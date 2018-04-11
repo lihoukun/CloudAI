@@ -86,7 +86,7 @@ def train_get():
         elif form.remove_train.data:
             kill_train(form.train_name.data)
             remove_train(form.train_name.data)
-    return render_template('train_get.html')
+    return render_template('train_get.html', form=form)
 
 @app.route('/models/')
 def models():
