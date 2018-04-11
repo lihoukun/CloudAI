@@ -84,7 +84,7 @@ def eval():
 def kubecmd(command = None, output=[]):
     form = SystemForm()
     if form.validate_on_submit():
-        command = 'kubectl {} {}'.format(form.action.data, form.label_str.data)
+        command = 'kubectl {} -l {}'.format(form.action.data, form.label_str.data)
         try:
             output = check_output(command.split(' ')).decode('ascii').split('\n')
         except:

@@ -1,7 +1,6 @@
 import argparse
 import os
 import datetime
-import sqlite3
 
 def parse_args():
     parser = argparse.ArgumentParser()
@@ -61,7 +60,7 @@ spec:
     return k8s_service
 
 def generate_train_job(job, id, port, model, signature):
-    worker_cmd, ps_cmd = get_cmd_from_db(model)
+    worker_cmd, ps_cmd = get_cmd_from_dir(model)
 
     k8s_job = """---
 apiVersion: batch/v1
@@ -139,13 +138,9 @@ def generate_train_config(model, signature, ps_num, worker_num, epoch):
 
     return k8s_config
 
-def get_cmd_from_db(model):
-    db_file = os.path.dirname(os.path.dirname(os.path.realpath(__file__))) + '/sqlite3.db'
-    conn = sqlite3.connect(db_file)
-    cursor = conn.cursor()
-    cursor.execute("SELECT worker_cmd, ps_cmd from models where name = '{}'".format(model))
-    worker_cmd, ps_cmd = cursor.fetchone()
-    conn.close()
+def get_cmd_from_dir(model):
+    worker_cmd = '/data/models/{}/worker.sh'.format(model)
+    ps_cmd = '/data/models/{}/ps.sh'.format(model)
     return (worker_cmd, ps_cmd)
 
 def main():
