@@ -43,6 +43,7 @@ def train():
 
     form = TrainForm()
     form.train_label.choices = [[train]*2 for train in get_trainings()]
+    form.model_name.choices = [[model]*2 for model in get_models()]
     if not form.train_label.choices:
         form.train_label.choices = [('', '---')]
     form.num_gpu.validators=[NumberRange(min=1, max=get_max_gpu())]

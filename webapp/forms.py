@@ -4,7 +4,7 @@ from wtforms.validators import NumberRange, DataRequired, ValidationError
 
 
 class TrainForm(FlaskForm):
-    model_name = SelectField('Select Model: ', choices = [('inception3', 'inception3'), ('imagenet', 'imagenet')])
+    model_name = SelectField('Select Model: ')
     num_gpu = IntegerField('Number of GPU: ')
     num_cpu = IntegerField('Number of CPU: ')
     num_epoch = IntegerField('Number of Epoch: ', validators=[NumberRange(min=1)])
