@@ -54,7 +54,7 @@ def train():
 
         cmd = 'python36 {}/scripts/gen_k8s_yaml.py'.format(os.path.dirname(os.path.realpath(__file__)))
         cmd += ' {} train'.format(form.model_name.data)
-        cmd += ' --ps_num {} --worker_num {}'.format(form.num_gpu.data, form.num_cpu.data)
+        cmd += ' --ps_num {} --worker_num {}'.format(form.num_cpu.data, form.num_gpu.data)
         cmd += ' --epoch {}'.format(form.num_epoch.data)
         cmd += ' --out_file {}'.format(cfg_file)
         cmd += ' --signature {}'.format(signature)
