@@ -21,7 +21,7 @@ def index():
     return render_template('index.html')
 
 @app.route('/trainings/new/', methods=['GET', 'POST'])
-def trainings_new:
+def trainings_new():
     def get_max_gpu():
         cmd = "kubectl describe nodes"
         res = check_output(cmd.split(' ')).decode('ascii').split('\n')
@@ -68,7 +68,7 @@ def trainings_new:
     return render_template('trainings_new.html', form=form)
 
 @app.route('/trainings/', methods=['GET', 'POST'])
-def trainings:
+def trainings():
     form = TrainingsForm()
     form.train_name.choices = [[train]*2 for train in get_trainings()]
     if form.validate_on_submit():
