@@ -5,7 +5,7 @@ app.config['SECRET_KEY'] = 'exaairocks'
 from flask import render_template, flash, redirect, request
 from wtforms.validators import NumberRange
 
-from forms import TrainingsIndexForm, TrainingsNewForm, SystemForm, EvalForm
+from forms import TrainingsForm, TrainingsNewForm, SystemForm, EvalForm
 from dir_parse import get_models, get_trainings
 
 from subprocess import check_output
@@ -20,8 +20,8 @@ def index():
         pass
     return render_template('index.html')
 
-@app.route('/trainings/', methods=['GET', 'POST'])
-def trainings(action = None):
+@app.route('/trainings/new/', methods=['GET', 'POST'])
+def trainings_new:
     def get_max_gpu():
         cmd = "kubectl describe nodes"
         res = check_output(cmd.split(' ')).decode('ascii').split('\n')
@@ -41,43 +41,43 @@ def trainings(action = None):
         res = check_output(cmd.split(' ')).decode('ascii').split('\n')
         return len(res) - 1
 
-    if action == 'new':
-        form = TrainingsNewForm()
-        form.train_label.choices = [[train]*2 for train in get_trainings()]
-        form.model_name.choices = [[model[0]]*2 for model in get_models()]
-        if not form.train_label.choices:
-            form.train_label.choices = [('', '---')]
-        form.num_gpu.validators=[NumberRange(min=1, max=get_max_gpu())]
-        form.num_cpu.validators=[NumberRange(min=1, max=get_max_cpu())]
-        if form.validate_on_submit():
-            signature = datetime.datetime.now().strftime("%y%m%d%H%M%S")
-            cfg_file = '/data/train/{}_{}/records/train.yaml'.format(form.model_name.data, signature)
+    form = TrainingsNewForm()
+    form.train_label.choices = [[train]*2 for train in get_trainings()]
+    form.model_name.choices = [[model[0]]*2 for model in get_models()]
+    if not form.train_label.choices:
+        form.train_label.choices = [('', '---')]
+    form.num_gpu.validators=[NumberRange(min=1, max=get_max_gpu())]
+    form.num_cpu.validators=[NumberRange(min=1, max=get_max_cpu())]
+    if form.validate_on_submit():
+        signature = datetime.datetime.now().strftime("%y%m%d%H%M%S")
+        cfg_file = '/data/train/{}_{}/records/train.yaml'.format(form.model_name.data, signature)
 
-            cmd = 'python36 {}/scripts/gen_k8s_yaml.py'.format(os.path.dirname(os.path.realpath(__file__)))
-            cmd += ' {} train'.format(form.model_name.data)
-            cmd += ' --ps_num {} --worker_num {}'.format(form.num_cpu.data, form.num_gpu.data)
-            cmd += ' --epoch {}'.format(form.num_epoch.data)
-            cmd += ' --out_file {}'.format(cfg_file)
-            cmd += ' --signature {}'.format(signature)
-            flash(cmd)
-            os.system(cmd)
+        cmd = 'python36 {}/scripts/gen_k8s_yaml.py'.format(os.path.dirname(os.path.realpath(__file__)))
+        cmd += ' {} train'.format(form.model_name.data)
+        cmd += ' --ps_num {} --worker_num {}'.format(form.num_cpu.data, form.num_gpu.data)
+        cmd += ' --epoch {}'.format(form.num_epoch.data)
+        cmd += ' --out_file {}'.format(cfg_file)
+        cmd += ' --signature {}'.format(signature)
+        flash(cmd)
+        os.system(cmd)
 
-            cmd = 'kubectl apply -f {}'.format(cfg_file)
-            flash(cmd)
-            os.system(cmd)
-            return redirect('/')
-        return render_template('trainings_new.html', form=form)
+        cmd = 'kubectl apply -f {}'.format(cfg_file)
+        flash(cmd)
+        os.system(cmd)
+        return redirect('/')
+    return render_template('trainings_new.html', form=form)
 
-    else:
-        form = TrainingsIndexForm()
-        form.train_name.choices = [[train]*2 for train in get_trainings()]
-        if form.validate_on_submit():
-            cmd = 'kubectl delete -f /data/train/{}/records/train.yaml'.format(name)
-            os.system(cmd)
-            flash('Kubernetes Tasks for {] Killed!'.format(name))
-            if form.remove_train.data:
-                print('Remove not implemented yet')
-        return render_template('trainings_index.html', form=form)
+@app.route('/trainings/', methods=['GET', 'POST'])
+def trainings:
+    form = TrainingsForm()
+    form.train_name.choices = [[train]*2 for train in get_trainings()]
+    if form.validate_on_submit():
+        cmd = 'kubectl delete -f /data/train/{}/records/train.yaml'.format(name)
+        os.system(cmd)
+        flash('Kubernetes Tasks for {] Killed!'.format(name))
+        if form.remove_train.data:
+            print('Remove not implemented yet')
+    return render_template('trainings.html', form=form)
 
 @app.route('/models/')
 def models():

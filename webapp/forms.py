@@ -12,7 +12,7 @@ class TrainingsNewForm(FlaskForm):
     train_label = SelectField('Training Label: ')
     submit = SubmitField('Train')
 
-class TrainingsIndexForm(FlaskForm):
+class TrainingsForm(FlaskForm):
     train_name = SelectField('Listing Train Dir:')
     kill_train = SubmitField('Kill')
     remove_train = SubmitField('Remove')
