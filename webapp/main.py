@@ -5,7 +5,7 @@ app.config['SECRET_KEY'] = 'exaairocks'
 from flask import render_template, flash, redirect, request
 from wtforms.validators import NumberRange
 
-from forms import TrainingsForm, TrainingsNewForm, SystemForm, EvalForm
+from forms import TrainingsNewForm, SystemForm, EvalForm
 from dir_parse import get_models, get_trainings
 
 from subprocess import check_output
