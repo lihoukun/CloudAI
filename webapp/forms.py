@@ -3,7 +3,7 @@ from wtforms import TextField, BooleanField, IntegerField, SelectField, RadioFie
 from wtforms.validators import NumberRange, DataRequired, ValidationError
 
 
-class TrainPostForm(FlaskForm):
+class TrainingsNewForm(FlaskForm):
     model_name = SelectField('Select Model: ')
     num_gpu = IntegerField('Number of GPU: ')
     num_cpu = IntegerField('Number of CPU: ')
@@ -12,7 +12,7 @@ class TrainPostForm(FlaskForm):
     train_label = SelectField('Training Label: ')
     submit = SubmitField('Train')
 
-class TrainGetForm(FlaskForm):
+class TrainingsIndexForm(FlaskForm):
     train_name = SelectField('Listing Train Dir:')
     kill_train = SubmitField('Kill')
     remove_train = SubmitField('Remove')
