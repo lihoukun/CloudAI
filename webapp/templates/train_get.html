@@ -3,7 +3,7 @@
 {% block content %}
 <br/>
 <br/>
-<a href="{{ url_for('train_post') }}" class="btn btn-primary btn-lg" role="button">New Training</a>
+<a href="{{ url_for('train_post', _method='POST') }}" class="btn btn-primary btn-lg" role="button">New Training</a>
 <br/>
 <br/>
 <form action="" method="get">
@@ -13,6 +13,7 @@
   {% for error in form.train_name.errors %}
   <span style="color: red;">[{{ error }}]</span>
   {% endfor %}
+  {{ form.kill_train() }} {{ form.remove_train() }}
 </form>
 <br/>
 <br/>
