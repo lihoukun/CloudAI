@@ -20,8 +20,8 @@ def index():
         pass
     return render_template('index.html')
 
-@app.route('/train/', methods=('GET', 'POST'))
-def train():
+@app.route('/train/', methods=('POST'))
+def train_post():
     def get_max_gpu():
         cmd = "kubectl describe nodes"
         res = check_output(cmd.split(' ')).decode('ascii').split('\n')
@@ -65,7 +65,11 @@ def train():
         flash(cmd)
         os.system(cmd)
         return redirect('/')
-    return render_template('train.html', form=form)
+    return render_template('train_post.html', form=form)
+
+@app.route('/train/', methods=('GET'))
+def train_get():
+    return render_template('train_get.html')
 
 @app.route('/models/')
 def models():
@@ -79,6 +83,10 @@ def eval():
         flash('Evaluation reuqest for log_dir {} submitted'.format(form.log_dir.data))
         return redirect('/')
     return render_template('eval.html', form=form)
+
+@app.route('/serve/')
+def serve():
+    return  render_template('serve.html')
 
 @app.route('/kubecmd/', methods=('GET', 'POST'))
 def kubecmd(command = None, output=[]):
