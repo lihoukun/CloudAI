@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block content %}
+<br/>
+<br/>
+<h1>Kubernetes Command Line</h1>
+<form action="" method="post">
+  {{ form.csrf_token }}
+  kubectl {{ form.action }} -l {{ form.label_str }} {{ form.submit() }}
+  <br/>
+  {% for error in form.label_str.errors %}
+  <span style="color: red;">[{{ error }}]</span>
+  {% endfor %}
+</form>
+<br/>
+<br/>
+{% if command %}
+<h1>Command:</h1>
+<p>{{ command }}</p>
+{% endif %}
+{% if output %}
+<h1>Output:</h1>
+  {% for line in output %}
+  <p>{{ line }}</p>
+  {% endfor %}
+{% endif %}
+{% endblock %}

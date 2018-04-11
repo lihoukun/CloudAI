@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+
+{% block content %}
+<br/>
+<br/>
+<br/>
+<br/>
+<div class="row">
+  <div class="col-sm-4">
+    <div class="row">
+      <div class="col-sm-1"></div>
+      <div class="card text-white bg-primary col-sm-10">
+        <div class="card-title">Tensorflow</div>
+        <img class="card-img-top" src="{{ url_for('static', filename='tensorflow.png') }}" height="128">
+        <div class="card-body">
+          <ul>
+            <li><a class="dropdown-item" href="{{ url_for('train') }}">Training</a></li>
+            <li><a class="dropdown-item" href="{{ url_for('eval') }}">Serving</a></li>
+          </ul>
+          <p class="card-text"><small class="text-muted">v1.7</small></p>
+        </div>
+      </div>
+      <div class="col-sm-1"></div>
+    </div>
+  </div>
+
+  <div class="col-sm-4">
+    <div class="row">
+      <div class="col-sm-1"></div>
+      <div class="card text-white bg-primary col-sm-10">
+        <div class="card-title">Kubernetes</div>
+        <img class="card-img-top" src="{{ url_for('static', filename='kubernetes.jpg') }}" height="128">
+        <div class="card-body">
+          <ul>
+            <li><a class="dropdown-item" href="http://localhost:8001/api/v1/namespaces/kube-system/services/https:kubernetes-dashboard:/proxy/">DashBoard</a></li>
+            <li><a class="dropdown-item" href="{{ url_for('kubecmd') }}">Cmdline</a></li>
+          </ul>
+          <p class="card-text"><small class="text-muted">v1.10</small></p>
+        </div>
+      </div>
+      <div class="col-sm-1"></div>
+    </div>
+  </div>
+
+  <div class="col-sm-4">
+    <div class="row">
+      <div class="col-sm-1"></div>
+      <div class="card text-white bg-primary col-sm-10">
+        <div class="card-title">Misc Tools</div>
+        <div class="row">
+          <div class="col"><img class="card-img-top" src="{{ url_for('static', filename='nginx.png') }}" height="128"></div>
+          <div class="col"><img class="card-img-top" src="{{ url_for('static', filename='jupyter.jpg') }}" height="128"></div>
+        </div>
+        <div class="card-body">
+          <ul>
+            <li><a class="dropdown-item" href="http://localhost:8080">Nginx</a></li>
+            <li><a class="dropdown-item" href="http://localhost:8888">JupyterNotebook</a></li>
+          </ul>
+          <p class="card-text"><small class="text-muted">and more</small></p>
+        </div>
+      </div>
+      <div class="col-sm-1"></div>
+    </div>
+  </div>
+</div>
+<br/>
+<br/>
+{% endblock %}

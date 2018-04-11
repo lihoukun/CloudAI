@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+
+{% block content %}
+<br/>
+<br/>
+    <h1>Training</h1>
+    <form action="" method="post">
+        {{ form.csrf_token }}
+        <p>
+            {{ form.model_name.label }}
+            {{ form.model_name() }}
+            {% for error in form.model_name.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+            <a href="{{ url_for('models') }}">Modelsi Details</a>
+        </p>
+        <p>
+            {{ form.num_gpu.label }}
+            {{ form.num_gpu() }}
+            {% for error in form.num_gpu.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+        <p>
+            {{ form.num_cpu.label }}
+            {{ form.num_cpu() }}
+            {% for error in form.num_cpu.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+        <p>
+            {{ form.num_epoch.label }}
+            {{ form.num_epoch() }}
+            {% for error in form.num_epoch.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+        <p>
+            {% for option in form.train_option %}
+              {{ option() }}
+              {{ option.label }}<br/>
+              <div style="padding-left: 2em;">
+              {% if loop.index  == 1 %}
+                {{ form.train_label.label }}
+                {{ form.train_label() }}
+                {% for error in form.train_label.errors %}
+                <span style="color: red;">[{{ error }}]</span>
+                {% endfor %}
+              {% endif %}
+              </div>
+              <br/>
+            {% endfor %}
+
+            {% for error in form.train_option.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+        <p>{{ form.submit() }}</p>
+    </form>
+<br/>
+<br/>
+{% endblock %}
