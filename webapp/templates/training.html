@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block content %}
+<br/>
+<br/>
+<h1>Training Tasks</h1>
+<table class="table table-hover table-primary">
+  <thead>
+    <tr>
+      <th scope="col">Name</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for row in data %}
+    <tr>
+      <td>{{ row }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+<br/>
+<br/>
+{% endblock %}
