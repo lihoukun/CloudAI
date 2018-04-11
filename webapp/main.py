@@ -20,7 +20,7 @@ def index():
         pass
     return render_template('index.html')
 
-@app.route('/train/', methods=('POST'))
+@app.route('/train/', methods=['POST'])
 def train_post():
     def get_max_gpu():
         cmd = "kubectl describe nodes"
@@ -67,7 +67,7 @@ def train_post():
         return redirect('/')
     return render_template('train_post.html', form=form)
 
-@app.route('/train/', methods=('GET'))
+@app.route('/train/', methods=['GET'])
 def train_get():
     return render_template('train_get.html')
 
