@@ -12,11 +12,6 @@ class TrainingsNewForm(FlaskForm):
     train_label = SelectField('Training Label: ')
     submit = SubmitField('Train')
 
-class TrainingsForm(FlaskForm):
-    train_name = SelectField('Listing Train Dir:')
-    kill_train = SubmitField('Kill')
-    remove_train = SubmitField('Remove')
-
 class EvalForm(FlaskForm):
     log_dir = SelectField('LOG Directory: ')
     submit = SubmitField('Start TensorBoard')

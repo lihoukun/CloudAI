@@ -69,15 +69,35 @@ def trainings_new():
 
 @app.route('/trainings/', methods=['GET', 'POST'])
 def trainings():
-    form = TrainingsForm()
-    form.train_name.choices = [[train]*2 for train in get_trainings()]
-    if form.validate_on_submit():
-        cmd = 'kubectl delete -f /data/train/{}/records/train.yaml'.format(name)
-        os.system(cmd)
-        flash('Kubernetes Tasks for {] Killed!'.format(name))
-        if form.remove_train.data:
-            print('Remove not implemented yet')
-    return render_template('trainings.html', form=form)
+    def get_status(training):
+        yaml_file = '/data/train/{}/records/train.yaml'.format(training)
+        if not os.path.isfile(yaml_file): return 'STOPPED'
+
+        model, signature = training.split('_')
+        cmd = 'kubectl get pods -l model={},signature=s{}'.format(model, signature)
+        output = check_output(cmd.split(' ')).decode('ascii')
+        if re.match('No resources found', output): return 'STOPPED'
+
+
+        cmd = 'kubectl get pods -l model={},signature=s{},job=worker'.format(model, signature)
+        output = check_output(cmd.split(' ')).decode('ascii')
+        if re.match('No resources found', output): return 'FINISHED'
+        return 'RUNNING'
+
+    data = []
+    for training in get_trainings():
+        status = get_status(training)
+        data.append([training, status])
+
+    return render_template('trainings.html', data=data)
+
+@app.route('/training/<label>', methods=['GET', 'POST'])
+def training(label):
+    model, signature = label.split('_')
+    cmd = 'kubectl get pods -l model={},signature=s{}'.format(model, signature)
+    output = check_output(cmd.split(' ')).decode('ascii').split('\n')
+
+    return render_template('training.html', label=label, data=output)
 
 @app.route('/models/')
 def models():
