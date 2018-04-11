@@ -5,7 +5,7 @@ app.config['SECRET_KEY'] = 'exaairocks'
 from flask import render_template, flash, redirect
 from wtforms.validators import NumberRange
 
-from forms import TrainForm, SystemForm, EvalForm
+from forms import TrainPostForm, TrainGetForm, SystemForm, EvalForm
 from dir_parse import get_models, get_trainings
 
 from subprocess import check_output
@@ -41,7 +41,7 @@ def train_post():
         res = check_output(cmd.split(' ')).decode('ascii').split('\n')
         return len(res) - 1
 
-    form = TrainForm()
+    form = TrainPostForm()
     form.train_label.choices = [[train]*2 for train in get_trainings()]
     form.model_name.choices = [[model[0]]*2 for model in get_models()]
     if not form.train_label.choices:
@@ -69,6 +69,23 @@ def train_post():
 
 @app.route('/train/', methods=['GET'])
 def train_get():
+    def kill_train(name):
+        cmd = 'kubectl delete -f /data/train/{}/records/train.yaml'.format(name)
+        os.system(cmd)
+        flash('Kubernetes Tasks for {] Killed!'.format(name))
+
+    def remove_train(name):
+        flash('Removal not implemented yet')
+
+
+    form = TrainGetForm()
+    form.train_name.choices = [[train]*2 for train in get_trainings()]
+    if form.validate_on_submit():
+        if form.kill_train.data:
+            kill_train(form.train_name.data)
+        elif form.remove_train.data:
+            kill_train(form.train_name.data)
+            remove_train(form.train_name.data)
     return render_template('train_get.html')
 
 @app.route('/models/')
