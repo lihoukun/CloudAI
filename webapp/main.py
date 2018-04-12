@@ -92,7 +92,7 @@ def trainings():
     form = TrainingsForm()
     form.train_label.choices = [[row[0]]*2 for row in data]
     if form.validate_on_submit():
-        if form.train_label.data
+        if form.train_label.data:
         flash('Training Label {} picked'.format(form.train_label.data))
 
     return render_template('trainings.html', data=data)
