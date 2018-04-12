@@ -64,7 +64,7 @@ def trainings_new():
         cmd = 'kubectl apply -f {}'.format(cfg_file)
         flash(cmd)
         os.system(cmd)
-        return redirect('/')
+        return redirect(url_for('training', label='{}_{}'.format(form.model_name.data, signature)))
     return render_template('trainings_new.html', form=form)
 
 @app.route('/trainings/', methods=['GET', 'POST'])
