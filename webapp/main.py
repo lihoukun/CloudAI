@@ -2,7 +2,7 @@ from flask import Flask
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'exaairocks'
 
-from flask import render_template, flash, redirect, request
+from flask import render_template, flash, redirect, request, url_for
 from wtforms.validators import NumberRange
 
 from forms import TrainingsNewForm, SystemForm, EvalForm, TrainingForm
