@@ -110,21 +110,21 @@ spec:
         k8s_job += """
             nvidia.com/gpu: 1
         command: ["/bin/bash"]
-        args: ["{}"]
+        args: ["{2}"]
         env:
         - name: POD_NAME
           value: {0}-{1}
-""".format(worker_cmd)
+""".format(job, id, worker_cmd)
     else:
         k8s_job += """
         command: ["/bin/bash"]
-        args: ["{}"]
+        args: ["{2}"]
         env:
         - name: POD_NAME
           value: {0}-{1}
         - name: CUDA_VISIBLE_DEVICES
           value: ''
-""".format(ps_cmd)
+""".format(job, id, ps_cmd)
 
     return k8s_job
 
