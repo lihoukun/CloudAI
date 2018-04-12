@@ -95,7 +95,7 @@ def trainings():
         if form.train_label.data:
             flash('Training Label {} picked'.format(form.train_label.data))
 
-    return render_template('trainings.html', data=data)
+    return render_template('trainings.html', data=data, form=form)
 
 @app.route('/training/<label>', methods=['GET', 'POST'])
 def training(label):
