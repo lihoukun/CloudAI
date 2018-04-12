@@ -3,6 +3,10 @@
 {% block content %}
 <br/>
 <br/>
+    <form action="" label={{ label }} method="post">
+        {{ form.csrf_token }}
+        <p>{{ form.submit() }}</p>
+    </form>
 <table class="table table-hover table-primary">
   <thead>
     <tr>

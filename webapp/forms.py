@@ -16,8 +16,7 @@ class EvalForm(FlaskForm):
     log_dir = SelectField('LOG Directory: ')
     submit = SubmitField('Start TensorBoard')
 
-class TrainingsForm(FlaskForm):
-    train_label = RadioField('Train Label')
+class TrainingForm(FlaskForm):
     submit = SubmitField('Stop')
 
 class SystemForm(FlaskForm):

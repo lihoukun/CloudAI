@@ -5,7 +5,7 @@ app.config['SECRET_KEY'] = 'exaairocks'
 from flask import render_template, flash, redirect, request
 from wtforms.validators import NumberRange
 
-from forms import TrainingsNewForm, SystemForm, EvalForm, TrainingsForm
+from forms import TrainingsNewForm, SystemForm, EvalForm, TrainingForm
 from dir_parse import get_models, get_trainings
 
 from subprocess import check_output
@@ -89,13 +89,7 @@ def trainings():
         status = get_status(training)
         data.append([training, status])
 
-    form = TrainingsForm()
-    form.train_label.choices = [[row[0]]*2 for row in data]
-    if form.validate_on_submit():
-        if form.train_label.data:
-            flash('Training Label {} picked'.format(form.train_label.data))
-
-    return render_template('trainings.html', data=data, form=form)
+    return render_template('trainings.html', data=data)
 
 @app.route('/training/<label>', methods=['GET', 'POST'])
 def training(label):
@@ -106,7 +100,10 @@ def training(label):
     if output:
         for line in output.split('\n'):
             data.append(line.split())
-
+    form = TrainingForm()
+    if form.validate_on_submit():
+        flash('delete {}'.format(request.form['label']))
+        print('delete {}'.format(request.form['label']))
     return render_template('training.html', label=label, data=data, form=form)
 
 @app.route('/models/')

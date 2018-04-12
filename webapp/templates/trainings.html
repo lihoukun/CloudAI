@@ -6,28 +6,22 @@
 <a href="{{ url_for('trainings_new') }}" class="btn btn-primary btn-lg" role="button">New Training</a>
 <br/>
 <br/>
-<form action="" method="post">
-  {{ form.csrf_token }}
 <table class="table table-hover table-primary">
   <thead>
     <tr>
-      <th></th>
-      <th scope="col">Training Label</th>
       <th scope="col">Status</th>
+      <th scope="col">Training Label</th>
     </tr>
   </thead>
   <tbody>
-    {% for option in form.train_option %}
+    {% for row in data %}
     <tr>
-      <td>{{ option() }}</td>
-      <td><a href="{{ url_for('training', label=option.label) }}">{{ option.label }}</a></td>
-      <td>aaa</td>
+      <td>{{ row[1] }}</td>
+      <td><a href="{{ url_for('training', label=row[0]) }}">{{ row[0] }}</a></td>
     </tr>
     {% endfor %}
   </tbody>
 </table>
-<p>{{ form.submit() }}</p>
-</form>
 <br/>
 <br/>
 {% endblock %}
