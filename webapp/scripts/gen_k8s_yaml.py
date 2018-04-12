@@ -61,70 +61,66 @@ spec:
 
 def generate_train_job(job, id, port, model, signature):
     k8s_job = """---
-apiVersion: batch/v1
-kind: Job
+apiVersion: v1
+kind: Pod
 metadata:
   name: {0}-{1}
+  labels:
+    job: {0}
+    task: t{1}
+    model: {3}
+    signature: s{4}
 spec:
-  backoffLimit: 1
-  template:
-    metadata:
-      labels:
-        job: {0}
-        task: t{1}
-        model: {3}
-        signature: s{4}
-    spec:
-      restartPolicy: Never
-      volumes:
-      - name: tf-volume
-        persistentVolumeClaim:
-          claimName: tf-pvc
-      containers:
-      - name: tf-training
-        image: exaai/tf-gpu:180409
-        securityContext:
-          privileged: true
-        command: ["/bin/bash"]
-        args: ["/data/models/{3}/worker.sh"]
-        ports:
-        - name: tf-training-ports
-          containerPort: {2}
-          protocol: TCP
-          name: http
-        volumeMounts:
-        - mountPath: /data
-          name: tf-volume
-        envFrom:
-        - configMapRef:
-            name: {3}-{4}-configmap
-        env:
-        - name: POD_NAME
-          value: {0}-{1}
+  restartPolicy: Never
+  volumes:
+  - name: tf-volume
+    persistentVolumeClaim:
+      claimName: tf-pvc
+  containers:
+  - name: tf-training
+    image: exaai/tf-gpu:180409
+    securityContext:
+      privileged: true
+    command: ["/bin/bash"]
+    args: ["/data/models/{3}/worker.sh"]
+    ports:
+    - name: tf-training-ports
+      containerPort: {2}
+      protocol: TCP
+      name: http
+    volumeMounts:
+    - mountPath: /data
+      name: tf-volume
+    envFrom:
+    - configMapRef:
+      name: {3}-{4}-configmap
+    env:
+    - name: POD_NAME
+      value: {0}-{1}
 """.format(job, id, port, model, signature)
 
     if job == 'worker':
         k8s_job += """
-        resources:
-          requests:
-            cpu: 1000m
-            memory: 10Gi
-          limits:
-            cpu: 2000m
-            memory: 20Gi
-            nvidia.com/gpu: 1
+    resources:
+      requests:
+        cpu: 1000m
+        memory: 10Gi
+      limits:
+        cpu: 2000m
+        memory: 20Gi
+        nvidia.com/gpu: 1
 """
     else:
         k8s_job += """
-        - name: CUDA_VISIBLE_DEVICES
-          value: ''
-        resources:
-          requests:
-            cpu: 1000m
-            memory: 10Gi
-          limits:
-            cpu: 2000m
-            memory: 20Gi
+    - name: CUDA_VISIBLE_DEVICES
+      value: ''
+    resources:
+      requests:
+        cpu: 1000m
+        memory: 10Gi
+      limits:
+        cpu: 2000m
+        memory: 20Gi
 """
 
     return k8s_job
