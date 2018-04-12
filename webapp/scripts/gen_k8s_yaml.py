@@ -66,6 +66,7 @@ kind: Job
 metadata:
   name: {0}-{1}
 spec:
+  backoffLimit: 1
   template:
     metadata:
       labels:
