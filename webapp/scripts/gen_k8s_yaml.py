@@ -93,7 +93,7 @@ spec:
       name: tf-volume
     envFrom:
     - configMapRef:
-      name: {3}-{4}-configmap
+        name: {3}-{4}-configmap
     env:
     - name: POD_NAME
       value: {0}-{1}
