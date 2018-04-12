@@ -58,11 +58,9 @@ def trainings_new():
         cmd += ' --epoch {}'.format(form.num_epoch.data)
         cmd += ' --out_file {}'.format(cfg_file)
         cmd += ' --signature {}'.format(signature)
-        flash(cmd)
         os.system(cmd)
 
         cmd = 'kubectl apply -f {}'.format(cfg_file)
-        flash(cmd)
         os.system(cmd)
         return redirect(url_for('training', label='{}_{}'.format(form.model_name.data, signature)))
     return render_template('trainings_new.html', form=form)
