@@ -21,12 +21,12 @@
   </thead>
   <tbody>
     {% for row in data %}
-    {% for col in row %}
     <tr>
-      <td>{{ col }}</td>
+        {% for col in row %}
+        <td>{{ col }}</td>
+        {% endfor %}
     </tr>
     <tr></tr>
-    {% endfor %}
     {% endfor %}
   </tbody>
 </table>

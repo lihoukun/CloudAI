@@ -102,12 +102,13 @@ def training(label):
     if output:
         for line in output.split('\n'):
             data.append(line.split())
-    print(data)
+        data.pop(0)
+
     form = TrainingForm()
     if form.validate_on_submit():
         flash('delete {}'.format(request.form['label']))
-        print('delete {}'.format(request.form['label']))
-        print('delete {}'.format(request.args['label']))
+        print('e {}'.format(request.form['label']))
+        #print('delete {}'.format(request.args['label']))
     return render_template('training.html', label=label, data=data, form=form)
 
 @app.route('/models/')
