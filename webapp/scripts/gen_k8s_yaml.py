@@ -86,6 +86,8 @@ spec:
         image: exaai/tf-gpu:180409
         securityContext:
           privileged: true
+        command: ["/bin/bash"]
+        args: ["/data/models/{3}/worker.sh"]
         ports:
         - name: tf-training-ports
           containerPort: {2}
@@ -97,6 +99,13 @@ spec:
         envFrom:
         - configMapRef:
             name: {3}-{4}-configmap
+        env:
+        - name: POD_NAME
+          value: {0}-{1}
+""".format(job, id, port, model, signature)
+
+    if job == 'worker':
+        k8s_job += """
         resources:
           requests:
             cpu: 1000m
@@ -104,27 +113,20 @@ spec:
           limits:
             cpu: 2000m
             memory: 20Gi
-""".format(job, id, port, model, signature)
-
-    if job == 'worker':
-        k8s_job += """
             nvidia.com/gpu: 1
-        command: ["/bin/bash"]
-        args: ["{2}"]
-        env:
-        - name: POD_NAME
-          value: {0}-{1}
-""".format(job, id, worker_cmd)
+"""
     else:
         k8s_job += """
-        command: ["/bin/bash"]
-        args: ["{2}"]
-        env:
-        - name: POD_NAME
-          value: {0}-{1}
         - name: CUDA_VISIBLE_DEVICES
           value: ''
-""".format(job, id, ps_cmd)
+        resources:
+          requests:
+            cpu: 1000m
+            memory: 10Gi
+          limits:
+            cpu: 2000m
+            memory: 20Gi
+"""
 
     return k8s_job
 
@@ -142,11 +144,6 @@ def generate_train_config(model, signature, ps_num, worker_num, epoch):
             k8s_config += generate_train_job(job, i, port, model, signature)
 
     return k8s_config
-
-def get_cmd_from_dir(model):
-    worker_cmd = '/data/models/{}/worker.sh'.format(model)
-    ps_cmd = '/data/models/{}/ps.sh'.format(model)
-    return (worker_cmd, ps_cmd)
 
 def main():
     args = parse_args()

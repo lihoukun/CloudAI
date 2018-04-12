@@ -99,7 +99,7 @@ def training(label):
     output = check_output(cmd.split()).decode('ascii')
     if output:
         for line in output.split('\n'):
-            data.append(line.split())
+            data.append(line.split()[:3])
         data.pop(0)
 
     form = TrainingForm()
