@@ -9,15 +9,17 @@
 <table class="table table-hover table-primary">
   <thead>
     <tr>
-      <th scope="col">Status</th>
+      <th></th>
       <th scope="col">Training Label</th>
+      <th scope="col">Status</th>
     </tr>
   </thead>
   <tbody>
-    {% for row in data %}
+    {% for option in form.train_option %}
     <tr>
-      <td>{{ row[1] }}</td>
-      <td><a href="{{ url_for('training', label=row[0]) }}">{{ row[0] }}</a></td>
+      <td>{{ option() }}</td>
+      <td><a href="{{ url_for('training', label=option.label) }}">{{{ option.label }}</a></td>
+      <td>aaa</td>
     </tr>
     {% endfor %}
   </tbody>

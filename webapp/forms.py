@@ -16,6 +16,10 @@ class EvalForm(FlaskForm):
     log_dir = SelectField('LOG Directory: ')
     submit = SubmitField('Start TensorBoard')
 
+class TrainingsForm(FlaskForm):
+    train_label = RadioField('Train Label')
+    submit = SubmitField('Stop')
+
 class SystemForm(FlaskForm):
     def label_format_check(form , field):
         if ' ' in field.data:
