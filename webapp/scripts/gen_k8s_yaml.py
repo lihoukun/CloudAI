@@ -44,7 +44,7 @@ def generate_train_service(job, id, port, model, signature):
 apiVersion: v1
 kind: Service
 metadata:
-  name: {0}-{1}
+  name: {3}-{4}-{0}-{1}
 spec:
   type: ClusterIP
   ports:
@@ -64,7 +64,7 @@ def generate_train_job(job, id, port, model, signature):
 apiVersion: v1
 kind: Pod
 metadata:
-  name: {0}-{1}
+  name: {3}-{4}-{0}-{1}
   labels:
     job: {0}
     task: t{1}
