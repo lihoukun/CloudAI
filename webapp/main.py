@@ -24,7 +24,7 @@ def index():
 def trainings_new():
     def get_max_gpu():
         cmd = "kubectl describe nodes"
-        res = check_output(cmd.split(' ')).decode('ascii').split('\n')
+        res = check_output(cmd.split()).decode('ascii').split('\n')
         is_avail = 0
         max_gpu = 0
         for line in res:
@@ -38,7 +38,7 @@ def trainings_new():
 
     def get_max_cpu():
         cmd = "kubectl get nodes"
-        res = check_output(cmd.split(' ')).decode('ascii').split('\n')
+        res = check_output(cmd.split()).decode('ascii').split('\n')
         return len(res) - 1
 
     form = TrainingsNewForm()
@@ -73,14 +73,15 @@ def trainings():
         yaml_file = '/data/train/{}/records/train.yaml'.format(training)
         if not os.path.isfile(yaml_file): return 'STOPPED'
 
-        model, signature = training.split('_')
+        m = re.match('(\S+)_(\d+)$', training)
+        model, signature = m.group(1), m.group(2)
         cmd = 'kubectl get pods -l model={},signature=s{}'.format(model, signature)
-        output = check_output(cmd.split(' ')).decode('ascii')
+        output = check_output(cmd.split()).decode('ascii')
         if not output: return 'STOPPED'
 
 
         cmd = 'kubectl get pods -l model={},signature=s{},job=worker'.format(model, signature)
-        output = check_output(cmd.split(' ')).decode('ascii')
+        output = check_output(cmd.split()).decode('ascii')
         if not output: return 'FINISHED'
         return 'RUNNING'
 
@@ -94,7 +95,8 @@ def trainings():
 @app.route('/training/<label>', methods=['GET', 'POST'])
 def training(label):
     data = []
-    model, signature = label.split('_')
+    m = re.match('(\S+)_(\d+)$', label)
+    model, signature = m.group(1), m.group(2)
     cmd = 'kubectl get pods -l model={},signature=s{}'.format(model, signature)
     output = check_output(cmd.split(' ')).decode('ascii')
     if output:
@@ -129,7 +131,7 @@ def kubecmd(command = None, output=[]):
     if form.validate_on_submit():
         command = 'kubectl {} -l {}'.format(form.action.data, form.label_str.data)
         try:
-            output = check_output(command.split(' ')).decode('ascii').split('\n')
+            output = check_output(command.split()).decode('ascii').split('\n')
         except:
             flash('Invalid')
     return render_template('kubecmd.html', form=form, command=command, output=output)
