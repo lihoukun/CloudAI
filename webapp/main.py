@@ -76,12 +76,12 @@ def trainings():
         model, signature = training.split('_')
         cmd = 'kubectl get pods -l model={},signature=s{}'.format(model, signature)
         output = check_output(cmd.split(' ')).decode('ascii')
-        if re.match('No resources found', output): return 'STOPPED'
+        if not output: return 'STOPPED'
 
 
         cmd = 'kubectl get pods -l model={},signature=s{},job=worker'.format(model, signature)
         output = check_output(cmd.split(' ')).decode('ascii')
-        if re.match('No resources found', output): return 'FINISHED'
+        if not output: return 'FINISHED'
         return 'RUNNING'
 
     data = []
@@ -93,11 +93,15 @@ def trainings():
 
 @app.route('/training/<label>', methods=['GET', 'POST'])
 def training(label):
+    data = []
     model, signature = label.split('_')
     cmd = 'kubectl get pods -l model={},signature=s{}'.format(model, signature)
-    output = check_output(cmd.split(' ')).decode('ascii').split('\n')
+    output = check_output(cmd.split(' ')).decode('ascii')
+    if output:
+        for line in output.split('\n'):
+            data.append(line.split())
 
-    return render_template('training.html', label=label, data=output)
+    return render_template('training.html', label=label, data=data)
 
 @app.route('/models/')
 def models():

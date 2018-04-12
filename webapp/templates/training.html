@@ -8,13 +8,20 @@
   <thead>
     <tr>
       <th scope="col">Name</th>
+      <th scope="col">Ready</th>
+      <th scope="col">Status</th>
+      <th scope="col">Restart</th>
+      <th scope="col">Age</th>
+      <th scope="col">Log</th>
     </tr>
   </thead>
   <tbody>
     {% for row in data %}
+    {% for col in row %}
     <tr>
-      <td>{{ row }}</td>
+      <td>{{ col }}</td>
     </tr>
+    <tr></tr>
     {% endfor %}
   </tbody>
 </table>
