@@ -3,7 +3,7 @@ import glob
 
 def get_models():
     models = []
-    for dirname in glob.glob('/data/models/*'):
+    for dirname in glob.glob('/nfs/nvme/models/*'):
         if not os.path.isdir(dirname): continue
         worker_cmd = '{}/worker.sh'.format(dirname)
         ps_cmd = '{}/ps.sh'.format(dirname)
@@ -14,7 +14,7 @@ def get_models():
 
 def get_trainings():
     trainings = []
-    for dirname in glob.glob('/data/train/*'):
+    for dirname in glob.glob('/nfs/nvme/train/*'):
         if not os.path.dirname(dirname): continue
         trainings.append(os.path.basename(dirname))
     return trainings

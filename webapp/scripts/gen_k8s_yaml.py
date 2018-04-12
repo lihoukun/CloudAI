@@ -82,7 +82,7 @@ spec:
     securityContext:
       privileged: true
     command: ["/bin/bash"]
-    args: ["/data/models/{3}/worker.sh"]
+    args: ["/nfs/nvme/models/{3}/worker.sh"]
     ports:
     - name: tf-training-ports
       containerPort: {2}

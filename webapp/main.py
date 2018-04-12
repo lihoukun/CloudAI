@@ -50,7 +50,7 @@ def trainings_new():
     form.num_cpu.validators=[NumberRange(min=1, max=get_max_cpu())]
     if form.validate_on_submit():
         signature = datetime.datetime.now().strftime("%y%m%d%H%M%S")
-        cfg_file = '/data/train/{}_{}/records/train.yaml'.format(form.model_name.data, signature)
+        cfg_file = '/nfs/nvme/train/{}_{}/records/train.yaml'.format(form.model_name.data, signature)
 
         cmd = 'python36 {}/scripts/gen_k8s_yaml.py'.format(os.path.dirname(os.path.realpath(__file__)))
         cmd += ' {} train'.format(form.model_name.data)
@@ -68,7 +68,7 @@ def trainings_new():
 @app.route('/trainings/', methods=['GET', 'POST'])
 def trainings():
     def get_status(training):
-        yaml_file = '/data/train/{}/records/train.yaml'.format(training)
+        yaml_file = '/nfs/nvme/train/{}/records/train.yaml'.format(training)
         if not os.path.isfile(yaml_file): return 'STOPPED'
 
         m = re.match('(\S+)_(\d+)$', training)
@@ -105,7 +105,7 @@ def training(label):
     form = TrainingForm()
     if form.validate_on_submit():
         label = request.form['label']
-        cmd = 'kubectl delete -f /data/train/{}/records/train.yaml'.format(label)
+        cmd = 'kubectl delete -f /nfs/nvme/train/{}/records/train.yaml'.format(label)
         flash('Training Label {} stopped'.format(label))
         os.system(cmd)
         return redirect('/trainings/')

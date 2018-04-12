@@ -6,10 +6,10 @@ autossh -M 20000 -f -nNT  -L 8001:127.0.0.1:8001 -L 5000:127.0.0.1:30050  -L 808
 curl localhost:5000
 
 ## Define your model
-All models stored at /data/models, with dirname as the model name
+All models stored at ~/models, with dirname as the model name
 Under each model dir, needs provide a worker.sh and ps.sh for each kubernetes POD to call.
 Env variales ['PS_HOSTS', 'WORKER_HOSTS', 'MODEL_NAME', 'POD_NAME', 'SIGNATURE', 'NUM_EPOCH'] is pre-defined.
-Must ensure training dir point point to '/data/train/${MODEL_NAME}_${SIGNATURE}'
+Must ensure training dir point point to '<data path>/train/${MODEL_NAME}_${SIGNATURE}'
 
 ## Run your model
 From localhost:5000, click train, and submit the form.
