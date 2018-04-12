@@ -5,7 +5,7 @@ app.config['SECRET_KEY'] = 'exaairocks'
 from flask import render_template, flash, redirect, request, url_for
 from wtforms.validators import NumberRange
 
-from forms import TrainingsNewForm, SystemForm, EvalForm, TrainingForm
+from forms import TrainingsNewForm, KubecmdForm, EvalForm, TrainingForm
 from dir_parse import get_models, get_trainings
 
 from subprocess import check_output
@@ -130,7 +130,7 @@ def serve():
 
 @app.route('/kubecmd/', methods=('GET', 'POST'))
 def kubecmd(command = None, output=[]):
-    form = SystemForm()
+    form = KubecmdForm()
     if form.validate_on_submit():
         command = 'kubectl {} -l {}'.format(form.action.data, form.label_str.data)
         try:

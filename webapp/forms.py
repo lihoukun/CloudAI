@@ -19,7 +19,7 @@ class EvalForm(FlaskForm):
 class TrainingForm(FlaskForm):
     submit = SubmitField('Stop')
 
-class SystemForm(FlaskForm):
+class KubecmdForm(FlaskForm):
     def label_format_check(form , field):
         if ' ' in field.data:
             raise ValidationError('Label cannot contain space')
