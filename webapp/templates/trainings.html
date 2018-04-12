@@ -25,7 +25,7 @@
       {% else %}
       <td><a href="{{ url_for('training', label=row[0]) }}">link</a></td>
       {% endif %}
-      <td><a href="http://localhost:8080/train/{{row[0]}}">output</a></td>
+      <td><a href="{{ 'http://localhost:8080/train/' + row[0] }}">output</a></td>
     </tr>
     {% endfor %}
   </tbody>
