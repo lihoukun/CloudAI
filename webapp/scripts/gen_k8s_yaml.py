@@ -60,8 +60,6 @@ spec:
     return k8s_service
 
 def generate_train_job(job, id, port, model, signature):
-    worker_cmd, ps_cmd = get_cmd_from_dir(model)
-
     k8s_job = """---
 apiVersion: batch/v1
 kind: Job
