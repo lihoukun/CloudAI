@@ -3,8 +3,9 @@
 {% block content %}
 <br/>
 <br/>
-    <form action="" label={{ label }} method="post">
+    <form action="" method="post">
         {{ form.csrf_token }}
+       <input type="hidden" name="label" value="{{ label }]" />
         <p>{{ form.submit() }}</p>
     </form>
 <table class="table table-hover table-primary">

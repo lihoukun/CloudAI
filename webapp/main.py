@@ -98,14 +98,16 @@ def training(label):
     m = re.match('(\S+)_(\d+)$', label)
     model, signature = m.group(1), m.group(2)
     cmd = 'kubectl get pods -l model={},signature=s{}'.format(model, signature)
-    output = check_output(cmd.split(' ')).decode('ascii')
+    output = check_output(cmd.split()).decode('ascii')
     if output:
         for line in output.split('\n'):
             data.append(line.split())
+    print(data)
     form = TrainingForm()
     if form.validate_on_submit():
         flash('delete {}'.format(request.form['label']))
         print('delete {}'.format(request.form['label']))
+        print('delete {}'.format(request.args['label']))
     return render_template('training.html', label=label, data=data, form=form)
 
 @app.route('/models/')
