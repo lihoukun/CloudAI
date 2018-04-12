@@ -106,7 +106,7 @@ def training(label):
     if form.validate_on_submit():
         label = request.form['label']
         cmd = 'kubectl delete -f /data/train/{}/records/train.yaml'.format(label)
-        flash(cmd)
+        flash('Training Label {} stopped'.format(label))
         os.system(cmd)
         return redirect('/trainings/')
     return render_template('training.html', label=label, data=data, form=form)

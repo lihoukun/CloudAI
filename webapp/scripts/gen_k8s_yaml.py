@@ -76,7 +76,7 @@ spec:
         model: {3}
         signature: s{4}
     spec:
-      restartPolicy: OnFailure
+      restartPolicy: Never
       volumes:
       - name: tf-volume
         persistentVolumeClaim:
@@ -94,9 +94,6 @@ spec:
         volumeMounts:
         - mountPath: /data
           name: tf-volume
-        env:
-        - name: POD_NAME
-          value: {0}-{1}
         envFrom:
         - configMapRef:
             name: {3}-{4}-configmap
@@ -114,11 +111,19 @@ spec:
             nvidia.com/gpu: 1
         command: ["/bin/bash"]
         args: ["{}"]
+        env:
+        - name: POD_NAME
+          value: {0}-{1}
 """.format(worker_cmd)
     else:
         k8s_job += """
         command: ["/bin/bash"]
         args: ["{}"]
+        env:
+        - name: POD_NAME
+          value: {0}-{1}
+        - name: CUDA_VISIBLE_DEVICES
+          value: ''
 """.format(ps_cmd)
 
     return k8s_job
