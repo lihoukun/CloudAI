@@ -4,9 +4,8 @@
 <br/>
 <br/>
     <form action="" method="post">
-        {{ form.csrf_token }}
-       <input type="hidden" name="label" value="{{ label }}" />
-        <p>{{ form.submit() }}</p>
+        {{ forms.csrf_token }}
+        <p>{{ forms.submit() }}</p>
     </form>
 <table class="table table-hover table-primary">
   <thead>
@@ -20,10 +19,16 @@
   <tbody>
     {% for row in data %}
     <tr>
-        {% for col in row %}
-        <td>{{ col }}</td>
-        {% endfor %}
-        <td></td>
+        <td>{{ row[0] }}</td>
+        <td>{{ row[1] }}</td>
+        <td>{{ row[2] }}</td>
+        <td>
+            <form action="" method="post">
+                {{ formd.csrf_token }}
+                <input type="hidden" name="name" value="{{ row[0] }}" />
+                <p>{{ formd.submit() }}</p>
+            </form>
+        </td>
     </tr>
     <tr></tr>
     {% endfor %}
@@ -31,4 +36,10 @@
 </table>
 <br/>
 <br/>
+{% if output %}
+<h1>Output:</h1>
+  {% for line in output %}
+  <p>{{ line }}</p>
+  {% endfor %}
+{% endif %}
 {% endblock %}

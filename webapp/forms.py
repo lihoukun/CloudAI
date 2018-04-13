@@ -16,8 +16,15 @@ class EvalForm(FlaskForm):
     log_dir = SelectField('LOG Directory: ')
     submit = SubmitField('Start TensorBoard')
 
-class TrainingForm(FlaskForm):
+class StopTrainForm(FlaskForm):
     submit = SubmitField('Stop')
+
+class DescribePodForm(FlaskForm):
+    submit = SubmitField('show description')
+
+class LogPodForm(FlaskForm):
+    submit = SubmitField('show log')
+
 
 class KubecmdForm(FlaskForm):
     def label_format_check(form , field):
