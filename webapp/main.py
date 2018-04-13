@@ -5,7 +5,7 @@ app.config['SECRET_KEY'] = 'exaairocks'
 from flask import render_template, flash, redirect, request, url_for
 from wtforms.validators import NumberRange
 
-from forms import TrainingsNewForm, KubecmdForm, EvalForm, StopTrainForm, DescribePodForm, LogPodForm
+from forms import TrainingsNewForm, KubecmdForm, EvalForm, StopForm, ShowForm
 from dir_parse import get_models, get_trainings
 
 from subprocess import check_output
@@ -88,7 +88,7 @@ def trainings():
     return render_template('trainings.html', data=data)
 
 @app.route('/training/<label>', methods=['GET', 'POST'])
-def training(label, output = []):
+def training(label=None, desc = [], log = []):
     data = []
     m = re.match('(\S+)_(\d+)$', label)
     model, signature = m.group(1), m.group(2)
@@ -96,24 +96,29 @@ def training(label, output = []):
     output = check_output(cmd.split()).decode('ascii')
     if output:
         for line in output.split('\n'):
-            data.append(line.split()[:3])
+            if line and line.strip():
+                data.append(line.split()[:3])
         data.pop(0)
 
-    forms = StopTrainForm()
+    forms = StopForm(prefix='forms')
     if forms.validate_on_submit():
         cmd = 'kubectl delete -f /nfs/nvme/train/{}/records/train.yaml'.format(label)
         flash('Training Label {} stopped'.format(label))
         os.system(cmd)
         return redirect('/trainings/')
 
-    formd = DescribePodForm()
+    formd = ShowForm(prefix='formd')
     if formd.validate_on_submit():
-        name = request.formd['name']
+        name = request.form['name']
         cmd = 'kubectl describe pod {}'.format(name)
-        output = check_output(cmd.split()).decode('ascii')
-        return redirect(url_for('training', label = label, output=output))
+        desc = check_output(cmd.split()).decode('ascii').split('\n')
+    forml = ShowForm(prefix='forml')
+    if forml.validate_on_submit():
+        name = request.form['name']
+        cmd = 'kubectl logs {}'.format(name)
+        log = check_output(cmd.split()).decode('ascii').split('\n')
 
-    return render_template('training.html', label=label, data=data, forms=forms, formd=formd, output=output)
+    return render_template('training.html', label=label, data=data, forms=forms, formd=formd, forml=forml, desc=desc, log=log)
 
 @app.route('/models/')
 def models():

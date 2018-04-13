@@ -13,6 +13,7 @@
       <th scope="col">Name</th>
       <th scope="col">Ready</th>
       <th scope="col">Status</th>
+      <th scope="col">Description</th>
       <th scope="col">Log</th>
     </tr>
   </thead>
@@ -29,6 +30,13 @@
                 <p>{{ formd.submit() }}</p>
             </form>
         </td>
+         <td>
+            <form action="" method="post">
+                {{ forml.csrf_token }}
+                <input type="hidden" name="name" value="{{ row[0] }}" />
+                <p>{{ forml.submit() }}</p>
+            </form>
+        </td>
     </tr>
     <tr></tr>
     {% endfor %}
@@ -36,10 +44,18 @@
 </table>
 <br/>
 <br/>
-{% if output %}
-<h1>Output:</h1>
-  {% for line in output %}
+{% if desc %}
+<h1>Pod Description for Label: {{ label }}</h1>
+  {% for line in desc %}
   <p>{{ line }}</p>
   {% endfor %}
 {% endif %}
+{% if log %}
+<h1>Pod Log for Label: {{ label }}</h1>
+  {% for line in log %}
+  <p>{{ line }}</p>
+  {% endfor %}
+{% endif %}
+<br/>
+<br/>
 {% endblock %}
