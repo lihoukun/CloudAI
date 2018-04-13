@@ -5,11 +5,9 @@ def get_models():
     models = []
     for dirname in glob.glob('/nfs/nvme/models/*'):
         if not os.path.isdir(dirname): continue
-        worker_cmd = '{}/worker.sh'.format(dirname)
-        ps_cmd = '{}/ps.sh'.format(dirname)
-        if not os.path.isfile(worker_cmd): continue
-        if not os.path.isfile(ps_cmd): continue
-        models.append([os.path.basename(dirname), worker_cmd, ps_cmd])
+        cmd = '{}/worker.sh'.format(dirname)
+        if not os.path.isfile(cmd): continue
+        models.append([os.path.basename(dirname), cmd])
     return models
 
 def get_trainings():

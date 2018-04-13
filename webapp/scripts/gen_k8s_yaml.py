@@ -89,7 +89,7 @@ spec:
       protocol: TCP
       name: http
     volumeMounts:
-    - mountPath: /data
+    - mountPath: /nfs
       name: tf-volume
     envFrom:
     - configMapRef:

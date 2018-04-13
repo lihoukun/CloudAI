@@ -15,9 +15,6 @@ import datetime
 
 @app.route('/')
 def index():
-    sysform = SystemForm()
-    if sysform.validate_on_submit():
-        pass
     return render_template('index.html')
 
 @app.route('/trainings/new/', methods=['GET', 'POST'])
@@ -52,7 +49,7 @@ def trainings_new():
         signature = datetime.datetime.now().strftime("%y%m%d%H%M%S")
         cfg_file = '/nfs/nvme/train/{}_{}/records/train.yaml'.format(form.model_name.data, signature)
 
-        cmd = 'python36 {}/scripts/gen_k8s_yaml.py'.format(os.path.dirname(os.path.realpath(__file__)))
+        cmd = 'python3 {}/scripts/gen_k8s_yaml.py'.format(os.path.dirname(os.path.realpath(__file__)))
         cmd += ' {} train'.format(form.model_name.data)
         cmd += ' --ps_num {} --worker_num {}'.format(form.num_cpu.data, form.num_gpu.data)
         cmd += ' --epoch {}'.format(form.num_epoch.data)
