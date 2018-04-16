@@ -5,8 +5,9 @@ app.config['SECRET_KEY'] = 'exaairocks'
 from flask import render_template, flash, redirect, request, url_for
 from wtforms.validators import NumberRange
 
-from forms import TrainingsNewForm, KubecmdForm, EvalForm, StopForm, ShowForm
-from dir_parse import get_models, get_trainings
+from forms import TrainingsNewForm, KubecmdForm, EvalForm, StopForm, ShowForm, ModelsNewForm, ModelEditForm
+from dir_parse import get_trainings
+from db_parse import get_models, new_model, update_model
 
 from subprocess import check_output
 import re
@@ -38,6 +39,18 @@ def trainings_new():
         res = check_output(cmd.split()).decode('ascii').split('\n')
         return len(res) - 1
 
+    def gen_script(record_dir, job, name):
+        if not os.path.isdir(record_dir):
+            os.makedirs(record_dir, 0o777)
+        filename = '{}/{}.sh'.format(record_dir, job)
+        with open(filename, 'w+') as f:
+            f.write('set -x\n')
+            f.write("TASK_ID=$(echo ${POD_NAME} | cut -f2 -d'-')\n")
+            f.write("JOB_NAME=$(echo ${POD_NAME} | cut -f1 -d'-')\n")
+            if job == 'ps':
+                f.write("CUDA_VISIBLE_DEVICES=' ' ")
+            f.write(get_models(name)[1])
+
     form = TrainingsNewForm()
     form.train_label.choices = [[train]*2 for train in get_trainings()]
     form.model_name.choices = [[model[0]]*2 for model in get_models()]
@@ -47,13 +60,17 @@ def trainings_new():
     form.num_cpu.validators=[NumberRange(min=1, max=get_max_cpu())]
     if form.validate_on_submit():
         signature = datetime.datetime.now().strftime("%y%m%d%H%M%S")
+        train_dir = '/nfs/nvme/train/{}_{}'.format(form.model_name.data, signature)
+        record_dir = '{}/records'.format(train_dir)
+        gen_script(record_dir, 'ps')
+        gen_script(record_dir, 'worker')
         cfg_file = '/nfs/nvme/train/{}_{}/records/train.yaml'.format(form.model_name.data, signature)
 
         cmd = 'python3 {}/scripts/gen_k8s_yaml.py'.format(os.path.dirname(os.path.realpath(__file__)))
         cmd += ' {} train'.format(form.model_name.data)
         cmd += ' --ps_num {} --worker_num {}'.format(form.num_cpu.data, form.num_gpu.data)
         cmd += ' --epoch {}'.format(form.num_epoch.data)
-        cmd += ' --out_file {}'.format(cfg_file)
+        cmd += ' --record_dir {}'.format(record_dir)
         cmd += ' --signature {}'.format(signature)
         os.system(cmd)
 
@@ -120,9 +137,29 @@ def training(label=None, desc = [], log = []):
 
     return render_template('training.html', label=label, data=data, forms=forms, formd=formd, forml=forml, desc=desc, log=log)
 
+@app.route('/models/new/', methods=['GET', 'POST'])
+def models_new():
+    form = ModelsNewForm()
+    if form.validate_on_submit():
+        new_model(form.model_name.data, form.script.data, form.desc.data)
+        return redirect(url_for('models'))
+    return render_template('models_new.html', form=form)
+
 @app.route('/models/')
 def models():
     return render_template('models.html', data=get_models())
+
+@app.route('/model/<name>', methods=['GET', 'POST'])
+def model(name=None):
+    data = get_models(name)
+
+    form = ModelEditForm()
+    form.script.data = data[1]
+    if form.validate_on_submit():
+        update_model(name, form.script.data, form.desc.data)
+        return redirect(url_for('models'))
+
+    return render_template('model.html', data=data, form=form)
 
 @app.route('/eval/', methods=('GET', 'POST'))
 def eval():

@@ -9,7 +9,7 @@ def parse_args():
     parser.add_argument('--ps_num', help='choose ps number', type=int)
     parser.add_argument('--worker_num', help='choose worker number', type=int)
     parser.add_argument('--epoch', help='choose worker number', type=int)
-    parser.add_argument('--out_file', help='output yaml file path')
+    parser.add_argument('--record_dir', help='record files path')
     parser.add_argument('--signature', help='signature label')
     args = parser.parse_args()
     return args
@@ -59,7 +59,7 @@ spec:
 """.format(job, id, port, model, signature)
     return k8s_service
 
-def generate_train_job(job, id, port, model, signature):
+def generate_train_job(job, id, port, model, signature, record_dir):
     k8s_job = """---
 apiVersion: v1
 kind: Pod
@@ -82,7 +82,7 @@ spec:
     securityContext:
       privileged: true
     command: ["/bin/bash"]
-    args: ["/nfs/nvme/models/{3}/worker.sh"]
+    args: ["{5}/{0}.sh"]
     ports:
     - name: tf-training-ports
       containerPort: {2}
@@ -97,7 +97,7 @@ spec:
     env:
     - name: POD_NAME
       value: {0}-{1}
-""".format(job, id, port, model, signature)
+""".format(job, id, port, model, signature, record_dir)
 
     if job == 'worker':
         k8s_job += """
@@ -125,7 +125,7 @@ spec:
 
     return k8s_job
 
-def generate_train_config(model, signature, ps_num, worker_num, epoch):
+def generate_train_config(model, signature, ps_num, worker_num, epoch, record_dir):
     req_nodes = {}
     req_nodes['ps'] = ps_num if ps_num else 2
     req_nodes['worker'] = worker_num if worker_num else 4
@@ -136,7 +136,7 @@ def generate_train_config(model, signature, ps_num, worker_num, epoch):
     for job in ['ps', 'worker']:
         for i in range(req_nodes[job]):
             k8s_config += generate_train_service(job, i, port, model, signature)
-            k8s_config += generate_train_job(job, i, port, model, signature)
+            k8s_config += generate_train_job(job, i, port, model, signature, record_dir)
 
     return k8s_config
 
@@ -145,19 +145,19 @@ def main():
     k8s_config = ''
     signature = args.signature if args.signature else datetime.datetime.now().strftime("%y%m%d%H%M%S")
     if args.flow == 'train':
-        k8s_config = generate_train_config(args.model, signature, args.ps_num, args.worker_num, args.epoch)
+        k8s_config = generate_train_config(args.model, signature, args.ps_num, args.worker_num, args.epoch, args.record_dir)
     elif args.flow == 'eval':
         k8s_config = generate_eval_config(args.model, signature)
     else:
         pass
 
-    if args.out_file:
-        dirname = os.path.dirname(args.out_file)
-        if not os.path.isdir(dirname):
-            os.makedirs(dirname, 0o777)
-        with open(args.out_file, 'w+') as f:
+    if args.record_dir:
+        if not os.path.isdir(args.record_dir):
+            os.makedirs(args.record_dir, 0o777)
+        cfg_file = '{}/train.yaml'.format(args.record_dir)
+        with open(cfg_file, 'w+') as f:
             f.write(k8s_config)
-        print("Yaml config generated at {}".format(args.out_file))
+        print("Yaml config generated at {}".format(cfg_file))
     else:
         print(k8s_config)
 

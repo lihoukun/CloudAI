@@ -3,32 +3,25 @@
 {% block content %}
 <br/>
 <br/>
-<h1>Listing Models</h1>
+<a href="{{ url_for('models_new') }}" class="btn btn-primary btn-lg" role="button">New Model</a>
+<br/>
+<br/>
 <table class="table table-hover table-primary">
   <thead>
     <tr>
-      <th scope="col">Name</th>
-      <th scope="col">Command</th>
+      <th scope="col">Model</th>
+      <th scope="col">Description</th>
     </tr>
   </thead>
   <tbody>
     {% for row in data %}
     <tr>
-      <td>{{ row[0] }}</td>
-      <td>{{ row[1] }}</td>
+      <td><a href="{{ url_for('model', name=row[0]) }}">{{ row[0] }}</a></td>
+      <td>{{ row[2] }}</td>
     </tr>
     {% endfor %}
   </tbody>
 </table>
 <br/>
 <br/>
-<h1>Built-in Environment Variables</h1>
-<ul>
-  <li>PS_HOSTS</li>
-  <li>WORKER_HOSTS</li>
-  <li>NUM_EPOCH</li>
-  <li>MODEL_NAME</li>
-  <li>SIGNATURE</li>
-  <li>POD_NAME</li>
-</ul>
 {% endblock %}
