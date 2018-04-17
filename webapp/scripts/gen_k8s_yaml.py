@@ -78,7 +78,7 @@ spec:
       claimName: tf-pvc
   containers:
   - name: tf-training
-    image: exaai/tf-gpu:180409
+    image: exaai/tf-gpu
     securityContext:
       privileged: true
     command: ["/bin/bash"]
