@@ -5,9 +5,13 @@
 <br/>
 <a href="{{ url_for('trainings_new') }}" class="btn btn-primary btn-lg" role="button">New Training</a>
 {% if type == 'active' %}
-<a href="{{ url_for('trainings', type='archive') }}" class="btn btn-primary btn-lg" role="button">Archive Trainings</a>
+<h1>Active Trainings
+<a href="{{ url_for('trainings', type='archive') }}" class="btn btn-info" role="button">List Archived Trainings</a>
+</h1>
 {% else %}
-<a href="{{ url_for('trainings', type='active') }}" class="btn btn-primary btn-lg" role="button">Active Trainings</a>
+<h1>Archived Trainings
+<a href="{{ url_for('trainings', type='active') }}" class="btn btn-info" role="button">List Active Trainings</a>
+</h1>
 {% endif %}
 <br/>
 <br/>

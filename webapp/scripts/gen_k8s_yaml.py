@@ -8,7 +8,7 @@ def parse_args():
     parser.add_argument('flow', help='choose a flow', choices=['train', 'eval', 'serve'])
     parser.add_argument('--ps_num', help='choose ps number', type=int)
     parser.add_argument('--worker_num', help='choose worker number', type=int)
-    parser.add_argument('--epoch', help='choose worker number', type=int)
+    parser.add_argument('--epoch', help='choose worker number', type=float)
     parser.add_argument('--record_dir', help='record files path')
     parser.add_argument('--signature', help='signature label')
     args = parser.parse_args()
@@ -131,8 +131,9 @@ def main():
     args = parse_args()
     k8s_config = ''
     signature = args.signature if args.signature else datetime.datetime.now().strftime("%y%m%d%H%M%S")
+    epoch = args.epoch if args.epoch else 1.0
     if args.flow == 'train':
-        k8s_config = generate_train_config(args.model, signature, args.ps_num, args.worker_num, args.epoch, args.record_dir)
+        k8s_config = generate_train_config(args.model, signature, args.ps_num, args.worker_num, epoch, args.record_dir)
     elif args.flow == 'eval':
         k8s_config = generate_eval_config(args.model, signature)
     else:
