@@ -99,11 +99,11 @@ spec:
       value: {0}-{1}
     resources:
       requests:
-        cpu: 1000m
-        memory: 10Gi
-      limits:
-        cpu: 2000m
+        cpu: 5000m
         memory: 20Gi
+      limits:
+        cpu: 8000m
+        memory: 50Gi
 """.format(job, id, port, model, signature, record_dir)
 
     if job == 'worker':

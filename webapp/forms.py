@@ -1,6 +1,6 @@
 import re
 from flask_wtf import FlaskForm
-from wtforms import TextField, BooleanField, IntegerField, SelectField, RadioField, SubmitField, TextAreaField
+from wtforms import TextField, BooleanField, IntegerField, SelectField, RadioField, SubmitField, TextAreaField, FloatField
 from wtforms.widgets import TextArea
 from wtforms.validators import NumberRange, DataRequired, ValidationError
 
@@ -10,7 +10,7 @@ class TrainingsNewForm(FlaskForm):
     model_name = SelectField('Select Model: ')
     num_gpu = IntegerField('Number of GPU: ')
     num_cpu = IntegerField('Number of CPU: ')
-    num_epoch = IntegerField('Number of Epoch: ', validators=[NumberRange(min=1)])
+    num_epoch = FloatField('Number of Epoch: ')
     train_option = RadioField('Train Option', choices = [('legacy', 'Continue from Existing Training'), ('new', 'Start a New Training')], default='new')
     train_label = SelectField('Training Label: ')
     submit = SubmitField('Train')

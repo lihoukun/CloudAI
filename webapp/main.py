@@ -56,8 +56,8 @@ def trainings_new():
     form.model_name.choices = [[model[0]]*2 for model in get_models()]
     if not form.train_label.choices:
         form.train_label.choices = [('', '---')]
-    form.num_gpu.validators=[NumberRange(min=1, max=get_max_gpu())]
-    form.num_cpu.validators=[NumberRange(min=1, max=get_max_cpu())]
+    form.num_gpu.validators=[NumberRange(min=0, max=get_max_gpu())]
+    form.num_cpu.validators=[NumberRange(min=0, max=get_max_cpu())]
     if form.validate_on_submit():
         signature = datetime.datetime.now().strftime("%y%m%d%H%M%S")
         train_dir = '/nfs/nvme/train/{}_{}'.format(form.model_name.data, signature)
@@ -79,8 +79,8 @@ def trainings_new():
         return redirect(url_for('training', label='{}_{}'.format(form.model_name.data, signature)))
     return render_template('trainings_new.html', form=form)
 
-@app.route('/trainings/', methods=['GET', 'POST'])
-def trainings():
+@app.route('/trainings/<type>', methods=['GET', 'POST'])
+def trainings(type='active'):
     def get_status(training):
         yaml_file = '/nfs/nvme/train/{}/records/train.yaml'.format(training)
         if not os.path.isfile(yaml_file): return 'STOPPED'
@@ -100,9 +100,12 @@ def trainings():
     data = []
     for training in get_trainings():
         status = get_status(training)
-        data.append([training, status])
+        if type == 'active' and status != 'STOPPED':
+            data.append([training, status])
+        if type != 'active' and status == 'STOPPED':
+            data.append([training, status])
 
-    return render_template('trainings.html', data=data)
+    return render_template('trainings.html', data=data, type=type)
 
 @app.route('/training/<label>', methods=['GET', 'POST'])
 def training(label=None, desc = [], log = []):
