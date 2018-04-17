@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block content %}
+<br/>
+<br/>
+    <h1>Model: {{ data[0] }}</h1>
+    <ul>
+        <p>pre-defined ENV variables for bash script to use</p>
+        <li>JOB_NAME: either 'ps' or 'worker'</li>
+        <li>TASK_ID: the index of the job</li>
+        <li>MODEL_NAME: {{ data[0] }} in this case</li>
+        <li>PS_HOSTS:  a string of ps hosts:port seperated by commar</li>
+        <li>WORKER_HOSTS: a string of worker hosts:port seperated by commar</li>
+        <li>NUM_EPOCH: for training duration</li>
+    </ul>
+    <br/>
+    <br/>
+    <form action="" method="post">
+        {{ form.csrf_token }}
+        <p>
+            {{ form.script.label }}<br/>
+            {% set f = form.script.process_data(data[1]) %}
+            {{ form.script(cols=80, rows=20) }}
+            {% for error in form.script.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+        <p>
+            {{ form.desc.label }}
+            {{ form.desc(value=data[2], cols=60) }}
+            {% for error in form.desc.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+        <p>{{ form.submit() }}</p>
+    </form>
+<br/>
+<br/>
+{% endblock %}
