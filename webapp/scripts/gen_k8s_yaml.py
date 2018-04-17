@@ -17,11 +17,11 @@ def parse_args():
 def generate_train_configmap(model, signature, req_nodes, port, epoch):
     ps_hosts, worker_hosts = [], []
     for i in range(req_nodes['ps']):
-        ps_host = 'ps-{}.default.svc.cluster.local:{}'.format(i, port)
+        ps_host = '{}-{}-ps-{}.default.svc.cluster.local:{}'.format(model, signature, i, port)
         ps_hosts.append(ps_host)
     ps_hosts_str = ','.join(ps_hosts)
     for i in range(req_nodes['worker']):
-        worker_host = 'worker-{}.default.svc.cluster.local:{}'.format(i, port)
+        worker_host = '{}-{}-worker-{}.default.svc.cluster.local:{}'.format(model, signature, i, port)
         worker_hosts.append(worker_host)
     worker_hosts_str = ','.join(worker_hosts)
 
@@ -97,32 +97,19 @@ spec:
     env:
     - name: POD_NAME
       value: {0}-{1}
+    resources:
+      requests:
+        cpu: 1000m
+        memory: 10Gi
+      limits:
+        cpu: 2000m
+        memory: 20Gi
 """.format(job, id, port, model, signature, record_dir)
 
     if job == 'worker':
         k8s_job += """
-    resources:
-      requests:
-        cpu: 1000m
-        memory: 10Gi
-      limits:
-        cpu: 2000m
-        memory: 20Gi
         nvidia.com/gpu: 1
 """
-    else:
-        k8s_job += """
-    - name: CUDA_VISIBLE_DEVICES
-      value: ''
-    resources:
-      requests:
-        cpu: 1000m
-        memory: 10Gi
-      limits:
-        cpu: 2000m
-        memory: 20Gi
-"""
-
     return k8s_job
 
 def generate_train_config(model, signature, ps_num, worker_num, epoch, record_dir):
