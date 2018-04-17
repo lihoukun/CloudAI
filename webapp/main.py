@@ -62,8 +62,8 @@ def trainings_new():
         signature = datetime.datetime.now().strftime("%y%m%d%H%M%S")
         train_dir = '/nfs/nvme/train/{}_{}'.format(form.model_name.data, signature)
         record_dir = '{}/records'.format(train_dir)
-        gen_script(record_dir, 'ps')
-        gen_script(record_dir, 'worker')
+        gen_script(record_dir, 'ps', form.model_name.data)
+        gen_script(record_dir, 'worker', form.model_name.data)
         cfg_file = '/nfs/nvme/train/{}_{}/records/train.yaml'.format(form.model_name.data, signature)
 
         cmd = 'python3 {}/scripts/gen_k8s_yaml.py'.format(os.path.dirname(os.path.realpath(__file__)))
@@ -152,9 +152,7 @@ def models():
 @app.route('/model/<name>', methods=['GET', 'POST'])
 def model(name=None):
     data = get_models(name)
-
     form = ModelEditForm()
-    form.script.data = data[1]
     if form.validate_on_submit():
         update_model(name, form.script.data, form.desc.data)
         return redirect(url_for('models'))

@@ -1,6 +1,6 @@
 import re
 from flask_wtf import FlaskForm
-from wtforms import TextField, BooleanField, IntegerField, SelectField, RadioField, SubmitField
+from wtforms import TextField, BooleanField, IntegerField, SelectField, RadioField, SubmitField, TextAreaField
 from wtforms.widgets import TextArea
 from wtforms.validators import NumberRange, DataRequired, ValidationError
 
@@ -31,7 +31,7 @@ class ModelsNewForm(FlaskForm):
     submit = SubmitField('Save')
 
 class ModelEditForm(FlaskForm):
-    script =  TextField('Bash Script:', widget=TextArea())
+    script =  TextAreaField('Bash Script:')
     desc = TextField('Description: ')
     submit = SubmitField('Save')
 
