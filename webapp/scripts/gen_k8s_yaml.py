@@ -95,20 +95,37 @@ spec:
     - configMapRef:
         name: {3}-{4}-configmap
     env:
-    - name: POD_NAME
-      value: {0}-{1}
-    resources:
-      requests:
-        cpu: 5000m
-        memory: 20Gi
-      limits:
-        cpu: 8000m
-        memory: 50Gi
+    - name: JOB_NAME
+      value: {0}
+    - name: TASK_ID
+      value: "{1}"
+    - name: TRAIN_DIR
+      value: "/nfs/nvme/train/{3}-{4}
 """.format(job, id, port, model, signature, record_dir)
 
     if job == 'worker':
         k8s_job += """
+    resources:
+      requests:
+        cpu: 3000m
+        memory: 16Gi
         nvidia.com/gpu: 1
+      limits:
+        cpu: 6000m
+        memory: 32Gi       
+        nvidia.com/gpu: 1
+"""
+    else:
+        k8s_job += """
+    - name: CUDA_VISIBLE_DEVICES
+      value: " "
+    resources:
+      requests:
+        cpu: 2000m
+        memory: 16Gi
+      limits:
+        cpu: 4000m
+        memory: 32Gi       
 """
     return k8s_job
 

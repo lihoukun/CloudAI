@@ -22,7 +22,10 @@ def index():
 def trainings_new():
     def get_max_gpu():
         cmd = "kubectl describe nodes"
-        res = check_output(cmd.split()).decode('ascii').split('\n')
+        try:
+            res = check_output(cmd.split()).decode('ascii').split('\n')
+        except:
+            return 0
         is_avail = 0
         max_gpu = 0
         for line in res:
@@ -36,8 +39,11 @@ def trainings_new():
 
     def get_max_cpu():
         cmd = "kubectl get nodes"
-        res = check_output(cmd.split()).decode('ascii').split('\n')
-        return len(res) - 1
+        try:
+            res = check_output(cmd.split()).decode('ascii').split('\n')
+            return len(res) - 1
+        except:
+            return 0
 
     def gen_script(record_dir, job, name):
         if not os.path.isdir(record_dir):
@@ -45,10 +51,6 @@ def trainings_new():
         filename = '{}/{}.sh'.format(record_dir, job)
         with open(filename, 'w+') as f:
             f.write('set -x\n')
-            f.write("TASK_ID=$(echo ${POD_NAME} | cut -f2 -d'-')\n")
-            f.write("JOB_NAME=$(echo ${POD_NAME} | cut -f1 -d'-')\n")
-            if job == 'ps':
-                f.write("CUDA_VISIBLE_DEVICES=' ' ")
             f.write(get_models(name)[1])
 
     form = TrainingsNewForm()
@@ -122,7 +124,10 @@ def training(label=None, desc = [], log = []):
 
     forms = StopForm(prefix='forms')
     if forms.validate_on_submit():
-        cmd = 'kubectl delete -f /nfs/nvme/train/{}/records/train.yaml'.format(label)
+        try:
+            cmd = 'kubectl delete -f /nfs/nvme/train/{}/records/train.yaml'.format(label)
+        except:
+            pass
         flash('Training Label {} stopped'.format(label))
         os.system(cmd)
         return redirect(url_for('trainings', type='active'))
@@ -130,13 +135,19 @@ def training(label=None, desc = [], log = []):
     formd = ShowForm(prefix='formd')
     if formd.validate_on_submit():
         name = request.form['name']
-        cmd = 'kubectl describe pod {}'.format(name)
-        desc = check_output(cmd.split()).decode('ascii').split('\n')
+        try:
+            cmd = 'kubectl describe pod {}'.format(name)
+            desc = check_output(cmd.split()).decode('ascii').split('\n')
+        except:
+            desc = ['Oops, getting errors while retrieving descriptions', 'Maybe the conainer is not ready or teminated?']
     forml = ShowForm(prefix='forml')
     if forml.validate_on_submit():
         name = request.form['name']
         cmd = 'kubectl logs {}'.format(name)
-        log = check_output(cmd.split()).decode('ascii').split('\n')
+        try:
+            log = check_output(cmd.split()).decode('ascii').split('\n')
+        except:
+            log = ['Oops, getting error while retrieving logs', 'Maybe the job is not ready or terminated?']
 
     return render_template('training.html', label=label, data=data, forms=forms, formd=formd, forml=forml, desc=desc, log=log)
 
