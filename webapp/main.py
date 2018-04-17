@@ -125,7 +125,7 @@ def training(label=None, desc = [], log = []):
         cmd = 'kubectl delete -f /nfs/nvme/train/{}/records/train.yaml'.format(label)
         flash('Training Label {} stopped'.format(label))
         os.system(cmd)
-        return redirect('/trainings/')
+        return redirect(url_for('trainings', type='active')
 
     formd = ShowForm(prefix='formd')
     if formd.validate_on_submit():
