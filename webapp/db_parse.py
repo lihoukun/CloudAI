@@ -3,6 +3,10 @@ import os
 
 def get_conn():
     conn = sqlite3.connect('{}/sqlite3.db'.format(os.environ.get('DATABASE_DIR', '/home/ai/workspace')))
+    #c = conn.cursor()
+    #c.execute("CREATE TABLE IF NOT EXISTS trainings (label string primary key, status string, train_dir string, tensorboard boolean)")
+    #c.execute("CREATE TABLE IF NOT EXISTS models (name string primary key, script text, description string)")
+    #conn.commit()
     return conn
 
 def get_models(name = None):
@@ -33,7 +37,7 @@ def new_model(name, script, desc):
     if desc:
         cmd = "INSERT INTO models (name, script, description) VALUES ('{}', '{}', '{}')".format(name, script, desc)
     else:
-        cmd = "INSERT INTO models (name, script) VALUES ('{}', '{}', '{}')".format(name, script)
+        cmd = "INSERT INTO models (name, script) VALUES ('{}', '{}')".format(name, script)
 
     print(cmd)
     c.execute(cmd)
@@ -57,7 +61,6 @@ def get_trainings(status = None):
     trainings = []
     conn = get_conn()
     c = conn.cursor()
-    c.execute("CREATE TABLE IF NOT EXISTS trainings (label string primary key, status string, train_dir string)")
 
     cmd = "SELECT label, status, train_dir FROM trainings"
     if status:
@@ -71,10 +74,29 @@ def get_trainings(status = None):
     conn.close()
     return trainings
 
+def get_tb_training():
+    conn = get_conn()
+    c = conn.cursor()
+
+    cmd = "SELECT label, status, train_dir FROM trainings WHERE tensorboard = true"
+    c.execute(cmd)
+    res = c.fetchone()
+    return res
+
+def update_tb_training(label):
+    conn = get_conn()
+    c = conn.cursor()
+
+    cmd = "UPDATE trainings set tensorboard = false"
+    c.execute(cmd)
+    cmd = "UPDATE trainings set tensorboard = true WHERE label = '{}'".format(label)
+    c.execute(cmd)
+    conn.commit()
+    conn.close()
+
 def new_training(label, train_dir):
     conn = get_conn()
     c = conn.cursor()
-    c.execute("CREATE TABLE IF NOT EXISTS trainings (label string primary key, status string, train_dir string)")
     if train_dir:
         cmd = "INSERT INTO trainings (label, status, train_dir) VALUES ('{}', 'RUNNING', '{}')".format(label, train_dir)
     else:
@@ -87,11 +109,14 @@ def new_training(label, train_dir):
 def update_training(label, status):
     conn = get_conn()
     c = conn.cursor()
-    c.execute("CREATE TABLE IF NOT EXISTS trainings (label string primary key, status string, train_dir string)")
     cmd = "UPDATE trainings set status = '{}' where label = '{}'".format(status, label)
     c.execute(cmd)
     conn.commit()
     conn.close()
 
 if __name__ == "__main__":
-    print(get_models())
+    conn = get_conn()
+    c = conn.cursor()
+    c.execute("ALTER TABLE trainings ADD COLUMN tensorboard boolean")
+    conn.commit()
+    conn.close()

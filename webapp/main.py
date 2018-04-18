@@ -6,7 +6,7 @@ from flask import render_template, flash, redirect, request, url_for
 from wtforms.validators import NumberRange
 
 from forms import TrainingsNewForm, KubecmdForm, EvalForm, StopForm, ShowForm, ModelsNewForm, ModelEditForm
-from db_parse import get_models, new_model, update_model, get_trainings, new_training, update_training
+from db_parse import get_models, new_model, update_model, get_trainings, new_training, update_training, get_tb_training, update_tb_training
 
 from subprocess import check_output
 import re
@@ -190,11 +190,11 @@ def model(name=None):
 @app.route('/eval/', methods=('GET', 'POST'))
 def eval():
     form = EvalForm()
-    form.log_dir.choices = [[train]*2 for train in get_trainings()]
+    current = get_tb_training()
+    form.log_dir.choices = [(train[0], train[2]) for train in get_trainings()]
     if form.validate_on_submit():
         flash('Evaluation reuqest for log_dir {} submitted'.format(form.log_dir.data))
-        return redirect('/')
-    return render_template('eval.html', form=form)
+    return render_template('eval.html', form=form, current=current)
 
 @app.route('/monitor/', methods=('GET', 'POST'))
 def monitor():

@@ -3,17 +3,21 @@
 {% block content %}
 <br/>
 <br/>
-    <h1>Evaluation</h1>
-    <form action="" method="post">
-        {{ form.csrf_token }}
-        <p>
-            {{ form.log_dir.label }}
-            {{ form.log_dir() }}
-        </p>
-        <br/>
-        <br/>
-        <p>{{ form.submit() }}</p>
-    </form>
+<h1>Evaluation</h1>
+{% if current %}
+<p>Current tensorboard label: {{ current[2] }}</p>
+{% else %}
+<p>Current tensorboard label: N/A </p>
+{% endif %}
+<form action="" method="post">
+    {{ form.csrf_token }}
+    Load new label
+    {{ form.log_dir() }}
+    {{ form.submit() }}
+</form>
+<br/>
+<br/>
+<h1><a class="btn btn-primary btn-lg active" role="button" aria-pressed="true" href="http://localhost:6006">TensorBoard</a></h1>
 <br/>
 <br/>
 {% endblock %}
