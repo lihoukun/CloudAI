@@ -202,7 +202,7 @@ def monitor():
     try:
         results = check_output(command.split()).decode('ascii').split('\n')
     except:
-        return render_template('monitor.html', output = None)
+        return render_template('monitor.html', token = None)
 
     for result in results:
         if not result: continue
@@ -211,11 +211,15 @@ def monitor():
             command = 'kubectl -n kube-system describe secret {}'.format(secret)
             try:
                 output = check_output(command.split()).decode('ascii').split('\n')
+                for line in output:
+                    if re.match('^token:', line):
+                        token = line
+                        break
             except:
-                output = None
+                token = None
             break
 
-    return render_template('monitor.html', output = output)
+    return render_template('monitor.html', token = token)
 
 @app.route('/serve/')
 def serve():
