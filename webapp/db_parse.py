@@ -35,7 +35,6 @@ def new_model(name, script, desc):
     conn.commit()
     conn.close()
 
-
 def update_model(name, script, desc):
     conn = sqlite3.connect('sqlite3.db')
     c = conn.cursor()
@@ -45,6 +44,46 @@ def update_model(name, script, desc):
     else:
         cmd = "UPDATE models SET script = '{}' WHERE name = '{}'".format(script, name)
     print(cmd)
+    c.execute(cmd)
+    conn.commit()
+    conn.close()
+
+def get_trainings(status = None):
+    trainings = []
+    conn = sqlite3.connect('sqlite3.db')
+    c = conn.cursor()
+    c.execute("CREATE TABLE IF NOT EXISTS trainings (label string primary key, status string, train_dir string)")
+
+    cmd = "SELECT label, status, train_dir FROM trainings"
+    if status:
+        cmd += " WHERE status = '{}'".format(status)
+    cmd += " ORDER by label"
+
+    c.execute(cmd)
+    for res in c.fetchall():
+        label, status, train_dir = res
+        trainings.append([label, status, train_dir])
+    conn.close()
+    return trainings
+
+def new_training(label, train_dir):
+    conn = sqlite3.connect('sqlite3.db')
+    c = conn.cursor()
+    c.execute("CREATE TABLE IF NOT EXISTS trainings (label string primary key, status string, train_dir string)")
+    if train_dir:
+        cmd = "INSERT INTO trainings (label, status, train_dir) VALUES ('{}', 'RUNNING', '{}')".format(label, train_dir)
+    else:
+        cmd = "INSERT INTO trainings (label, status) VALUES ('{}', 'RUNNING')".format(label)
+    print(cmd)
+    c.execute(cmd)
+    conn.commit()
+    conn.close()
+
+def update_training(label, status):
+    conn = sqlite3.connect('sqlite3.db')
+    c = conn.cursor()
+    c.execute("CREATE TABLE IF NOT EXISTS trainings (label string primary key, status string, train_dir string)")
+    cmd = "UPDATE trainings set status = '{}' where label = '{}'".format(status, label)
     c.execute(cmd)
     conn.commit()
     conn.close()

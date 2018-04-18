@@ -12,7 +12,7 @@
             {% for error in form.model_name.errors %}
             <span style="color: red;">[{{ error }}]</span>
             {% endfor %}
-            <a href="{{ url_for('models') }}">Modelsi Details</a>
+            <a href="{{ url_for('models') }}">Model Detail</a>
         </p>
         <p>
             {{ form.num_gpu.label }}

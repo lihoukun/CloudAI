@@ -6,8 +6,7 @@ from flask import render_template, flash, redirect, request, url_for
 from wtforms.validators import NumberRange
 
 from forms import TrainingsNewForm, KubecmdForm, EvalForm, StopForm, ShowForm, ModelsNewForm, ModelEditForm
-from dir_parse import get_trainings
-from db_parse import get_models, new_model, update_model
+from db_parse import get_models, new_model, update_model, get_trainings, new_training, update_training
 
 from subprocess import check_output
 import re
@@ -54,7 +53,7 @@ def trainings_new():
             f.write(get_models(name)[1])
 
     form = TrainingsNewForm()
-    form.train_label.choices = [[train]*2 for train in get_trainings()]
+    form.train_label.choices = [[train[0]]*2 for train in get_trainings('STOPPED')]
     form.model_name.choices = [[model[0]]*2 for model in get_models()]
     if not form.train_label.choices:
         form.train_label.choices = [('', '---')]
@@ -78,34 +77,49 @@ def trainings_new():
 
         cmd = 'kubectl apply -f {}'.format(cfg_file)
         os.system(cmd)
+
+        script = get_models(form.model_name.data)[1]
+        if re.match('TRAIN_DIR', script):
+            new_training('{}_{}'.format(form.model_name.data, signature), train_dir)
+        else:
+            new_training('{}_{}'.format(form.model_name.data, signature), None)
         return redirect(url_for('training', label='{}_{}'.format(form.model_name.data, signature)))
+
     return render_template('trainings_new.html', form=form)
 
 @app.route('/trainings/<type>', methods=['GET', 'POST'])
 def trainings(type='active'):
-    def get_status(training):
-        yaml_file = '/nfs/nvme/train/{}/records/train.yaml'.format(training)
-        if not os.path.isfile(yaml_file): return 'STOPPED'
-
-        m = re.match('(\S+)_(\d+)$', training)
-        model, signature = m.group(1), m.group(2)
-        cmd = 'kubectl get pods -l model={},signature=s{}'.format(model, signature)
-        output = check_output(cmd.split()).decode('ascii')
-        if not output: return 'STOPPED'
-
-
-        cmd = 'kubectl get pods -l model={},signature=s{},job=worker'.format(model, signature)
-        output = check_output(cmd.split()).decode('ascii')
-        if not output: return 'FINISHED'
-        return 'RUNNING'
+    def update_status(label):
+        yaml_file = '/nfs/nvme/train/{}/records/train.yaml'.format(label)
+        if os.path.isfile(yaml_file):
+            m = re.match('(\S+)_(\d+)$', label)
+            model, signature = m.group(1), m.group(2)
+            cmd = 'kubectl get pods -l model={},signature=s{}'.format(model, signature)
+            output = check_output(cmd.split()).decode('ascii')
+            if output:
+                cmd = 'kubectl get pods -l model={},signature=s{},job=worker'.format(model, signature)
+                output = check_output(cmd.split()).decode('ascii')
+                if output:
+                    status = 'RUNNING'
+                else:
+                    status = 'FINISHED'
+            else:
+                status = 'STOPPED'
+        else:
+            status = 'STOPPED'
+        update_training(label, status)
+        return status
 
     data = []
     for training in get_trainings():
-        status = get_status(training)
+        label, status, train_dir = training
+        if status != 'STOPPED':
+            status = update_status(label)
+
         if type == 'active' and status != 'STOPPED':
-            data.append([training, status])
+            data.append([label, status, train_dir])
         if type != 'active' and status == 'STOPPED':
-            data.append([training, status])
+            data.append([label, status, train_dir])
 
     return render_template('trainings.html', data=data, type=type)
 
