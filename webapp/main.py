@@ -198,11 +198,21 @@ def eval():
 
 @app.route('/monitor/', methods=('GET', 'POST'))
 def monitor():
-    command = "kubectl -n kube-system describe secret $(kubectl -n kube-system get secret | grep admin-user | awk '{print $1}')  | grep '^token:'"
+    command = 'kubectl -n kube-system get secret'
     try:
-        output = check_output(command.split()).decode('ascii').split('\n')
+        results = check_output(command.split()).decode('ascii').split('\n')
     except:
-        output = None
+        return render_template('monitor.html', token = None)
+
+    for result in results:
+        secret = result.split()
+        if re.match('admin-user', secret):
+            command = 'kubectl -n kube-system describe secret {}'.format(secret)
+            try:
+                output = check_output(command.split()).decode('ascii').split('\n')
+            except:
+                output = None
+
     return render_template('monitor.html', token = output)
 
 @app.route('/serve/')
