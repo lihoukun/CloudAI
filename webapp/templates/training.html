@@ -52,7 +52,9 @@
 {% endif %}
 {% if log %}
 <h1>Pod Log for Label: {{ label }}</h1>
+  {% for line in log %}
   <pre>{{ line }}</pre>
+  {% endfor %}
 {% endif %}
 <br/>
 <br/>
