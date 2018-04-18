@@ -78,7 +78,7 @@ def get_tb_training():
     conn = get_conn()
     c = conn.cursor()
 
-    cmd = "SELECT label, status, train_dir FROM trainings WHERE tensorboard = true"
+    cmd = "SELECT label, status, train_dir FROM trainings WHERE tensorboard = 1"
     c.execute(cmd)
     res = c.fetchone()
     return res
@@ -87,9 +87,9 @@ def update_tb_training(label):
     conn = get_conn()
     c = conn.cursor()
 
-    cmd = "UPDATE trainings set tensorboard = false"
+    cmd = "UPDATE trainings set tensorboard = 0"
     c.execute(cmd)
-    cmd = "UPDATE trainings set tensorboard = true WHERE label = '{}'".format(label)
+    cmd = "UPDATE trainings set tensorboard = 1 WHERE label = '{}'".format(label)
     c.execute(cmd)
     conn.commit()
     conn.close()
