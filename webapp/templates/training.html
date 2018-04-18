@@ -47,13 +47,13 @@
 {% if desc %}
 <h1>Pod Description for Label: {{ label }}</h1>
   {% for line in desc %}
-  <p>{{ line }}</p>
+  <pre>{{ line }}</pre>
   {% endfor %}
 {% endif %}
 {% if log %}
 <h1>Pod Log for Label: {{ label }}</h1>
   {% for line in log %}
-  <p>{{ line }}</p>
+  <pre>{{ line }}</pre>
   {% endfor %}
 {% endif %}
 <br/>
