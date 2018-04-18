@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+{% block content %}
+<br/>
+<br/>
+    <h1>Kubernetes Dasboard</h1>
+    {% if token %}
+    <p>Click <a href="http://localhost:8001/api/v1/namespaces/kube-system/services/https:kubernetes-dashboard:/proxy/">here</a> and paste the token below for admin login</p>
+    <p>{{ token }}</p>
+<br/>
+<br/>
+{% endblock %}

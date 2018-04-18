@@ -196,6 +196,15 @@ def eval():
         return redirect('/')
     return render_template('eval.html', form=form)
 
+@app.route('/monitor/', methods=('GET', 'POST'))
+def monitor():
+    command = "kubectl -n kube-system describe secret $(kubectl -n kube-system get secret | grep admin-user | awk '{print $1}')  | grep '^token:'"
+    try:
+        output = check_output(command.split()).decode('ascii').split('\n')
+    except:
+        output = None
+    return render_template('monitor.html', token = output)
+
 @app.route('/serve/')
 def serve():
     return  render_template('serve.html')
