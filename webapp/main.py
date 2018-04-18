@@ -231,7 +231,7 @@ def kubecmd(command = None, output=[]):
     if form.validate_on_submit():
         command = 'kubectl -n {} {} {}'.format(form.namespace.data, form.action.data, form.target.data)
         try:
-            output = check_output(command.split()).decode('ascii').replace(' ', '&nbsp').split('\n')
+            output = check_output(command.split()).decode('ascii').split('\n')
         except:
             flash('Invalid')
     return render_template('kubecmd.html', form=form, command=command, output=output)
