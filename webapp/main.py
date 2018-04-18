@@ -202,7 +202,7 @@ def monitor():
     try:
         results = check_output(command.split()).decode('ascii').split('\n')
     except:
-        return render_template('monitor.html', token = None)
+        return render_template('monitor.html', output = None)
 
     for result in results:
         if not result: continue
@@ -215,7 +215,7 @@ def monitor():
                 output = None
             break
 
-    return render_template('monitor.html', token = output)
+    return render_template('monitor.html', output = output)
 
 @app.route('/serve/')
 def serve():

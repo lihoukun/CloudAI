@@ -3,14 +3,17 @@
 {% block content %}
 <br/>
 <br/>
-    <h1>Kubernetes Dasboard</h1>
-    {% if token %}
-    <p>Click <a href="http://localhost:8001/api/v1/namespaces/kube-system/services/https:kubernetes-dashboard:/proxy/">here</a> and paste the token below for admin login</p>
-    <p>{{ token }}</p>
-    {% else %}
-    <p>Service not enabled</p>
-    <p>Please contact system admin for help</p>
-    {% endif %}
+{% if output %}
+<h1>Click <a href="http://localhost:8001/api/v1/namespaces/kube-system/services/https:kubernetes-dashboard:/proxy/">here</a> to access Kubernetes Dashboard</h1>
+<h1>Check below if token is required for admin login</h1>
+{% for line in output %}
+<p>{{ line }}</p>
+{% endfor %}
+{% else %}
+<h1>Kubernetes Dasboard</h1>
+<p>Service not enabled</p>
+<p>Please contact system admin for help</p>
+{% endif %}
 <br/>
 <br/>
 {% endblock %}
