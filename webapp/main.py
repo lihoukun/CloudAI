@@ -204,7 +204,7 @@ def serve():
 def kubecmd(command = None, output=[]):
     form = KubecmdForm()
     if form.validate_on_submit():
-        command = 'kubectl {} -l {}'.format(form.action.data, form.label_str.data)
+        command = 'kubectl -n {} {} {}'.format(form.namespace.data, form.action.data, form.target.data)
         try:
             output = check_output(command.split()).decode('ascii').split('\n')
         except:

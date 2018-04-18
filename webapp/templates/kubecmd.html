@@ -6,11 +6,8 @@
 <h1>Kubernetes Command Line</h1>
 <form action="" method="post">
   {{ form.csrf_token }}
-  kubectl {{ form.action }} -l {{ form.label_str }} {{ form.submit() }}
+  kubectl -n {{ form.namespace }} {{ form.action }} {{ form.target }} {{ form.submit() }}
   <br/>
-  {% for error in form.label_str.errors %}
-  <span style="color: red;">[{{ error }}]</span>
-  {% endfor %}
 </form>
 <br/>
 <br/>

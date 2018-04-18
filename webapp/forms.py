@@ -46,17 +46,8 @@ class ShowForm(FlaskForm):
     submit = SubmitField('show')
 
 class KubecmdForm(FlaskForm):
-    def label_format_check(form , field):
-        if ' ' in field.data:
-            raise ValidationError('Label cannot contain space')
-        for pair in field.data.split(','):
-            tmp = pair.split('=')
-            if len(tmp) != 2:
-                raise ValidationError("Each Label pair needs like key=value")
-            if not tmp[0]:
-                raise ValidationError("Key cannot be empty")
-            if not tmp[1]:
-                raise ValidationError("Value cannot be empty")
-    action = SelectField('action', choices = [('get all', 'get all'), ('describe all', 'describe all'), ('logs', 'logs')])
-    label_str = TextField('label', validators=[label_format_check])
+    namespace = SelectField('namespace', choices = [('kube-system', 'kube-system'), ('default', 'default')])
+    action = SelectField('action', choices = [('get', 'get'), ('describe', 'describe')])
+    types = ['all', 'pods', 'nodes', 'svc', 'ds', 'ep', 'deploy', 'jobs', 'pv', 'pvc', 'events']
+    target = SelectField('target', choices = [[type]*2 for type in types])
     submit = SubmitField('Execute')
