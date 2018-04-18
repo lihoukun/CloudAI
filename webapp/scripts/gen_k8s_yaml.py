@@ -107,11 +107,11 @@ spec:
         k8s_job += """
     resources:
       requests:
-        cpu: 3000m
+        cpu: 6000m
         memory: 16Gi
         nvidia.com/gpu: 1
       limits:
-        cpu: 6000m
+        cpu: 8000m
         memory: 32Gi       
         nvidia.com/gpu: 1
 """
@@ -121,10 +121,10 @@ spec:
       value: " "
     resources:
       requests:
-        cpu: 2000m
+        cpu: 4000m
         memory: 16Gi
       limits:
-        cpu: 4000m
+        cpu: 6000m
         memory: 32Gi       
 """
     return k8s_job
