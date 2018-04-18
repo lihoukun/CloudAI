@@ -36,8 +36,8 @@ class ModelEditForm(FlaskForm):
     submit = SubmitField('Save')
 
 class EvalForm(FlaskForm):
-    log_dir = SelectField('LOG Directory: ')
-    submit = SubmitField('Start TensorBoard')
+    log_dir = SelectField('Availabel Lables: ')
+    submit = SubmitField('Load!')
 
 class StopForm(FlaskForm):
     submit = SubmitField('Stop')

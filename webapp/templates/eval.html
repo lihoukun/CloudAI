@@ -11,7 +11,7 @@
 {% endif %}
 <form action="" method="post">
     {{ form.csrf_token }}
-    Load new label
+    {{ form.log_dir.label }}
     {{ form.log_dir() }}
     {{ form.submit() }}
 </form>

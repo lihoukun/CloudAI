@@ -78,7 +78,9 @@ def trainings_new():
         cmd = 'kubectl apply -f {}'.format(cfg_file)
         os.system(cmd)
 
-        script = get_models(form.model_name.data)[1]
+        result = get_models(form.model_name.data)
+	print(result)
+        script = result[1]
         if re.match('TRAIN_DIR', script):
             new_training('{}_{}'.format(form.model_name.data, signature), train_dir)
         else:
@@ -191,7 +193,7 @@ def model(name=None):
 def eval():
     form = EvalForm()
     current = get_tb_training()
-    form.log_dir.choices = [(train[0], train[2]) for train in get_trainings()]
+    form.log_dir.choices = [(train[2], train[0]) for train in get_trainings() if train[2]]
     if form.validate_on_submit():
         flash('Evaluation reuqest for log_dir {} submitted'.format(form.log_dir.data))
     return render_template('eval.html', form=form, current=current)

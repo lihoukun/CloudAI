@@ -117,6 +117,9 @@ def update_training(label, status):
 if __name__ == "__main__":
     conn = get_conn()
     c = conn.cursor()
-    c.execute("ALTER TABLE trainings ADD COLUMN tensorboard boolean")
+    c.execute("select train_dir from trainings where train_dir is not null")
+    for line in c.fetchall():
+        print(line)
+
     conn.commit()
     conn.close()

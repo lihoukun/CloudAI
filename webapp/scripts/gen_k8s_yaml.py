@@ -107,12 +107,12 @@ spec:
         k8s_job += """
     resources:
       requests:
-        cpu: 6000m
-        memory: 16Gi
+        cpu: "12"
+        memory: 56Gi
         nvidia.com/gpu: 1
       limits:
-        cpu: 8000m
-        memory: 32Gi       
+        cpu: "12"
+        memory: 64Gi       
         nvidia.com/gpu: 1
 """
     else:
@@ -121,10 +121,10 @@ spec:
       value: " "
     resources:
       requests:
-        cpu: 4000m
+        cpu: "8"
         memory: 16Gi
       limits:
-        cpu: 6000m
+        cpu: "8"
         memory: 32Gi       
 """
     return k8s_job
