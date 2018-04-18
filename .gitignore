@@ -4,7 +4,7 @@ __pycache__/
 *$py.class
 
 # sqlite
-sqplite3.db
+webapp/sqplite3.db
 
 # C extensions
 *.so
