@@ -100,7 +100,7 @@ spec:
     - name: TASK_ID
       value: "{1}"
     - name: TRAIN_DIR
-      value: "/nfs/nvme/train/{3}-{4}"
+      value: "/nfs/nvme/train/{3}_{4}"
 """.format(job, id, port, model, signature, record_dir)
 
     if job == 'worker':
