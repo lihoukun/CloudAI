@@ -205,6 +205,7 @@ def monitor():
         return render_template('monitor.html', token = None)
 
     for result in results:
+        if not result: continue
         secret = result.split()[0]
         if re.match('admin-user', secret):
             command = 'kubectl -n kube-system describe secret {}'.format(secret)
@@ -212,6 +213,7 @@ def monitor():
                 output = check_output(command.split()).decode('ascii').split('\n')
             except:
                 output = None
+            break
 
     return render_template('monitor.html', token = output)
 
