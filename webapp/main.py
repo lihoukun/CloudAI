@@ -159,7 +159,7 @@ def training(label=None, desc = [], log = []):
         name = request.form['name']
         cmd = 'kubectl logs {}'.format(name)
         try:
-            log = check_output(cmd.split()).decode('ascii').split('\n')
+            log = check_output(cmd.split()).decode('ascii')
         except:
             log = ['Oops, getting error while retrieving logs', 'Maybe the job is not ready or terminated?']
 
