@@ -1,8 +1,13 @@
 import sqlite3
+import os
+
+def get_conn():
+    conn = sqlite3.connect('{}/sqlite3.db'.format(os.environ.get('DATABASE_DIR', '/home/ai/workspace')))
+    return conn
 
 def get_models(name = None):
     models = []
-    conn = sqlite3.connect('sqlite3.db')
+    conn = get_conn()
     c = conn.cursor()
 
     if name:
@@ -22,7 +27,7 @@ def get_models(name = None):
     return models
 
 def new_model(name, script, desc):
-    conn = sqlite3.connect('sqlite3.db')
+    conn = get_conn()
     c = conn.cursor()
     script = script.replace("'", "''")
     if desc:
@@ -36,7 +41,7 @@ def new_model(name, script, desc):
     conn.close()
 
 def update_model(name, script, desc):
-    conn = sqlite3.connect('sqlite3.db')
+    conn = get_conn()
     c = conn.cursor()
     script = script.replace("'", "''")
     if desc:
@@ -50,7 +55,7 @@ def update_model(name, script, desc):
 
 def get_trainings(status = None):
     trainings = []
-    conn = sqlite3.connect('sqlite3.db')
+    conn = get_conn()
     c = conn.cursor()
     c.execute("CREATE TABLE IF NOT EXISTS trainings (label string primary key, status string, train_dir string)")
 
@@ -67,7 +72,7 @@ def get_trainings(status = None):
     return trainings
 
 def new_training(label, train_dir):
-    conn = sqlite3.connect('sqlite3.db')
+    conn = get_conn()
     c = conn.cursor()
     c.execute("CREATE TABLE IF NOT EXISTS trainings (label string primary key, status string, train_dir string)")
     if train_dir:
@@ -80,7 +85,7 @@ def new_training(label, train_dir):
     conn.close()
 
 def update_training(label, status):
-    conn = sqlite3.connect('sqlite3.db')
+    conn = get_conn()
     c = conn.cursor()
     c.execute("CREATE TABLE IF NOT EXISTS trainings (label string primary key, status string, train_dir string)")
     cmd = "UPDATE trainings set status = '{}' where label = '{}'".format(status, label)
