@@ -51,7 +51,7 @@ def trainings_new():
             f.write(get_models(name)[1])
 
     form = TrainingsNewForm()
-    form.train_label.choices = [[train[0]]*2 for train in get_trainings('STOPPED')]
+    form.train_label.choices = [[train[0]]*2 for train in get_trainings('STOPPED') if train[2]]
     form.model_name.choices = [[model[0]]*2 for model in get_models()]
     if not form.train_label.choices:
         form.train_label.choices = [('', '---')]
