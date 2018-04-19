@@ -204,7 +204,8 @@ def eval():
     if form.validate_on_submit():
         bash_path = os.path.realpath(__file__) + '/../deploy/tensorboard/docker.sh'
         cmd = 'bash {} {}'.format(bash_path, form.log_dir.data)
-        flash(cmd)
+        os.system(cmd)
+        flash('TensorBoard for label {} Loaded'.format(form.log_dir.data))
     return render_template('eval.html', form=form, current=current)
 
 @app.route('/monitor/', methods=('GET', 'POST'))
