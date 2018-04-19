@@ -202,7 +202,7 @@ def eval():
     current = get_tb_training()
     form.log_dir.choices = [(train[0], train[0]) for train in get_trainings() if train[2]]
     if form.validate_on_submit():
-        bash_path = os.path.realpath(__file__) + '/../deploy/tensorboard/docker.sh'
+        bash_path = os.path.dirname(os.path.realpath(__file__)) + '/../deploy/tensorboard/docker.sh'
         cmd = 'bash {} {}'.format(bash_path, form.log_dir.data)
         os.system(cmd)
         flash('TensorBoard for label {} Loaded'.format(form.log_dir.data))
