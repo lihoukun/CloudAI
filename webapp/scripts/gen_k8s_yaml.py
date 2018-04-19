@@ -74,7 +74,7 @@ metadata:
     model: {3}
     signature: s{4}
 spec:
-  restartPolicy: Never
+  restartPolicy: OnFailure
   volumes:
   - name: tf-volume
     persistentVolumeClaim:
