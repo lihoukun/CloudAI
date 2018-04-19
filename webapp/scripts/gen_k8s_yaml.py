@@ -45,6 +45,9 @@ apiVersion: v1
 kind: Service
 metadata:
   name: {3}-{4}-{0}-{1}
+  labels:
+    model: {3}
+    signature: s{4}
 spec:
   type: ClusterIP
   ports:
