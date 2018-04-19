@@ -202,10 +202,13 @@ def eval():
     current = get_tb_training()
     form.log_dir.choices = [(train[0], train[0]) for train in get_trainings() if train[2]]
     if form.validate_on_submit():
+        label = form.log_dir.data
         bash_path = os.path.dirname(os.path.realpath(__file__)) + '/../deploy/tensorboard/docker.sh'
-        cmd = 'bash {} {}'.format(bash_path, form.log_dir.data)
+        cmd = 'bash {} {}'.format(bash_path, label)
         os.system(cmd)
-        flash('TensorBoard for label {} Loaded'.format(form.log_dir.data))
+        update_tb_training(label)
+        flash('TensorBoard for label {} Loaded'.format(label))
+        return redirect(url_for('eval'))
     return render_template('eval.html', form=form, current=current)
 
 @app.route('/monitor/', methods=('GET', 'POST'))
