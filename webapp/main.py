@@ -79,7 +79,7 @@ def trainings_new():
         os.system(cmd)
 
         result = get_models(form.model_name.data)
-	print(result)
+        print(result)
         script = result[1]
         if re.match('TRAIN_DIR', script):
             new_training('{}_{}'.format(form.model_name.data, signature), train_dir)
