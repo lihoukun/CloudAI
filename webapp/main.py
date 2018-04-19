@@ -12,6 +12,7 @@ from subprocess import check_output
 import re
 import os
 import datetime
+import shutil
 
 @app.route('/')
 def index():
@@ -57,9 +58,19 @@ def trainings_new():
     form.num_gpu.validators=[NumberRange(min=0, max=get_max_gpu())]
     form.num_cpu.validators=[NumberRange(min=0, max=get_max_cpu())]
     if form.validate_on_submit():
-        signature = datetime.datetime.now().strftime("%y%m%d%H%M%S")
-        train_dir = '/nfs/nvme/train/{}_{}'.format(form.model_name.data, signature)
+        if form.train_option.data == 'legacy':
+            label = form.train_label.data
+            m = re.match('(\S+)_(\d+)$', label)
+            model, signature = m.group(1), m.group(2)
+        else:
+            signature = datetime.datetime.now().strftime("%y%m%d%H%M%S")
+            model = form.model_name.data
+
+        train_dir = '/nfs/nvme/train/{}_{}'.format(model, signature)
         record_dir = '{}/records'.format(train_dir)
+        if os.path.isdir(record_dir):
+            shutil.rmtree(record_dir)
+
         gen_script(record_dir, 'ps', form.model_name.data)
         gen_script(record_dir, 'worker', form.model_name.data)
         cfg_file = '/nfs/nvme/train/{}_{}/records/train.yaml'.format(form.model_name.data, signature)
