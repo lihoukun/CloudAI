@@ -41,7 +41,9 @@ def trainings_new():
 
     def gen_script(record_dir, job, name):
         if not os.path.isdir(record_dir):
+            umask = os.umask(0)
             os.makedirs(record_dir, 0o777)
+            os.umask(umask)
         filename = '{}/{}.sh'.format(record_dir, job)
         with open(filename, 'w+') as f:
             f.write('set -x\n')
@@ -74,9 +76,8 @@ def trainings_new():
         os.system(cmd)
 
         result = get_models(form.model_name.data)
-        print(result)
         script = result[1]
-        if re.match('TRAIN_DIR', script):
+        if re.search('TRAIN_DIR', script):
             new_training('{}_{}'.format(form.model_name.data, signature), train_dir)
         else:
             new_training('{}_{}'.format(form.model_name.data, signature), None)
@@ -211,7 +212,7 @@ def monitor():
             try:
                 output = check_output(command.split()).decode('ascii').split('\n')
                 for line in output:
-                    if re.match('^token:', line):
+                    if re.match('token:', line):
                         token = line
                         break
             except:

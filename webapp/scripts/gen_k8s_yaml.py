@@ -158,7 +158,9 @@ def main():
 
     if args.record_dir:
         if not os.path.isdir(args.record_dir):
+            umask = os.umask(0)
             os.makedirs(args.record_dir, 0o777)
+            os.umask(umask)
         cfg_file = '{}/train.yaml'.format(args.record_dir)
         with open(cfg_file, 'w+') as f:
             f.write(k8s_config)
