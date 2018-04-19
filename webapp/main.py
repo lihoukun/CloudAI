@@ -25,16 +25,11 @@ def trainings_new():
             res = check_output(cmd.split()).decode('ascii').split('\n')
         except:
             return 0
-        is_avail = 0
         max_gpu = 0
         for line in res:
             if re.search('gpu:', line):
-                if is_avail:
-                    max_gpu += 1
-                    is_avail = 0
-                else:
-                    is_avail = 1
-        return max_gpu
+                max_gpu += 1
+        return max_gpu // 2
 
     def get_max_cpu():
         cmd = "kubectl get nodes"
