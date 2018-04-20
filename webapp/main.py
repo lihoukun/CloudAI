@@ -40,7 +40,7 @@ def trainings_new():
         except:
             return 0
 
-    def gen_script(record_dir, job, name):
+    def gen_script(record_dir, job, script):
         if not os.path.isdir(record_dir):
             umask = os.umask(0)
             os.makedirs(record_dir, 0o777)
@@ -49,10 +49,10 @@ def trainings_new():
         with open(filename, 'w+') as f:
             f.write('set -x\n')
             f.write('umask 2\n')
-            f.write(get_models(name)[1])
+            f.write(script)
 
     form = TrainingsNewForm()
-    form.train_label.choices = [[train[0]]*2 for train in get_trainings('STOPPED') if train[2]]
+    form.train_label.choices = [((train[2], train[0]), train[0]) for train in get_trainings('STOPPED') if train[2]]
     form.model_name.choices = [[model[0]]*2 for model in get_models()]
     if not form.train_label.choices:
         form.train_label.choices = [('', '---')]
@@ -60,20 +60,31 @@ def trainings_new():
     form.num_cpu.validators=[NumberRange(min=0, max=get_max_cpu())]
     if form.validate_on_submit():
         if form.train_option.data == 'legacy':
-            label = form.train_label.data
+            train_dir, label = form.train_label.data
             m = re.match('(\S+)_(\d+)$', label)
             model, signature = m.group(1), m.group(2)
         else:
             signature = datetime.datetime.now().strftime("%y%m%d%H%M%S")
             model = form.model_name.data
+            train_dir = '/nfs/nvme/train/{}_{}'.format(model, signature)
 
-        train_dir = '/nfs/nvme/train/{}_{}'.format(model, signature)
         record_dir = '{}/records'.format(train_dir)
         if os.path.isdir(record_dir):
             shutil.rmtree(record_dir)
 
-        gen_script(record_dir, 'ps', form.model_name.data)
-        gen_script(record_dir, 'worker', form.model_name.data)
+        script = get_models(model)[1]
+        m = re.search('--train_dir[ |=](\S+)',script)
+        if form.train_option.data == 'legacy':
+            if m:
+                script.replace(m.group(1), train_dir)
+            else:
+                script += ' --train_dir={}'.format(train_dir)
+        else:
+            if m and m.group(1) == '$TRAIN_DIR':
+                script.replace(m.group(1), train_dir)
+
+        gen_script(record_dir, 'ps', script)
+        gen_script(record_dir, 'worker', script)
         cfg_file = '/nfs/nvme/train/{}_{}/records/train.yaml'.format(form.model_name.data, signature)
 
         cmd = 'python3 {}/scripts/gen_k8s_yaml.py'.format(os.path.dirname(os.path.realpath(__file__)))
@@ -87,14 +98,9 @@ def trainings_new():
         cmd = 'kubectl apply -f {}'.format(cfg_file)
         os.system(cmd)
 
-        result = get_models(form.model_name.data)
-        script = result[1]
         m = re.search('--train_dir[ |=](\S+)', script):
         if m:
-            if m.group(1) == '$TRAIN_DIR':
-                new_training('{}_{}'.format(form.model_name.data, signature), train_dir)
-            else:
-                new_training('{}_{}'.format(form.model_name.data, signature), m.group(1))
+            new_training('{}_{}'.format(form.model_name.data, signature), m.group(1))
         else:
             new_training('{}_{}'.format(form.model_name.data, signature), None)
         return redirect(url_for('training', label='{}_{}'.format(form.model_name.data, signature)))
@@ -205,7 +211,7 @@ def model(name=None):
 def eval():
     form = EvalForm()
     current = get_tb_training()
-    form.log_dir.choices = [(train[0], train[0]) for train in get_trainings() if train[2]]
+    form.log_dir.choices = [(train[2], train[0]) for train in get_trainings() if train[2]]
     if form.validate_on_submit():
         label = form.log_dir.data
         bash_path = os.path.dirname(os.path.realpath(__file__)) + '/../deploy/tensorboard/docker.sh'
