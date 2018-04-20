@@ -78,7 +78,7 @@ spec:
   volumes:
   - name: tf-volume
     persistentVolumeClaim:
-      claimName: tf-gpvc
+      claimName: tf-pvc
   containers:
   - name: tf-training
     image: exaai/tf-gpu
@@ -92,7 +92,7 @@ spec:
       protocol: TCP
       name: http
     volumeMounts:
-    - mountPath: /nfs/gdv
+    - mountPath: /nfs
       name: tf-volume
     envFrom:
     - configMapRef:

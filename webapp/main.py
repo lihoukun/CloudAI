@@ -52,21 +52,21 @@ def trainings_new():
             f.write(script)
 
     form = TrainingsNewForm()
-    form.train_label.choices = [((train[2], train[0]), train[0]) for train in get_trainings('STOPPED') if train[2]]
+    form.train_label.choices = [('{},{}'.format(train[2], train[0]), train[0]) for train in get_trainings('STOPPED') if train[2]]
     form.model_name.choices = [[model[0]]*2 for model in get_models()]
     if not form.train_label.choices:
-        form.train_label.choices = [('', '---')]
+        form.train_label.choices = [(',', '---')]
     form.num_gpu.validators=[NumberRange(min=0, max=get_max_gpu())]
     form.num_cpu.validators=[NumberRange(min=0, max=get_max_cpu())]
     if form.validate_on_submit():
         if form.train_option.data == 'legacy':
-            train_dir, label = form.train_label.data
+            train_dir, label = form.train_label.data.split(',')
             m = re.match('(\S+)_(\d+)$', label)
             model, signature = m.group(1), m.group(2)
         else:
             signature = datetime.datetime.now().strftime("%y%m%d%H%M%S")
             model = form.model_name.data
-            train_dir = '/nfs/nvme/train/{}_{}'.format(model, signature)
+            train_dir = '/nfs/gdv/train/{}_{}'.format(model, signature)
 
         record_dir = '{}/records'.format(train_dir)
         if os.path.isdir(record_dir):
@@ -85,7 +85,7 @@ def trainings_new():
 
         gen_script(record_dir, 'ps', script)
         gen_script(record_dir, 'worker', script)
-        cfg_file = '/nfs/nvme/train/{}_{}/records/train.yaml'.format(form.model_name.data, signature)
+        cfg_file = '/nfs/gdv/train/{}_{}/records/train.yaml'.format(form.model_name.data, signature)
 
         cmd = 'python3 {}/scripts/gen_k8s_yaml.py'.format(os.path.dirname(os.path.realpath(__file__)))
         cmd += ' {} train'.format(form.model_name.data)
@@ -110,7 +110,7 @@ def trainings_new():
 @app.route('/trainings/<type>', methods=['GET', 'POST'])
 def trainings(type='active'):
     def update_status(label):
-        yaml_file = '/nfs/nvme/train/{}/records/train.yaml'.format(label)
+        yaml_file = '/nfs/gdv/train/{}/records/train.yaml'.format(label)
         if os.path.isfile(yaml_file):
             m = re.match('(\S+)_(\d+)$', label)
             model, signature = m.group(1), m.group(2)
@@ -159,7 +159,7 @@ def training(label=None, desc = [], log = []):
     forms = StopForm(prefix='forms')
     if forms.validate_on_submit():
         try:
-            cmd = 'kubectl delete -f /nfs/nvme/train/{}/records/train.yaml'.format(label)
+            cmd = 'kubectl delete -f /nfs/gdv/train/{}/records/train.yaml'.format(label)
         except:
             pass
         flash('Training Label {} stopped'.format(label))

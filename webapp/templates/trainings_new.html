@@ -36,6 +36,9 @@
               {% if loop.index  == 1 %}
                 {{ form.train_label.label }}
                 {{ form.train_label() }}
+                {% for error in form.train_label.errors %}
+                <span style="color: red;">[{{ error }}]</span>
+                {% endfor %}
               {% else %}
                 {{ form.model_name.label }}
                 {{ form.model_name() }}
