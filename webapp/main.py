@@ -48,6 +48,7 @@ def trainings_new():
         filename = '{}/{}.sh'.format(record_dir, job)
         with open(filename, 'w+') as f:
             f.write('set -x\n')
+            f.write('umask 2\n')
             f.write(get_models(name)[1])
 
     form = TrainingsNewForm()
