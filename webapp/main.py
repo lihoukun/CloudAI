@@ -98,7 +98,7 @@ def trainings_new():
         cmd = 'kubectl apply -f {}'.format(cfg_file)
         os.system(cmd)
 
-        m = re.search('--train_dir[ |=](\S+)', script):
+        m = re.search('--train_dir[ |=](\S+)', script)
         if m:
             new_training('{}_{}'.format(form.model_name.data, signature), m.group(1))
         else:
