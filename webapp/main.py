@@ -89,8 +89,12 @@ def trainings_new():
 
         result = get_models(form.model_name.data)
         script = result[1]
-        if re.search('TRAIN_DIR', script):
-            new_training('{}_{}'.format(form.model_name.data, signature), train_dir)
+        m = re.search('--train_dir[ |=](\S+)', script):
+        if m:
+            if m.group(1) == '$TRAIN_DIR':
+                new_training('{}_{}'.format(form.model_name.data, signature), train_dir)
+            else:
+                new_training('{}_{}'.format(form.model_name.data, signature), m.group(1))
         else:
             new_training('{}_{}'.format(form.model_name.data, signature), None)
         return redirect(url_for('training', label='{}_{}'.format(form.model_name.data, signature)))
