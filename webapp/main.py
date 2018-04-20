@@ -42,9 +42,7 @@ def trainings_new():
 
     def gen_script(record_dir, job, script):
         if not os.path.isdir(record_dir):
-            umask = os.umask(0)
-            os.makedirs(record_dir, 0o777)
-            os.umask(umask)
+            os.makedirs(record_dir, 0o775)
         filename = '{}/{}.sh'.format(record_dir, job)
         with open(filename, 'w+') as f:
             f.write('set -x\n')
@@ -76,12 +74,12 @@ def trainings_new():
         m = re.search('--train_dir[ |=](\S+)',script)
         if form.train_option.data == 'legacy':
             if m:
-                script.replace(m.group(1), train_dir)
+                script = script.replace(m.group(1), train_dir)
             else:
                 script += ' --train_dir={}'.format(train_dir)
         else:
             if m and m.group(1) == '$TRAIN_DIR':
-                script.replace(m.group(1), train_dir)
+                script = script.replace(m.group(1), train_dir)
 
         gen_script(record_dir, 'ps', script)
         gen_script(record_dir, 'worker', script)
