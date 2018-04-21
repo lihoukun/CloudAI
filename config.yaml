@@ -1,0 +1,6 @@
+NAS_MODE: "NFS"
+GLUSTER_HOST: "/nfs/gdv"
+GLUSTER_CONTAINER: "/nfs/gdv"
+NFS_HOST: "/nfs/nvme"
+NFS_CONTAINER: "/nfs/nvme"
+
