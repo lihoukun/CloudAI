@@ -77,9 +77,8 @@ spec:
   restartPolicy: OnFailure
   volumes:
   - name: tf-volume
-    nfs:
-      server: "2.2.2.91"
-      path: "/mnt/mnt-nvme-lv"
+    persistentVolumeClaim:
+      claimName: tf-gpvc
   containers:
   - name: tf-training
     image: exaai/tf-gpu
@@ -93,7 +92,7 @@ spec:
       protocol: TCP
       name: http
     volumeMounts:
-    - mountPath: /nfs/nvme
+    - mountPath: /nfs/gdv
       name: tf-volume
     envFrom:
     - configMapRef:
