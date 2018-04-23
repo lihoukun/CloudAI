@@ -53,7 +53,7 @@ def check_k8s():
     try:
         res = check_output(cmd.split()).decode('ascii').split('\n')
     except:
-        print('Error: kubecl not working!')
+        print('Error: kubectl not working!')
         exit(1)
    print('Checking k8s...Done!')
 
