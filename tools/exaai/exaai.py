@@ -3,9 +3,9 @@ import os
 import yaml
 from subprocess import check_output
 
-from lib.k8s import deploy_pv, deploy_kubeboard
-from lib.flask import deploy_web
-from lib.docker import deploy_jupyter, deploy_nginx
+from deploy.k8s import deploy_pv, deploy_kubeboard
+from deploy.flask import deploy_web
+from deploy.docker import deploy_jupyter, deploy_nginx
 
 def parse_args():
     parser = argparse.ArgumentParser()
