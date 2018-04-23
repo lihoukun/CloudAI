@@ -15,7 +15,7 @@ def deploy_pv():
         os.makedirs(record_dir, 0o775)
     k8s_file = '{}/k8s_pv.yaml'.format(record_dir)
     if os.path.isfile(k8s_file):
-        cmd = 'kubectl delete f {}'.format(k8s_file)
+        cmd = 'kubectl delete -f {}'.format(k8s_file)
         print(cmd)
         os.system(cmd)
 

@@ -1,6 +1,6 @@
 import os
 import sqlite3
-from subprocess import Popen
+from subprocess import Popen, check_output
 
 def init_db(db_file):
     conn = sqlite3.connect(db_file)
@@ -13,6 +13,7 @@ def init_db(db_file):
 def deploy_web():
     db_file = os.path.dirname(os.path.realpath(__file__)) + '/../../../../../sqlite3.db'
     if not os.path.isfile(db_file):
+        print("Database is not setup, setting up now")
         init_db(db_file)
 
     cwd = os.getcwd()

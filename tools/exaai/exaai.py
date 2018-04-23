@@ -9,7 +9,7 @@ from deploy.docker import deploy_jupyter, deploy_nginx
 
 def parse_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument('target', help='choose a flow', choices=['pv', 'web', 'jupyter', 'nginx', 'kubeboard', 'info'])
+    parser.add_argument('target', help='choose a flow', choices=['pv', 'web', 'jupyter', 'nginx', 'kubeboard', 'all', 'info'])
     args = parser.parse_args()
     return args
 
