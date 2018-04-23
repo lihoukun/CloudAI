@@ -1,5 +1,6 @@
 import os
 import sqlite3
+import re
 from subprocess import Popen, check_output
 
 def init_db(db_file):
