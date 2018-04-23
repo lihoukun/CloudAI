@@ -26,16 +26,16 @@ sudo usermod -aG docker $USER
 sudo systemctl enable docker
 sudo systemctl start docker
 # to takes effect, need logout and re-login
-
+```
 ## (optional) test if docker works
 `docker run hello-world`
 
-=================
-Kubernetes
-=================
-https://kubernetes.io/docs/setup/independent/install-kubeadm/
 
-sudo vi /etc/yum.repos.d/kubernetes.repo
+# install kubernetes
+## add repository
+```
+# US version where google can be visited
+cat <<EOF > /etc/yum.repos.d/kubernetes.repo
 [kubernetes]
 name=Kubernetes
 baseurl=https://packages.cloud.google.com/yum/repos/kubernetes-el7-$basearch
@@ -43,8 +43,9 @@ enabled=1
 gpgcheck=1
 repo_gpgcheck=1
 gpgkey=https://packages.cloud.google.com/yum/doc/yum-key.gpg https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
+EOF
 
-[国内】
+# China mainland version
 cat <<EOF > /etc/yum.repos.d/kubernetes.repo
 [kubernetes]
 name=Kubernetes
@@ -55,7 +56,10 @@ repo_gpgcheck=0
 gpgkey=http://mirrors.aliyun.com/kubernetes/yum/doc/yum-key.gpg
         http://mirrors.aliyun.com/kubernetes/yum/doc/rpm-package-key.gpg
 EOF
+```
 
+## install and config
+```
 sudo setenforce 0
 sudo yum install -y kubelet kubeadm kubectl
 sudo systemctl enable kubelet
@@ -68,30 +72,32 @@ sudo systemctl enable kubelet.service
 sudo systemctl stop firewalld
 sudo systemctl disable firewalld
 sudo swapoff -a
+```
 
-
-====================
-GPU
-====================
-https://github.com/NVIDIA/nvidia-docker
-
-# If you have nvidia-docker 1.0 installed: we need to remove it and all existing GPU containers
+# Install Nvidia GPU docker plugin
+## If you have nvidia-docker 1.0 installed: we need to remove it and all existing GPU containers
+```
 docker volume ls -q -f driver=nvidia-docker | xargs -r -I{} -n1 docker ps -q -a -f volume={} | xargs -r docker rm -f
 sudo yum remove nvidia-docker
-
-# Add the package repositories
+```
+## Add the package repositories
+```
 distribution=$(. /etc/os-release;echo $ID$VERSION_ID)
 curl -s -L https://nvidia.github.io/nvidia-docker/$distribution/nvidia-docker.repo | \
   sudo tee /etc/yum.repos.d/nvidia-docker.repo
-
-# Install nvidia-docker2 and reload the Docker daemon configuration
+```
+## Install nvidia-docker2 and reload the Docker daemon configuration
+```
 sudo yum install -y nvidia-docker2
 sudo pkill -SIGHUP dockerd
-
-# Test nvidia-smi with the latest official CUDA image
+```
+## Test nvidia-smi with the latest official CUDA image
+```
 docker run --runtime=nvidia --rm nvidia/cuda nvidia-smi
-
-/etc/docker/daemon.json
+```
+## config update
+```
+# add default runtime in /etc/docker/daemon.json
 {
     "default-runtime": "nvidia",
     "runtimes": {
@@ -102,12 +108,16 @@ docker run --runtime=nvidia --rm nvidia/cuda nvidia-smi
     }
 }
 
-/etc/systemd/system/kubelet.service.d/10-kubeadm.conf
+# add below env in /etc/systemd/system/kubelet.service.d/10-kubeadm.conf
 Environment="KUBELET_EXTRA_ARGS=--feature-gates=DevicePlugins=true"
+```
 
+## enable the change
+```
 sudo systemctl daemon-reload
 sudo systemctl restart kubelet
 sudo systemctl restart docker.service
+```
 
 ================
 Create Cluster
@@ -246,4 +256,3 @@ https://github.com/kubernetes/examples/tree/master/staging/volumes/glusterfs
 http://k8s.docker8.com/plugins/glusterfs.html
 
 
-autossh -M 20000 -f -nNT  -L 8001:127.0.0.1:8001 -L 5000:127.0.0.1:30050  -L 8080:127.0.0.1:30080  -L 8888:127.0.0.1:30088 -L 6006:127.0.0.1:30060 ai@1.tcp.ngrok.io -p22958
