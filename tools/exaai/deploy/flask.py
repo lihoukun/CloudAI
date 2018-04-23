@@ -11,12 +11,12 @@ def init_db(db_file):
     conn.close()
 
 def deploy_web():
-    db_file = os.path.basename(os.path.realpath(__file__)) + '/../../../sqlite3.db'
+    db_file = os.path.dirname(os.path.realpath(__file__)) + '/../../../../../sqlite3.db'
     if not os.path.isfile(db_file):
         init_db(db_file)
 
     cwd = os.getcwd()
-    flask_dir = os.path.basename(os.path.realpath(__file__)) + '/../../../webapp'
+    flask_dir = os.path.dirname(os.path.realpath(__file__)) + '/../../../webapp'
     os.chdir(flask_dir)
     cmd = 'python3 -m flask run --host=0.0.0.0 --port={}'.format(os.environ.get('FLASK_PORT'))
     Popen(cmd.split())

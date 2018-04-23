@@ -4,12 +4,13 @@ from subprocess import Popen
 def deploy_kubeboard():
     os.system("ps aux |grep 'kubectl proxy' |awk '{print $2}' |head -n 1 | xargs kill")
     os.system("kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/master/src/deploy/recommended/kubernetes-dashboard.yaml")
-    os.system("kubectl apply -f dashboard-admin.yaml")
+    yaml_dir = os.path.dirname(os.path.realpath(__file__)) + '/../../../deploy/kubeboard'
+    os.system("kubectl apply -f {}/dashboard-admin.yaml".format(yaml_dir))
     Popen(['kubectl', 'proxy'])
 
 def deploy_pv():
     k8s_yaml = gen_pv_yaml()
-    record_dir = os.path.basename(os.path.realpath(__file__)) + '/records'
+    record_dir = os.path.dirname(os.path.realpath(__file__)) + '/records'
     if not os.path.isdir(record_dir):
         os.makedirs(record_dir, 0o775)
     k8s_file = '{}/k8s_pv.yaml'.format(record_dir)
@@ -75,7 +76,7 @@ subsets:
   - port: 1
 """.format(gluster_ip)
 
-    k8s_yaml += """___
+    k8s_yaml += """---
 kind: Service
 apiVersion: v1
 metadata:

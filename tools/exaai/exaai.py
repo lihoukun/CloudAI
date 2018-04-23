@@ -9,12 +9,12 @@ from deploy.docker import deploy_jupyter, deploy_nginx
 
 def parse_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument('target', help='choose a flow', choices=['flask', 'info'])
+    parser.add_argument('target', help='choose a flow', choices=['pv', 'web', 'jupyter', 'nginx', 'kubeboard', 'info'])
     args = parser.parse_args()
     return args
 
 def get_config():
-    cfg_yaml = os.path.dirname(os.path.realpath(__file__)) + '/../config.yaml'
+    cfg_yaml = os.path.dirname(os.path.realpath(__file__)) + '/../../config.yaml'
     with open(cfg_yaml, 'r') as f:
         lookup = yaml.load(f)
         return lookup
@@ -55,7 +55,7 @@ def check_k8s():
     except:
         print('Error: kubectl not working!')
         exit(1)
-   print('Checking k8s...Done!')
+    print('Checking k8s...Done!')
 
 def main():
     config = get_config()

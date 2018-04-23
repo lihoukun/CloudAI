@@ -1,6 +1,6 @@
 # net disk related
 NAS_MODE: "GLUSTER"
-HOSTPATH_HOST: "/nfs/gdv"
+HOSTPATH_HOST: "/nfs"
 HOSTPATH_CONTAINER: "/nfs/hostpath"
 HOSTPATH_GB: "1000"
 GLUSTER_NAME: "gdistvol"
