@@ -16,6 +16,14 @@ def deploy_web():
         print("Database is not setup, setting up now")
         init_db(db_file)
 
+    cmd = "ps -u ai u"
+    res = check_output(cmd.split()).decode('ascii').split('\n')
+    for line in res:
+        if re.search('flask run', line):
+            pid = line.split()[1]
+            os.system('kill {}'.format(pid))
+            print('Kill flask process with PID {}'.format(pid))
+
     cwd = os.getcwd()
     flask_dir = os.path.dirname(os.path.realpath(__file__)) + '/../../../webapp'
     os.chdir(flask_dir)
