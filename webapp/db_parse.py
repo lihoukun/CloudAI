@@ -83,13 +83,13 @@ def get_tb_training():
     res = c.fetchone()
     return res
 
-def update_tb_training(label):
+def update_tb_training(log_dir):
     conn = get_conn()
     c = conn.cursor()
 
     cmd = "UPDATE trainings set tensorboard = 0"
     c.execute(cmd)
-    cmd = "UPDATE trainings set tensorboard = 1 WHERE label = '{}'".format(label)
+    cmd = "UPDATE trainings set tensorboard = 1 WHERE train_dir = '{}'".format(log_dir)
     c.execute(cmd)
     conn.commit()
     conn.close()

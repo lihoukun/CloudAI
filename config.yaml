@@ -1,6 +1,32 @@
+# net disk related
 NAS_MODE: "NFS"
+HOSTPATH_HOST: "/nfs"
+HOSTPATH_CONTAINER: "/nfs"
+HOSTPATH_GB: "2000"
+GLUSTER_NAME: "gdistvol"
+GLUSTER_IP: "2.2.2.1"
 GLUSTER_HOST: "/nfs/gdv"
 GLUSTER_CONTAINER: "/nfs/gdv"
+GLUSTER_GB: "1000"
 NFS_HOST: "/nfs/nvme"
 NFS_CONTAINER: "/nfs/nvme"
+NFS_GB: "1000"
+
+# deploy
+DEPLOY_PATH: "/nfs/nvme/deploy"
+
+# web app
+FLASK_PORT: "30050"
+FLASK_DEBUG: "1"
+FLASK_APP: "main.py"
+
+# Jupyter notebook
+JUPYTER_UID: "1000"
+JUPYTER_GID: "1000"
+JUPYTER_PORT: "30088"
+
+# Other Ports
+TENSORBOARD_PORT: "30060"
+NGINX_PORT: "30080"
+KUBEBOARD_PORT: "8001"
 

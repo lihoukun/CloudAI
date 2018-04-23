@@ -211,12 +211,14 @@ def eval():
     current = get_tb_training()
     form.log_dir.choices = [(train[2], train[0]) for train in get_trainings() if train[2]]
     if form.validate_on_submit():
-        label = form.log_dir.data
-        bash_path = os.path.dirname(os.path.realpath(__file__)) + '/../deploy/tensorboard/docker.sh'
-        cmd = 'bash {} {}'.format(bash_path, label)
+        log_dir = form.log_dir.data
+        os.system("docker kill exaai-tensorboard")
+        os.system("docker rm exaai-tensorboard")
+        cmd = "docker run --name exaai-tensorboard -d -p {0}:6006 -v {1}:/local/mnt/workspace".format(os.environ.get('TENSORBOARD_PORT'), log_dir)
+        cmd +=" exaai/tensorboard tensorboard --logdir=/local/mnt/workspace"
         os.system(cmd)
-        update_tb_training(label)
-        flash('TensorBoard for label {} Loaded'.format(label))
+        update_tb_training(log_dir)
+        flash('TensorBoard for log_dir {} Loaded'.format(log_dir))
         return redirect(url_for('eval'))
     return render_template('eval.html', form=form, current=current)
 
