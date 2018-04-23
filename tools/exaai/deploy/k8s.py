@@ -9,7 +9,10 @@ def deploy_kubeboard():
 
 def deploy_pv():
     k8s_yaml = gen_pv_yaml()
-    k8s_file = '{}/k8s_pv.yaml'.format(os.environ.get('DEPLOY_PATH'))
+    record_dir = os.path.basename(os.path.realpath(__file__)) + '/records'
+    if not os.path.isdir(record_dir):
+        os.makedirs(record_dir, 0o775)
+    k8s_file = '{}/k8s_pv.yaml'.format(record_dir)
     if os.path.isfile(k8s_file):
         cmd = 'kubectl delete f {}'.format(k8s_file)
         print(cmd)
@@ -24,10 +27,9 @@ def deploy_pv():
 
 def gen_pv_yaml():
     k8s_yaml = ""
-    if os.environ.get('HOSTPATH_GB') and int(os.environ.get('HOSTPATH_GB')) > 0:
-        hostpath_pv_gb = int(os.environ.get('HOSTPATH_GB'))
-        hostpath_pvc_gb = hostpath_pv_gb / 2
-        k8s_yaml += """---
+    hostpath_pv_gb = int(os.environ.get('HOSTPATH_GB'))
+    hostpath_pvc_gb = hostpath_pv_gb / 2
+    k8s_yaml += """---
 apiVersion: v1
 kind: PersistentVolume
 metadata:
@@ -55,26 +57,25 @@ spec:
   storageClassName: hostpath
 """.format(hostpath_pv_gb, os.environ.get('HOSTPATH_HOST'), hostpath_pvc_gb)
 
-    if os.environ.get('GLUSTER_GB') and int(os.environ.get('GLUSTER_GB')) > 0:
-        gluster_pv_gb = int(os.environ.get('GLUSTER_GB'))
-        gluster_pvc_gb = gluster_pv_gb / 2
-        gluster_ips = os.environ.get('GLUSTER_IP').split(',')
-        k8s_yaml += """---
+    gluster_pv_gb = int(os.environ.get('GLUSTER_GB'))
+    gluster_pvc_gb = gluster_pv_gb / 2
+    gluster_ips = os.environ.get('GLUSTER_IP').split(',')
+    k8s_yaml += """---
 apiVersion: v1
 kind: Endpoints
 metadata:
   name: glusterfs-cluster
 subsets:
 """
-        for gluster_ip in gluster_ips:
-           k8s_yaml += """ 
+    for gluster_ip in gluster_ips:
+        k8s_yaml += """ 
 - addresses:
   - ip: {}
   ports:
   - port: 1
 """.format(gluster_ip)
 
-        k8s_yaml += """___
+    k8s_yaml += """___
 kind: Service
 apiVersion: v1
 metadata:

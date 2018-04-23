@@ -6,6 +6,9 @@ __pycache__/
 # sqlite
 webapp/sqplite3.db
 
+# deploy
+tools/exaai/deploy/records/*
+
 # C extensions
 *.so
 

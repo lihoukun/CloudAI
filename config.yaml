@@ -1,19 +1,18 @@
 # net disk related
-NAS_MODE: "NFS"
-HOSTPATH_HOST: "/nfs"
-HOSTPATH_CONTAINER: "/nfs"
-HOSTPATH_GB: "2000"
+NAS_MODE: "GLUSTER"
+HOSTPATH_HOST: "/nfs/gdv"
+HOSTPATH_CONTAINER: "/nfs/hostpath"
+HOSTPATH_GB: "1000"
 GLUSTER_NAME: "gdistvol"
-GLUSTER_IP: "2.2.2.1"
+GLUSTER_IP: "2.2.2.1,2.2.2.2,2.2.2.3,2.2.2.4"
 GLUSTER_HOST: "/nfs/gdv"
 GLUSTER_CONTAINER: "/nfs/gdv"
 GLUSTER_GB: "1000"
 NFS_HOST: "/nfs/nvme"
 NFS_CONTAINER: "/nfs/nvme"
+NFS_SERVER: "2.2.2.91"
+NFS_PATH: "/mnt/mnt-nvme-lv"
 NFS_GB: "1000"
-
-# deploy
-DEPLOY_PATH: "/nfs/nvme/deploy"
 
 # web app
 FLASK_PORT: "30050"

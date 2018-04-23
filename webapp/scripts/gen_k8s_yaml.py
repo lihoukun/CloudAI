@@ -67,43 +67,56 @@ def generate_train_job(job, id, port, model, signature, record_dir):
 apiVersion: v1
 kind: Pod
 metadata:
-  name: {3}-{4}-{0}-{1}
+  name: {2}-{3}-{0}-{1}
   labels:
     job: {0}
     task: t{1}
-    model: {3}
-    signature: s{4}
+    model: {2}
+    signature: s{3}
 spec:
   restartPolicy: OnFailure
   volumes:
-  - name: tf-volume
+  - name: nfs-volume
     nfs:
-      server: "2.2.2.91"
-      path: "/mnt/mnt-nvme-lv"
+      server: "{4}"
+      path: "{5}"
+  - name: gluster-volume
+    persistentVolumeClaim:
+      claimName: gluster-pvc
+  - name: hostpath-volume
+    persistentVolumeClaim:
+      claimName: hostpath-pvc
   containers:
   - name: tf-training
     image: exaai/tf-gpu
     securityContext:
       privileged: true
+    envFrom:
+    - configMapRef:
+        name: {2}-{3}-configmap
+    volumeMounts:
+    - name: nfs-volume
+      mountPath: "{6}"
+    - name: gluster-volume
+      mountPath: "{7}"
+    - name: hostpath-volume
+      mountPath: "{8}"
+""".format(job, id, model, signature, os.environ['NFS_SERVER'], os.environ['NFS_PATH'], os.environ['NFS_CONTAINER'], os.environ['GLUSTER_CONTAINER'], os.environ['HOSTPATH_CONTAINER'])
+
+    k8s_job += """
     command: ["/bin/bash"]
-    args: ["{5}/{0}.sh"]
+    args: ["{3}/{0}.sh"]
     ports:
     - name: tf-training-ports
       containerPort: {2}
       protocol: TCP
       name: http
-    volumeMounts:
-    - mountPath: /nfs/nvme
-      name: tf-volume
-    envFrom:
-    - configMapRef:
-        name: {3}-{4}-configmap
     env:
     - name: JOB_NAME
       value: {0}
     - name: TASK_ID
       value: "{1}"
-""".format(job, id, port, model, signature, record_dir)
+""".format(job, id, port, record_dir)
 
     if job == 'worker':
         k8s_job += """
