@@ -12,6 +12,9 @@ tools/exaai/deploy/records/*
 # C extensions
 *.so
 
+# Mac
+.DS_STORE
+
 # Distribution / packaging
 .Python
 env/
