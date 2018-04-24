@@ -93,7 +93,8 @@ sudo pkill -SIGHUP dockerd
 ```
 ## 4.4 (Optional) test using nvidia-smi
 ```
-docker run --runtime=nvidia --rm exaai/tf-gpu nvidia-smi
+docker run --runtime=nvidia exaai/tf-gpu nvidia-smi
+docker container prune
 ```
 ## 4.5 config update
 ```
