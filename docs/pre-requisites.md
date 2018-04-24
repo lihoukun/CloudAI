@@ -81,6 +81,7 @@ sudo yum remove nvidia-docker
 ```
 ## 4.2 Add the package repositories
 ```
+# if the curl cmd get hang, simply kill and retry, or direct add the repo
 distribution=$(. /etc/os-release;echo $ID$VERSION_ID)
 curl -s -L https://nvidia.github.io/nvidia-docker/$distribution/nvidia-docker.repo | \
   sudo tee /etc/yum.repos.d/nvidia-docker.repo
