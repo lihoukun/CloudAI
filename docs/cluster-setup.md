@@ -36,6 +36,28 @@ docker tag exaai/pause-amd64:3.1 k8s.gcr.io/pause-amd64:3.1
 ```
 
 # 1. Create Cluster from Scratch
+## flannel version. (For China Mobile case)
+```
+# on all nodes, run
+sudo sysctl net.bridge.bridge-nf-call-iptables=1
+sudo swapoff -a
+
+# Run below steps on the master node
+# if US master
+sudo kubeadm init --pod-network-cidr=10.244.0.0/16
+# if China master
+sudo kubeadm init --pod-network-cidr=10.244.0.0/16 --kubernetes-version=v1.10.1
+
+mkdir -p $HOME/.kube
+sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+sudo chown $(id -u):$(id -g) $HOME/.kube/config
+
+kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/v0.10.0/Documentation/kube-flannel.yml
+kubectl create -f https://raw.githubusercontent.com/NVIDIA/k8s-device-plugin/v1.10/nvidia-device-plugin.yml
+# the output of the init command will be used for slave join, which can be got by
+kubeadm token create --print-join-command
+```
+## calico version. (For US and other China customer)
 ```
 # on all nodes, run
 sudo sysctl net.bridge.bridge-nf-call-iptables=1
@@ -76,7 +98,13 @@ sudo systemctl stop docker
 sudo rm -rf /var/lib/cni/
 sudo rm -rf /var/lib/kubelet/*
 sudo rm -rf /etc/cni/
+sudo ifconfig cni0 down
+sudo ifconfig flannel.1 down
 sudo ifconfig docker0 down
+sudo ifconfig tunl0 down
+sudo ip link delete tunl0
+sudo ip link delete cni0
+sudo ip link delete flannel.1
 sudo systemctl restart docker.service
 sudo systemctl start docker
 sudo systemctl start kubelet
