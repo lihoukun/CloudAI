@@ -13,6 +13,7 @@ def deploy_jupyter():
 def deploy_nginx():
     os.system("docker container kill exaai-nginx")
     os.system("docker container rm exaai-nginx")
+    nginx_gen_conf()
     cmd = "docker run --name exaai-nginx -v {0}:{0} -p {1}:80 -d exaai/nginx:nfs".format(os.environ.get('GLUSTER_HOST'), os.environ.get('NGINX_PORT'))
     print(cmd)
     os.system(cmd)

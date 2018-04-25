@@ -64,7 +64,7 @@ def trainings_new():
         else:
             signature = datetime.datetime.now().strftime("%y%m%d%H%M%S")
             model = form.model_name.data
-            train_dir = '/nfs/nvme/train/{}_{}'.format(model, signature)
+            train_dir = '{}/train/{}_{}'.format(os.environ['GLUSTER_HOST'], model, signature)
 
         record_dir = '{}/records'.format(train_dir)
         if os.path.isdir(record_dir):
@@ -83,7 +83,7 @@ def trainings_new():
 
         gen_script(record_dir, 'ps', script)
         gen_script(record_dir, 'worker', script)
-        cfg_file = '/nfs/nvme/train/{}_{}/records/train.yaml'.format(form.model_name.data, signature)
+        cfg_file = '{}/train/{}_{}/records/train.yaml'.format(os.environ['GLUSTER_HOST'], form.model_name.data, signature)
 
         cmd = 'python3 {}/scripts/gen_k8s_yaml.py'.format(os.path.dirname(os.path.realpath(__file__)))
         cmd += ' {} train'.format(form.model_name.data)
@@ -108,7 +108,7 @@ def trainings_new():
 @app.route('/trainings/<type>', methods=['GET', 'POST'])
 def trainings(type='active'):
     def update_status(label):
-        yaml_file = '/nfs/nvme/train/{}/records/train.yaml'.format(label)
+        yaml_file = '{}/train/{}/records/train.yaml'.format(os.environ['GLUSTER_HOST'], label)
         if os.path.isfile(yaml_file):
             m = re.match('(\S+)_(\d+)$', label)
             model, signature = m.group(1), m.group(2)
@@ -157,7 +157,7 @@ def training(label=None, desc = [], log = []):
     forms = StopForm(prefix='forms')
     if forms.validate_on_submit():
         try:
-            cmd = 'kubectl delete -f /nfs/nvme/train/{}/records/train.yaml'.format(label)
+            cmd = 'kubectl delete -f {}/train/{}/records/train.yaml'.format(os.environ['GLUSTER_HOST'], label)
         except:
             pass
         flash('Training Label {} stopped'.format(label))
