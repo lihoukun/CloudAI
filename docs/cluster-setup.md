@@ -27,7 +27,9 @@ docker tag exaai/pause-amd64:3.1 k8s.gcr.io/pause-amd64:3.1
 # on slave nodes:
 docker pull exaai/kube-proxy-amd64:v1.10.1
 docker pull exaai/pause-amd64:3.1
+docker pull exaai/kubernetes-dashboard-amd64:v1.8.3
 
+docker tag exaai/kubernetes-dashboard-amd64:v1.8.3 k8s.gcr.io/kubernetes-dashboard-amd64:v1.8.3
 docker tag exaai/kube-proxy-amd64:v1.10.1 k8s.gcr.io/kube-proxy-amd64:v1.10.1
 docker tag exaai/pause-amd64:3.1 k8s.gcr.io/pause-amd64:3.1
 
