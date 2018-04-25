@@ -76,16 +76,28 @@ metadata:
 spec:
   restartPolicy: OnFailure
   volumes:
+""".format(job, id, model, signature)
+
+    if os.environ.get('NFS_ENABLE') == '1':
+        k8s_job += """
   - name: nfs-volume
     nfs:
-      server: "{4}"
-      path: "{5}"
+      server: "{}"
+      path: "{}"
+""".format(os.environ.get('NFS_SERVER'), os.environ.get('NFS_PATH'))
+    if os.environ.get('GLUSTER_ENABLE') == '1':
+        k8s_job += """
   - name: gluster-volume
     persistentVolumeClaim:
       claimName: gluster-pvc
+"""
+    if os.environ.get('HOSTPATH_ENABLE') == '1':
+        k8s_job += """
   - name: hostpath-volume
     persistentVolumeClaim:
       claimName: hostpath-pvc
+"""
+    k8s_job += """
   containers:
   - name: tf-training
     image: exaai/tf-gpu
@@ -93,15 +105,25 @@ spec:
       privileged: true
     envFrom:
     - configMapRef:
-        name: {2}-{3}-configmap
+        name: {0}-{1}-configmap
     volumeMounts:
+""".format(model, signature)
+
+    if os.environ.get('NFS_ENABLE') == '1':
+        k8s_job += """
     - name: nfs-volume
-      mountPath: "{6}"
+      mountPath: "{}"
+""".format(os.environ.get('NFS_CONTAINER'))
+    if os.environ.get('GLUSTER_ENABLE') == '1':
+        k8s_job += """
     - name: gluster-volume
-      mountPath: "{7}"
+      mountPath: "{}"
+""".format(os.environ.get('GLUSTER_CONTAINER'))
+    if os.environ.get('HOSTPATH_ENABLE') == '1':
+        k8s_job += """
     - name: hostpath-volume
-      mountPath: "{8}"
-""".format(job, id, model, signature, os.environ['NFS_SERVER'], os.environ['NFS_PATH'], os.environ['NFS_CONTAINER'], os.environ['GLUSTER_CONTAINER'], os.environ['HOSTPATH_CONTAINER'])
+      mountPath: "{}"
+""".format(os.environ.get('HOSTPATH_CONTAINER'))
 
     k8s_job += """
     command: ["/bin/bash"]
@@ -185,3 +207,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
