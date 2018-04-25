@@ -2,7 +2,7 @@ import sqlite3
 import os
 
 def get_conn():
-    conn = sqlite3.connect('{}/sqlite3.db'.format(os.environ.get('DATABASE_DIR', '/home/ai/workspace')))
+    conn = sqlite3.connect(os.environ.get('FLASK_DB'))
     #c = conn.cursor()
     #c.execute("CREATE TABLE IF NOT EXISTS trainings (label string primary key, status string, train_dir string, tensorboard boolean)")
     #c.execute("CREATE TABLE IF NOT EXISTS models (name string primary key, script text, description string)")

@@ -13,8 +13,10 @@ def init_db(db_file):
 
 def deploy_web():
     db_file = os.path.dirname(os.path.realpath(__file__)) + '/../../../../../sqlite3.db'
+    db_file = os.environ.get('FLASK_DB')
     if not os.path.isfile(db_file):
         print("Database is not setup, setting up now")
+        print(db_file)
         init_db(db_file)
 
     cmd = "ps -u ai u"
