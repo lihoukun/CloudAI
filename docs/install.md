@@ -29,4 +29,5 @@ brew install autossh
 autossh -M 20000 -f -nNT  -L 8001:127.0.0.1:8001 -L 5000:127.0.0.1:5000  -L 8080:127.0.0.1:30080  -L 8888:127.0.0.1:30088 -L 6006:127.0.0.1:30060 USER@HOST -p PORT
 ```
 
-# curl localhost:5000
+# 4. Open the browser and enjoy
+`curl localhost:5000`
