@@ -18,7 +18,6 @@ NFS_PATH: "/mnt/mnt-nvme-lv"
 NFS_GB: "1000"
 
 # web app
-FLASK_PORT: "30050"
 FLASK_DEBUG: "1"
 FLASK_APP: "main.py"
 FLASK_DB: '/home/ai/db/sqlite3.db'
@@ -26,9 +25,10 @@ FLASK_DB: '/home/ai/db/sqlite3.db'
 # Jupyter notebook
 JUPYTER_UID: "1000"
 JUPYTER_GID: "1000"
-JUPYTER_PORT: "30088"
 
-# Other Ports
+# Ports
+FLASK_PORT: "5000"
+KUBEBOARD_PORT: "8001"
 TENSORBOARD_PORT: "30060"
 NGINX_PORT: "30080"
-KUBEBOARD_PORT: "8001"
+JUPYTER_PORT: "30088"
