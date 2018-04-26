@@ -41,6 +41,9 @@ docker tag exaai/pause-amd64:3.1 k8s.gcr.io/pause-amd64:3.1
 # on all nodes, run
 sudo sysctl net.bridge.bridge-nf-call-iptables=1
 sudo swapoff -a
+# make above permanent even after reboot
+# open /etc/fstab, comment line with swap
+
 
 # Run below steps on the master node
 # if US master
