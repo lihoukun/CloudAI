@@ -5,6 +5,7 @@ This documents how AI Cloud help the life-cycle of AI development.
 # ssh keyless to vpn,  take reference to http://www.linuxproblem.org/art_9.html
 # install tool autossh, something like brew install autossh
 autossh -M 20086 -f -nNT  -L 8001:127.0.0.1:8001 -L 5000:127.0.0.1:5000  -L 8080:127.0.0.1:30080  -L 8888:127.0.0.1:30088 -L 6006:127.0.0.1:30060 ai@1.tcp.ap.ngrok.io -p20100
+# now open localhost:5000
 ``` 
 
 # 1. train a model 
