@@ -97,10 +97,19 @@ def update_tb_training(log_dir):
 def new_training(label, train_dir):
     conn = get_conn()
     c = conn.cursor()
-    if train_dir:
-        cmd = "INSERT INTO trainings (label, status, train_dir) VALUES ('{}', 'RUNNING', '{}')".format(label, train_dir)
+    cmd = "SELECT * FROM trainings where label = '{}'".format(label)
+    c.execute(cmd)
+    res = c.fetchone()
+    if res:
+        if train_dir:
+            cmd = "UPDATE trainings set status = 'RUNNING', train_dir = '{}' where label = '{}'".format(train_dir, label)
+        else:
+            cmd = "UPDATE trainings set status = 'RUNNING', train_dir = null where label = '{}'".format(label)
     else:
-        cmd = "INSERT INTO trainings (label, status) VALUES ('{}', 'RUNNING')".format(label)
+        if train_dir:
+            cmd = "INSERT INTO trainings (label, status, train_dir) VALUES ('{}', 'RUNNING', '{}')".format(label, train_dir)
+        else:
+            cmd = "INSERT INTO trainings (label, status) VALUES ('{}', 'RUNNING')".format(label)
     print(cmd)
     c.execute(cmd)
     conn.commit()
