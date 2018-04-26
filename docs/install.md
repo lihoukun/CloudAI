@@ -2,10 +2,10 @@ This documents how to install the AI Cloud management system.
 # 0. pre-requisite
 ```
 #install python3
-sudo yum install https://centos7.iuscommunity.org/ius-release.rpm
-sudo yum install python36u
-sudo yum install python36u-pip
-sudo yum install python36u-devel
+sudo yum install -y https://centos7.iuscommunity.org/ius-release.rpm
+sudo yum install -y python36u
+sudo yum install -y python36u-pip
+sudo yum install -y python36u-devel
 sudo ln -s /usr/bin/python3.6 /usr/bin/python3
 sudo python3 -m pip install flask flask-wtf pyyaml
 ```
