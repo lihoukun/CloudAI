@@ -83,10 +83,10 @@ def trainings_new():
 
         gen_script(record_dir, 'ps', script)
         gen_script(record_dir, 'worker', script)
-        cfg_file = '{}/train/{}_{}/records/train.yaml'.format(os.environ['GLUSTER_HOST'], form.model_name.data, signature)
+        cfg_file = '{}/train/{}_{}/records/train.yaml'.format(os.environ['GLUSTER_HOST'], model, signature)
 
         cmd = 'python3 {}/scripts/gen_k8s_yaml.py'.format(os.path.dirname(os.path.realpath(__file__)))
-        cmd += ' {} train'.format(form.model_name.data)
+        cmd += ' {} train'.format(model)
         cmd += ' --ps_num {} --worker_num {}'.format(form.num_cpu.data, form.num_gpu.data)
         cmd += ' --epoch {}'.format(form.num_epoch.data)
         cmd += ' --record_dir {}'.format(record_dir)
@@ -98,10 +98,10 @@ def trainings_new():
 
         m = re.search('--train_dir[ |=](\S+)', script)
         if m:
-            new_training('{}_{}'.format(form.model_name.data, signature), m.group(1))
+            new_training('{}_{}'.format(model, signature), m.group(1))
         else:
-            new_training('{}_{}'.format(form.model_name.data, signature), None)
-        return redirect(url_for('training', label='{}_{}'.format(form.model_name.data, signature)))
+            new_training('{}_{}'.format(model, signature), None)
+        return redirect(url_for('training', label='{}_{}'.format(model, signature)))
 
     return render_template('trainings_new.html', form=form)
 
