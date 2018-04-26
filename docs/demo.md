@@ -21,6 +21,7 @@ NUM_EPOCH is float. try it youself. My estimate is 0.01 takes less than 5min. So
 Select 'Start New Training' and select model to 'resnet-training-demo'
 Do NOT train two concurrently. Always stop first before train second. 
 During demo, repeatly click log for any worker, until you see completion.
+Even if it shows complete, still need manual click 'STOP' to kill the rest containers.
 ```
 ![image](images/train_new.png)
 
