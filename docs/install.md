@@ -15,9 +15,17 @@ sudo python3 -m pip install flask flask-wtf pyyaml
 
 # 2. deploy the system
 ```
-# make a copy of config.sh to somewhere in your system, edit it
-source <PATH_TO_MODIFIED_CONFIG_SH>
+# for US side only
+source config.sh
+
+# deploy all 
 ./bin/exaai.sh all
+
+# or deploy what is needed
+./bin/exaai.sh pv
+./bin/exaai.sh kubeboard
+./bin/exaai.sh jupyter
+./bin/exaai.sh flask
 ```
 
 # 3. (Optional) Port Forward in case hosts do not have external IP
