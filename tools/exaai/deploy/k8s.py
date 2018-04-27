@@ -4,8 +4,8 @@ from subprocess import Popen
 def deploy_kubeboard():
     os.system("ps aux |grep 'kubectl proxy' |awk '{print $2}' |head -n 1 | xargs kill")
     os.system("kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/master/src/deploy/recommended/kubernetes-dashboard.yaml")
-    yaml_dir = os.path.dirname(os.path.realpath(__file__)) + '/../../../deploy/kubeboard'
-    os.system("kubectl apply -f {}/dashboard-admin.yaml".format(yaml_dir))
+    yaml_file = os.path.dirname(os.path.realpath(__file__)) + '/../../cfg_files/kubeboard_admin.yaml'
+    os.system("kubectl apply -f {}".format(yaml_file))
     Popen(['kubectl', 'proxy'])
 
 def deploy_pv():
