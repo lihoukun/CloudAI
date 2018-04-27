@@ -224,11 +224,12 @@ def eval():
 
 @app.route('/monitor/', methods=('GET', 'POST'))
 def monitor():
+    token = None
     command = 'kubectl -n kube-system get secret'
     try:
         results = check_output(command.split()).decode('ascii').split('\n')
     except:
-        return render_template('monitor.html', token = None)
+        return render_template('monitor.html', token = token)
 
     for result in results:
         if not result: continue

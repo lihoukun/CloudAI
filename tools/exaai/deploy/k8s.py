@@ -2,7 +2,7 @@ import os
 from subprocess import Popen
 
 def deploy_kubeboard():
-    os.system("ps aux |grep 'kubectl proxy' |awk '{print $2}' |head -n 1 | xargs kill")
+    os.system("ps aux |grep -v grep |grep 'kubectl proxy' |awk '{print $2}' |head -n 1 | xargs kill")
     os.system("kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/master/src/deploy/recommended/kubernetes-dashboard.yaml")
     yaml_file = os.path.dirname(os.path.realpath(__file__)) + '/../../cfg_files/kubeboard_admin.yaml'
     os.system("kubectl apply -f {}".format(yaml_file))
