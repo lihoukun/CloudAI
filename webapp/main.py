@@ -40,10 +40,10 @@ def trainings_new():
         except:
             return 0
 
-    def gen_script(record_dir, job, script):
+    def gen_script(record_dir, script):
         if not os.path.isdir(record_dir):
             os.makedirs(record_dir, 0o775)
-        filename = '{}/{}.sh'.format(record_dir, job)
+        filename = '{}/tensorflow.sh'.format(record_dir)
         with open(filename, 'w+') as f:
             f.write('set -x\n')
             f.write('umask 2\n')
@@ -54,7 +54,7 @@ def trainings_new():
     form.model_name.choices = [[model[0]]*2 for model in get_models()]
     if not form.train_label.choices:
         form.train_label.choices = [(',', '---')]
-    form.num_gpu.validators=[NumberRange(min=0, max=get_max_gpu())]
+    form.num_gpu.validators=[NumberRange(min=1, max=get_max_gpu())]
     form.num_cpu.validators=[NumberRange(min=0, max=get_max_cpu())]
     if form.validate_on_submit():
         if form.train_option.data == 'legacy':
@@ -81,8 +81,7 @@ def trainings_new():
             if m and m.group(1) == '$TRAIN_DIR':
                 script = script.replace(m.group(1), train_dir)
 
-        gen_script(record_dir, 'ps', script)
-        gen_script(record_dir, 'worker', script)
+        gen_script(record_dir, script)
         cfg_file = '{}/train/{}_{}/records/train.yaml'.format(os.environ['GLUSTER_HOST'], model, signature)
 
         cmd = 'python3 {}/scripts/gen_k8s_yaml.py'.format(os.path.dirname(os.path.realpath(__file__)))

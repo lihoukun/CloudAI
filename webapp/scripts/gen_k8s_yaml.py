@@ -127,7 +127,7 @@ spec:
 
     k8s_job += """
     command: ["/bin/bash"]
-    args: ["{3}/{0}.sh"]
+    args: ["{3}/tensorflow.sh"]
     ports:
     - name: tf-training-ports
       containerPort: {2}
