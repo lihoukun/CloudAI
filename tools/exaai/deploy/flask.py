@@ -21,7 +21,7 @@ def deploy_web():
     cmd = "ps -u ai u"
     res = check_output(cmd.split()).decode('ascii').split('\n')
     for line in res:
-        if re.search('flask run', line):
+        if re.search('gunicorn', line):
             pid = line.split()[1]
             os.system('kill {}'.format(pid))
             print('Kill flask process with PID {}'.format(pid))
