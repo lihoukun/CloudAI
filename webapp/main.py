@@ -262,3 +262,6 @@ def kubecmd(command = None, output=[]):
         except:
             flash('Invalid')
     return render_template('kubecmd.html', form=form, command=command, output=output)
+
+if __name__ == "__main__":
+    app.run()
