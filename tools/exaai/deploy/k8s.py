@@ -1,5 +1,6 @@
 import os
-from subprocess import Popen
+import re
+from subprocess import Popen, check_output
 
 def deploy_kubeboard():
     cmd = "ps -u ai u"
