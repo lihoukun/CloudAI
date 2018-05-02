@@ -262,5 +262,9 @@ def kubecmd(command = None, output=[]):
             flash('Invalid')
     return render_template('kubecmd.html', form=form, command=command, output=output)
 
+@app.route('/notebook/', method=('GET', 'POST'))
+def notebook():
+    return redirect("http://jupyter.exaai.ngrok.io")
+
 if __name__ == "__main__":
     app.run()
