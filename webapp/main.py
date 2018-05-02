@@ -262,9 +262,18 @@ def kubecmd(command = None, output=[]):
             flash('Invalid')
     return render_template('kubecmd.html', form=form, command=command, output=output)
 
-@app.route('/notebook/', method=('GET', 'POST'))
+@app.route('/notebook/', methods=('GET', 'POST'))
 def notebook():
-    return redirect("http://jupyter.exaai.ngrok.io")
+    return redirect("http://notebool.{}".format(os.environ['NGROK_DOMAIN']))
+
+@app.route('/nginx/', methods=('GET', 'POST'))
+def nginx():
+    return redirect("http://nginx.{}".format(os.environ['NGROK_DOMAIN']))
+
+@app.route('/tensorboard/', methods=('GET', 'POST'))
+def tensorboard():
+    return redirect("http://tensorboard.{}".format(os.environ['NGROK_DOMAIN']))
+
 
 if __name__ == "__main__":
     app.run()

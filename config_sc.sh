@@ -26,7 +26,8 @@ export FLASK_DB='/home/ai/workspace/sqlite3.db'
 export JUPYTER_UID="1000"
 export JUPYTER_GID="1000"
 
-# Ports
+# NETWORKING
+export NGROK_DOMAIN="exaai.ngrok.io"
 export FLASK_PORT="5000"
 export KUBEBOARD_PORT="8001"
 export TENSORBOARD_PORT="30060"
