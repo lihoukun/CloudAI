@@ -264,7 +264,7 @@ def kubecmd(command = None, output=[]):
 
 @app.route('/notebook/', methods=('GET', 'POST'))
 def notebook():
-    return redirect("http://notebool.{}".format(os.environ['NGROK_DOMAIN']))
+    return redirect("http://notebook.{}".format(os.environ['NGROK_DOMAIN']))
 
 @app.route('/nginx/', methods=('GET', 'POST'))
 def nginx():
