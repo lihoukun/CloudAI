@@ -1,4 +1,5 @@
 from subprocess import check_output
+import re
 
 def get_total_gpu():
     cmd = "kubectl describe nodes"
@@ -20,7 +21,7 @@ def get_total_gpu():
     return max_gpu // 2
 
 def get_busy_gpu():
-    pass
+    return 0
 
 def get_total_cpu():
     cmd = "kubectl get nodes"
@@ -31,4 +32,4 @@ def get_total_cpu():
         return 0
 
 def get_busy_cpu():
-    pass
+    return 0

@@ -2,7 +2,7 @@ from flask import Flask
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'exaairocks'
 
-from flask import render_template, flash, redirect, request, url_for
+from flask import render_template, render_template_string, flash, redirect, request, url_for
 from wtforms.validators import NumberRange
 
 from forms import TrainingsNewForm, KubecmdForm, EvalForm, StopForm, ShowForm, ModelsNewForm, ModelEditForm
@@ -31,7 +31,7 @@ def resource(type='GPU'):
         lookup['BUSY'] = get_total_cpu()
         lookup['IDLE'] = get_total_cpu() - get_busy_cpu()
 
-    return render(json.dumps(lookup))
+    return render_template_string(json.dumps(lookup))
 
 @app.route('/trainings/new/', methods=['GET', 'POST'])
 def trainings_new():
