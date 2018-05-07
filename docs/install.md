@@ -15,8 +15,8 @@ sudo python3 -m pip install flask flask-wtf pyyaml
 
 # 2. deploy the system
 ```
-# for US side only
-source config.sh
+# write per data center config .sh
+source config_<DATA_CENTER>.sh
 
 # deploy all 
 ./bin/exaai.sh all
@@ -28,14 +28,38 @@ source config.sh
 ./bin/exaai.sh flask
 ```
 
-# 3. (Optional) Port Forward in case hosts do not have external IP
+# 3. ngrok for http
 ```
-# install autossh, for MAC
-brew install autossh
+# write ngrok yaml fiel, in US, the file at ~/.ngrok2/ngrok.yml, and the content is below
+tunnels:
+  ui:
+    addr: ibip91:80
+    proto: http
+    hostname: exaai.ngrok.io
+    auth: "exaai:exaai"
+  notebook:
+    addr: ibip91:30088
+    proto: http
+    hostname: notebook.exaai.ngrok.io
+    auth: "exaai:exaai"
+  tensorboard:
+    addr: ibip91:30060
+    proto: http
+    hostname: tensorboard.exaai.ngrok.io
+    auth: "exaai:exaai"
+  nginx:
+    addr: ibip91:30080
+    proto: http
+    hostname: nginx.exaai.ngrok.io
+  kubeboard:
+    addr: ibip91:8001
+    proto: http
+    hostname: kubeboard.exaai.ngrok.io
+    auth: "exaai:exaai"
 
-# port forwarding needed ports
-autossh -M 20000 -f -nNT  -L 8001:127.0.0.1:8001 -L 5000:127.0.0.1:5000  -L 8080:127.0.0.1:30080  -L 8888:127.0.0.1:30088 -L 6006:127.0.0.1:30060 USER@HOST -p PORT
+# start ngrok for http
+ngrok start --all
 ```
 
-# 4. Open the browser and enjoy
-`curl localhost:5000`
+# 4. open the brower for 'hosname' defined in under 'ui' in ngrok yaml
+
