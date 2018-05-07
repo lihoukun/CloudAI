@@ -7,39 +7,34 @@ from wtforms.validators import NumberRange
 
 from forms import TrainingsNewForm, KubecmdForm, EvalForm, StopForm, ShowForm, ModelsNewForm, ModelEditForm
 from db_parse import get_models, new_model, update_model, get_trainings, new_training, update_training, get_tb_training, update_tb_training
-
+from kube_parse import get_busy_cpu, get_busy_gpu, get_total_cpu, get_total_gpu
 from subprocess import check_output
 import re
 import os
 import datetime
 import shutil
+import json
 
 @app.route('/')
 def index():
     return render_template('index.html')
 
+@app.route('/resource/<type>')
+def resource(type='GPU'):
+    lookup = {}
+    if type =='GPU':
+        lookup['TOTAL'] = get_total_gpu()
+        lookup['BUSY'] = get_busy_gpu()
+        lookup['IDLE'] = get_total_gpu() -  get_busy_gpu()
+    elif type == 'CPU':
+        lookup['TOTAL'] = get_total_cpu()
+        lookup['BUSY'] = get_total_cpu()
+        lookup['IDLE'] = get_total_cpu() - get_busy_cpu()
+
+    return render(json.dumps(lookup))
+
 @app.route('/trainings/new/', methods=['GET', 'POST'])
 def trainings_new():
-    def get_max_gpu():
-        cmd = "kubectl describe nodes"
-        try:
-            res = check_output(cmd.split()).decode('ascii').split('\n')
-        except:
-            return 0
-        max_gpu = 0
-        for line in res:
-            if re.search('gpu:', line):
-                max_gpu += 1
-        return max_gpu // 2
-
-    def get_max_cpu():
-        cmd = "kubectl get nodes"
-        try:
-            res = check_output(cmd.split()).decode('ascii').split('\n')
-            return len(res) - 1
-        except:
-            return 0
-
     def gen_script(record_dir, script):
         if not os.path.isdir(record_dir):
             os.makedirs(record_dir, 0o775)
@@ -54,8 +49,8 @@ def trainings_new():
     form.model_name.choices = [[model[0]]*2 for model in get_models()]
     if not form.train_label.choices:
         form.train_label.choices = [(',', '---')]
-    form.num_gpu.validators=[NumberRange(min=1, max=get_max_gpu())]
-    form.num_cpu.validators=[NumberRange(min=0, max=get_max_cpu())]
+    form.num_gpu.validators=[NumberRange(min=1, max=get_total_gpu())]
+    form.num_cpu.validators=[NumberRange(min=0, max=get_total_cpu())]
     if form.validate_on_submit():
         if form.train_option.data == 'legacy':
             train_dir, label = form.train_label.data.split(',')
