@@ -21,7 +21,16 @@ def get_total_gpu():
     return max_gpu // 2
 
 def get_busy_gpu():
-    return 0
+    cmd = "kubectl get pods"
+    try:
+        res = check_output(cmd.split()).decode('ascii').split('\n')
+    except:
+        return 0
+    busy_gpu = 0
+    for line in res:
+       if re.search('-worker-', line):
+           busy_gpu += 1
+    return busy_gpu
 
 def get_total_cpu():
     cmd = "kubectl get nodes"
@@ -32,4 +41,14 @@ def get_total_cpu():
         return 0
 
 def get_busy_cpu():
-    return 0
+    cmd = "kubectl get pods"
+    try:
+        res = check_output(cmd.split()).decode('ascii').split('\n')
+    except:
+        return 0
+    busy_cpu = 0
+    for line in res:
+       if re.search('-ps-', line):
+           busy_cpu += 1
+    return busy_cpu
+
