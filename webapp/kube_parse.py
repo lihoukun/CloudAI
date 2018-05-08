@@ -10,15 +10,14 @@ def get_total_gpu():
     max_gpu = 0
     flip = False
     for line in res:
-        if flip:
-            m = re.search('gpu:\s+(\d)', line)
-            if m:
+        m = re.search('gpu:\s+(\d)', line)
+        if m:
+            if flip:
                 max_gpu += int(m.group(1))
-            flip = False
-        else:
-            flip = True
-            continue
-    return max_gpu // 2
+                flip = False
+            else:
+                flip = True
+    return max_gpu
 
 def get_busy_gpu():
     cmd = "kubectl get pods"
