@@ -1,37 +1,51 @@
-This documents the needed pre-steps before deploying the AI Cloud management system.
+This documents the needed tools seup.
 
-# 1. datetime sync to internet
+# 0 pre-requisites
+## 0.1 install
+```#install nvidia driver and ai superuser account```
+
+## 0.2 check
 ```
-sudo yum -y install ntp
-sudo chkconfig ntpd on
-sudo ntpdate pool.ntp.org
+nvidia-smi
+# check ai user account has UID 1000, and GID(ai) 1000
+id
+```
+
+# 1 input sudo password, and set sudo never expire during install
+## 1.1 install
+```sudo sh -c 'echo "Defaults timestamp_timeout=-1" | (EDITOR="tee -a" visudo)'
+```
+## 1.2 check
+```#by command 'sudo visudo', will see last line have timout set to -```
+
+# 2 datetime sync to internet
+## 2.1 install
+```
+sudo yum -y install ntp && \
+sudo chkconfig ntpd on && \
+sudo ntpdate pool.ntp.org && \
 sudo service ntpd start
 ```
+## 2.2 check
+```#type 'date' to verify```
 
-# 2. install docker
-## 2.1 remove old version
+# 3 install docker
+## 3.1 install
 ```
-sudo yum remove docker docker-client docker-client-latest docker-common docker-latest docker-latest-logrotate docker-logrotate docker-selinux docker-engine-selinux docker-engine
+sudo yum remove docker docker-client docker-client-latest docker-common docker-latest docker-latest-logrotate docker-logrotate docker-selinux docker-engine-selinux docker-engine && \
+sudo yum install -y yum-utils device-mapper-persistent-data lvm2 && \
+sudo yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo && \
+sudo yum install -y docker-ce && \
+sudo usermod -aG docker $USER && \
+sudo systemctl enable docker && \
+sudo systemctl start docker && \
 ```
-## 2.2. install
-```
-sudo yum install -y yum-utils device-mapper-persistent-data lvm2
-sudo yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
-sudo yum install -y docker-ce
-```
-## 2.3 add docker group for non-root user
-```
-sudo usermod -aG docker $USER
-sudo systemctl enable docker
-sudo systemctl start docker
-# to takes effect, need logout and re-login
-```
-## 2.4 (optional) test if docker works
-`docker run hello-world`
+## 3.2 check
+```logout and login again, then run 'docker run hello-world' ```
 
 
-# 3. install kubernetes
-## 3.1 add repository
+# 4 install kubernetes
+## 4.1 add repository
 ```
 # US version where google can be visited
 cat <<EOF > /etc/yum.repos.d/kubernetes.repo
