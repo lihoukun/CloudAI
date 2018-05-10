@@ -2,10 +2,11 @@ This documents the needed tools seup.
 
 # 0 pre-requisites
 ## 0.1 install
-```#install nvidia driver and ai superuser account```
+`# install nvidia driver and ai superuser account`
 
 ## 0.2 check
 ```
+# nvidia driver
 nvidia-smi
 # check ai user account has UID 1000, and GID(ai) 1000
 id
@@ -13,10 +14,9 @@ id
 
 # 1 input sudo password, and set sudo never expire during install
 ## 1.1 install
-```sudo sh -c 'echo "Defaults timestamp_timeout=-1" | (EDITOR="tee -a" visudo)'
-```
+`sudo sh -c 'echo "Defaults timestamp_timeout=-1" | (EDITOR="tee -a" visudo)'`
 ## 1.2 check
-```#by command 'sudo visudo', will see last line have timout set to -```
+`# by command 'sudo visudo', will see last line have timout set to -1`
 
 # 2 datetime sync to internet
 ## 2.1 install
@@ -41,14 +41,14 @@ sudo systemctl enable docker && \
 sudo systemctl start docker && \
 ```
 ## 3.2 check
-```logout and login again, then run 'docker run hello-world' ```
+`# logout and login again, then run 'docker run hello-world' `
 
 
 # 4 install kubernetes
-## 4.1 add repository
+## 4.1 install
 ```
 # US version where google can be visited
-cat <<EOF > /etc/yum.repos.d/kubernetes.repo
+cat <<EOF | sudo tee -a /etc/yum.repos.d/kubernetes.repo
 [kubernetes]
 name=Kubernetes
 baseurl=https://packages.cloud.google.com/yum/repos/kubernetes-el7-$basearch
