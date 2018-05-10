@@ -59,7 +59,7 @@ gpgkey=https://packages.cloud.google.com/yum/doc/yum-key.gpg https://packages.cl
 EOF
 
 # China mainland version
-cat <<EOF > /etc/yum.repos.d/kubernetes.repo
+cat <<EOF | sudo tee -a /etc/yum.repos.d/kubernetes.repo
 [kubernetes]
 name=Kubernetes
 baseurl=http://mirrors.aliyun.com/kubernetes/yum/repos/kubernetes-el7-x86_64
@@ -70,49 +70,40 @@ gpgkey=http://mirrors.aliyun.com/kubernetes/yum/doc/yum-key.gpg
         http://mirrors.aliyun.com/kubernetes/yum/doc/rpm-package-key.gpg
 EOF
 ```
-
-## 3.2 install and config
 ```
-sudo setenforce 0
-sudo yum install -y kubelet kubeadm kubectl
-sudo systemctl enable kubelet
-sudo systemctl start kubelet
-sudo sed -i "s/cgroup-driver=systemd/cgroup-driver=cgroupfs/g" /etc/systemd/system/kubelet.service.d/10-kubeadm.conf
-sudo systemctl daemon-reload
-sudo systemctl restart kubelet
-
-sudo systemctl enable kubelet.service
-sudo systemctl stop firewalld
-sudo systemctl disable firewalld
+sudo setenforce 0 && \
+sudo yum install -y kubelet=1.10.0-00 kubeadm=1.10.0-00 kubectl=1.10.0-00 && \
+sudo systemctl enable kubelet && \
+sudo systemctl start kubelet && \
+sudo sed -i "s/cgroup-driver=systemd/cgroup-driver=cgroupfs/g" /etc/systemd/system/kubelet.service.d/10-kubeadm.conf && \
+sudo systemctl daemon-reload && \
+sudo systemctl restart kubelet && \
+sudo systemctl enable kubelet.service && \
+sudo systemctl stop firewalld && \
+sudo systemctl disable firewalld && \
 sudo swapoff -a
 ```
 
-# 4. Install Nvidia GPU docker plugin
-## 4.1 remove old version 
+# 5 Install Nvidia GPU docker plugin
+## 5.1 install 
 ```
 docker volume ls -q -f driver=nvidia-docker | xargs -r -I{} -n1 docker ps -q -a -f volume={} | xargs -r docker rm -f
 sudo yum remove nvidia-docker
 ```
-## 4.2 Add the package repositories
 ```
-# if the curl cmd get hang, simply kill and retry, or direct add the repo
 distribution=$(. /etc/os-release;echo $ID$VERSION_ID)
 curl -s -L https://nvidia.github.io/nvidia-docker/$distribution/nvidia-docker.repo | \
   sudo tee /etc/yum.repos.d/nvidia-docker.repo
 ```
-## 4.3 Install and reload configuration
 ```
-sudo yum install -y nvidia-docker2
+sudo yum install -y nvidia-docker2 && \
 sudo pkill -SIGHUP dockerd
 ```
-## 4.4 (Optional) test using nvidia-smi
-```
-docker run --runtime=nvidia exaai/tf-gpu nvidia-smi
-docker container prune
-```
-## 4.5 config update
+
 ```
 # add default runtime in /etc/docker/daemon.json
+sudo rm -f /etc/docker/daemon.json && \
+cat <<EOF | sudo tee -a /etc/docker/daemon.json
 {
     "default-runtime": "nvidia",
     "runtimes": {
@@ -122,15 +113,11 @@ docker container prune
         }
     }
 }
-
-# add below env in /etc/systemd/system/kubelet.service.d/10-kubeadm.conf
-Environment="KUBELET_EXTRA_ARGS=--feature-gates=DevicePlugins=true"
+EOF 
 ```
-
-## 4.6 enable the change
 ```
-sudo systemctl daemon-reload
-sudo systemctl restart kubelet
+sudo systemctl daemon-reload && \
+sudo systemctl restart kubelet && \
 sudo systemctl restart docker.service
 ```
 
