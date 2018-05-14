@@ -38,7 +38,7 @@ sudo yum-config-manager --add-repo https://download.docker.com/linux/centos/dock
 sudo yum install -y docker-ce && \
 sudo usermod -aG docker $USER && \
 sudo systemctl enable docker && \
-sudo systemctl start docker && \
+sudo systemctl start docker
 ```
 ## 3.2 check
 `# logout and login again, then run 'docker run hello-world' `
@@ -87,7 +87,7 @@ sudo swapoff -a
 # 5 Install Nvidia GPU docker plugin
 ## 5.1 install 
 ```
-docker volume ls -q -f driver=nvidia-docker | xargs -r -I{} -n1 docker ps -q -a -f volume={} | xargs -r docker rm -f
+docker volume ls -q -f driver=nvidia-docker | xargs -r -I{} -n1 docker ps -q -a -f volume={} | xargs -r docker rm -f && \
 sudo yum remove nvidia-docker
 ```
 ```
