@@ -72,7 +72,7 @@ EOF
 ```
 ```
 sudo setenforce 0 && \
-sudo yum install -y kubelet=1.10.0-00 kubeadm=1.10.0-00 kubectl=1.10.0-00 && \
+sudo yum install -y kubelet kubeadm kubectl && \
 sudo systemctl enable kubelet && \
 sudo systemctl start kubelet && \
 sudo sed -i "s/cgroup-driver=systemd/cgroup-driver=cgroupfs/g" /etc/systemd/system/kubelet.service.d/10-kubeadm.conf && \

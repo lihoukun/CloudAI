@@ -7,7 +7,7 @@ sudo yum install -y python36u
 sudo yum install -y python36u-pip
 sudo yum install -y python36u-devel
 sudo ln -s /usr/bin/python3.6 /usr/bin/python3
-sudo python3 -m pip install flask flask-wtf pyyaml
+sudo python3 -m pip install flask flask-wtf pyyaml gunicorn
 ```
 
 # 1. download from github
