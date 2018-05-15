@@ -77,7 +77,6 @@ def trainings_new():
                 script = script.replace(m.group(1), train_dir)
 
         gen_script(record_dir, script)
-        cfg_file = '{}/train/{}_{}/records/train.yaml'.format(os.environ['GLUSTER_HOST'], model, signature)
 
         cmd = 'python3 {}/scripts/gen_k8s_yaml.py'.format(os.path.dirname(os.path.realpath(__file__)))
         cmd += ' {} train'.format(model)
@@ -93,7 +92,7 @@ def trainings_new():
             new_training('{}_{}'.format(model, signature), form.num_gpu.data, m.group(1))
         else:
             new_training('{}_{}'.format(model, signature), form.num_gpu.data, None)
-        return redirect(url_for('training', label='{}_{}'.format(model, signature)))
+        return redirect(url_for('trainings', type='active'))
 
     return render_template('trainings_new.html', form=form)
 
