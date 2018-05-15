@@ -147,10 +147,10 @@ def training(label=None, desc = [], log = []):
     if forms.validate_on_submit():
         try:
             cmd = 'kubectl delete -f {}/train/{}/records/train.yaml'.format(os.environ['GLUSTER_HOST'], label)
+            os.system(cmd)
+            flash('Training Label {} scheduled to stop'.format(label))
         except:
-            pass
-        flash('Training Label {} stopped'.format(label))
-        os.system(cmd)
+            flash('Failed to stop training label {}'.format(label))
         return redirect(url_for('trainings', type='active'))
 
     formd = ShowForm(prefix='formd')
