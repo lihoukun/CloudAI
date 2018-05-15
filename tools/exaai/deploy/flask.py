@@ -7,7 +7,7 @@ def init_db(db_file):
     conn = sqlite3.connect(db_file)
     c = conn.cursor()
     c.execute("CREATE TABLE models (name string primary key, script text, description string)")
-    c.execute("CREATE TABLE trainings (label string primary key, status string, train_dir string, tensorboard integer, submit_at text, start_at text, stop_at text)")
+    c.execute("CREATE TABLE trainings (label string primary key, status string, train_dir string, tensorboard integer, submit_at text, start_at text, stop_at text, num_gpu integer)")
     conn.commit()
     conn.close()
 

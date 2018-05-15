@@ -93,9 +93,9 @@ def trainings_new():
 
         m = re.search('--train_dir[ |=](\S+)', script)
         if m:
-            new_training('{}_{}'.format(model, signature), m.group(1))
+            new_training('{}_{}'.format(model, signature), form.num_gpu.data, m.group(1))
         else:
-            new_training('{}_{}'.format(model, signature), None)
+            new_training('{}_{}'.format(model, signature), form.num_gpu.data, None)
         return redirect(url_for('training', label='{}_{}'.format(model, signature)))
 
     return render_template('trainings_new.html', form=form)

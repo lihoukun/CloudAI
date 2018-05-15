@@ -91,7 +91,7 @@ def update_tb_training(log_dir):
     conn.commit()
     conn.close()
 
-def new_training(label, train_dir):
+def new_training(label, , num_gpu, train_dir):
     cur_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     conn = get_conn()
     c = conn.cursor()
@@ -99,7 +99,7 @@ def new_training(label, train_dir):
     c.execute(cmd)
     res = c.fetchone()
     if res:
-        cmd = "UPDATE trainings set status = 'PEND', submit_at = '{}', ".format(cur_time)
+        cmd = "UPDATE trainings set status = 'PEND', num_gpu = {} submit_at = '{}', ".format(cur_time, num_gpu)
         if train_dir:
             cmd += " train_dir = '{}' ".format(train_dir)
         else:
@@ -107,7 +107,7 @@ def new_training(label, train_dir):
         cmd += " where label = '{}'".format(label)
         c.execute(cmd)
     else:
-        cmd = "INSERT INTO trainings (label, status, submit_at) VALUES ('{}', 'PEND', '{}')".format(label, cur_time)
+        cmd = "INSERT INTO trainings (label, status, submit_at, num_gpu) VALUES ('{}', 'PEND', '{}', {})".format(label, cur_time, num_gpu)
         c.execute(cmd)
         if train_dir:
             cmd = "UPDATE trainings set train_dir = '{}' WHERE label = '{}'".format(train_dir, label)
