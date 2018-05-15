@@ -168,8 +168,8 @@ spec:
 
 def generate_train_config(model, signature, ps_num, worker_num, epoch, record_dir):
     req_nodes = {}
-    req_nodes['ps'] = ps_num if ps_num else 2
-    req_nodes['worker'] = worker_num if worker_num else 4
+    req_nodes['ps'] = 2 if ps_num is None else ps_num
+    req_nodes['worker'] = 4 if worker_num is None else worker_num
     port = 2220
 
     k8s_config = ''

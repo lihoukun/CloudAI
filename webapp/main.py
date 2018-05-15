@@ -85,6 +85,7 @@ def trainings_new():
         cmd += ' --epoch {}'.format(form.num_epoch.data)
         cmd += ' --record_dir {}'.format(record_dir)
         cmd += ' --signature {}'.format(signature)
+        print(cmd)
         os.system(cmd)
 
         cmd = 'kubectl apply -f {}'.format(cfg_file)
