@@ -12,7 +12,9 @@ def main():
     res = c.fetchone()
     if res:
         label, num_gpu = res
-        if num_gpu < get_idle_gpu(): return 0
+        avail_gpu = get_idle_gpu()
+        if num_gpu > avail_gpu:
+            return 0
 
         m = re.match('(\S+)_(\d+)$', label)
         model, signature = m.group(1), m.group(2)
