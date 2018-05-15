@@ -91,7 +91,7 @@ def update_tb_training(log_dir):
     conn.commit()
     conn.close()
 
-def new_training(label, , num_gpu, train_dir):
+def new_training(label,num_gpu, train_dir):
     cur_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     conn = get_conn()
     c = conn.cursor()

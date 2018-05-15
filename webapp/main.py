@@ -88,9 +88,6 @@ def trainings_new():
         print(cmd)
         os.system(cmd)
 
-        cmd = 'kubectl apply -f {}'.format(cfg_file)
-        os.system(cmd)
-
         m = re.search('--train_dir[ |=](\S+)', script)
         if m:
             new_training('{}_{}'.format(model, signature), form.num_gpu.data, m.group(1))
@@ -126,9 +123,6 @@ def trainings(type='active'):
     data = []
     for training in get_trainings():
         label, status, train_dir = training
-        #if status != 'STOPPED':
-        #    status = update_status(label)
-
         if type == 'active' and status != 'STOPPED':
             data.append([label, status, train_dir])
         if type != 'active' and status == 'STOPPED':
