@@ -12,7 +12,9 @@ def main():
     res = c.fetchone()
     if res:
         label, num_gpu = res
-        if num_gpu < get_idle_gpu(): return 0
+        avail_gpu = get_idle_gpu()
+        if num_gpu > avail_gpu:
+            return 0
 
         cfg_file = '/nfs/gdv/train/{}/records/train.yaml'.format(label)
         if os.path.isfile(cfg_file):
