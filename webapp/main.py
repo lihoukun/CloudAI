@@ -99,27 +99,6 @@ def trainings_new():
 
 @app.route('/trainings/<type>', methods=['GET', 'POST'])
 def trainings(type='active'):
-    def update_status(label):
-        yaml_file = '{}/train/{}/records/train.yaml'.format(os.environ['GLUSTER_HOST'], label)
-        if os.path.isfile(yaml_file):
-            m = re.match('(\S+)_(\d+)$', label)
-            model, signature = m.group(1), m.group(2)
-            cmd = 'kubectl get pods -l model={},signature=s{}'.format(model, signature)
-            output = check_output(cmd.split()).decode('ascii')
-            if output:
-                cmd = 'kubectl get pods -l model={},signature=s{},job=worker'.format(model, signature)
-                output = check_output(cmd.split()).decode('ascii')
-                if output:
-                    status = 'RUNNING'
-                else:
-                    status = 'FINISHED'
-            else:
-                status = 'STOPPED'
-        else:
-            status = 'STOPPED'
-        update_training(label, status)
-        return status
-
     data = []
     for training in get_trainings():
         label, status, train_dir = training

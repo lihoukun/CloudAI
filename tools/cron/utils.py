@@ -3,8 +3,9 @@ import sqlite3
 from subprocess import check_output
 import re
 
-def send_mail(to, sub, msg):
+def send_mail(sub, msg):
     FROM = 'DoNotReply@exaai.io'
+    TO = ['xiaojie.zhang@exaai.io', 'houkun.li@exaai.io']
 
     message = """\
 From: %s
@@ -12,10 +13,10 @@ To: %s
 Subject: %s
 
 %s
-""" % (FROM, ", ".join(to), sub, msg)
+""" % (FROM, ", ".join(TO), sub, msg)
 
     server = smtplib.SMTP('localhost')
-    server.sendmail(FROM, to, message)
+    server.sendmail(FROM, TO, message)
     server.quit()
 
 def conn_db():
