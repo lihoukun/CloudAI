@@ -11,8 +11,9 @@ def main():
     c.execute("update trainings set start_at = '{}' where start_at is NULL and status = 'RUNNING'".format(cur_time))
     c.execute("SELECT label from trainings where status='RUNNING' order by submit_at asc")
     for res in c.fetchall():
-        label, = res
+        status = 'RUNNING'
 
+        label, = res
         m = re.match('(\S+)_(\d+)$', label)
         model, signature = m.group(1), m.group(2)
         cmd = 'kubectl get pods -l model={},signature=s{}'.format(model, signature)
@@ -21,9 +22,14 @@ def main():
             cmd = 'kubectl get pods -l model={},signature=s{},job=worker'.format(model, signature)
             output = check_output(cmd.split()).decode('ascii')
             if output:
-                status = 'RUNNING'
-            else:
-                status = 'FINISHED'
+                lines = output.split('\n')
+                is_finished = True
+                for line in lines[1:-1]:
+                    items = line.split()
+                    if len(items) != 5 or items[2] != 'Completed':
+                        is_finished = False
+                        break
+                if is_finished: status = 'FINISHED'
         else:
             status = 'STOPPED'
 

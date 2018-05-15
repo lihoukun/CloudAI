@@ -3,6 +3,7 @@ from utils import send_mail, conn_db
 import datetime
 import re
 import os
+from subprocess import check_output
 
 def main():
     cur_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -28,7 +29,7 @@ def main():
                 send_mail(sub, msg)
         else:
             status = 'STOPPED'
-            c.execute("UPDATE trainings set status='{}', where label = '{}'".format(status, label))
+            c.execute("UPDATE trainings set status='{}' where label = '{}'".format(status, label))
 
     conn.commit()
     c.close()
