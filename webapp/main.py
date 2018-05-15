@@ -126,8 +126,8 @@ def trainings(type='active'):
     data = []
     for training in get_trainings():
         label, status, train_dir = training
-        if status != 'STOPPED':
-            status = update_status(label)
+        #if status != 'STOPPED':
+        #    status = update_status(label)
 
         if type == 'active' and status != 'STOPPED':
             data.append([label, status, train_dir])

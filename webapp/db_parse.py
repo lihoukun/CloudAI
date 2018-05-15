@@ -99,7 +99,7 @@ def new_training(label, train_dir):
     c.execute(cmd)
     res = c.fetchone()
     if res:
-        cmd = "UPDATE trainings set status = 'RUNNING', submit_at = '{}', ".format(cur_time)
+        cmd = "UPDATE trainings set status = 'PEND', submit_at = '{}', ".format(cur_time)
         if train_dir:
             cmd += " train_dir = '{}' ".format(train_dir)
         else:
@@ -107,7 +107,7 @@ def new_training(label, train_dir):
         cmd += " where label = '{}'".format(label)
         c.execute(cmd)
     else:
-        cmd = "INSERT INTO trainings (label, status, submit_at) VALUES ('{}', 'RUNNING', '{}')".format(label, cur_time)
+        cmd = "INSERT INTO trainings (label, status, submit_at) VALUES ('{}', 'PEND', '{}')".format(label, cur_time)
         c.execute(cmd)
         if train_dir:
             cmd = "UPDATE trainings set train_dir = '{}' WHERE label = '{}'".format(train_dir, label)
