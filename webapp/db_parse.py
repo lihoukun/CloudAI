@@ -1,12 +1,9 @@
 import sqlite3
 import os
+import datetime
 
 def get_conn():
     conn = sqlite3.connect(os.environ.get('FLASK_DB'))
-    #c = conn.cursor()
-    #c.execute("CREATE TABLE IF NOT EXISTS trainings (label string primary key, status string, train_dir string, tensorboard boolean)")
-    #c.execute("CREATE TABLE IF NOT EXISTS models (name string primary key, script text, description string)")
-    #conn.commit()
     return conn
 
 def get_models(name = None):
@@ -95,23 +92,26 @@ def update_tb_training(log_dir):
     conn.close()
 
 def new_training(label, train_dir):
+    cur_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     conn = get_conn()
     c = conn.cursor()
     cmd = "SELECT * FROM trainings where label = '{}'".format(label)
     c.execute(cmd)
     res = c.fetchone()
     if res:
+        cmd = "UPDATE trainings set status = 'RUNNING', submit_at = '{}', ".format(cur_time)
         if train_dir:
-            cmd = "UPDATE trainings set status = 'RUNNING', train_dir = '{}' where label = '{}'".format(train_dir, label)
+            cmd += " train_dir = '{}' ".format(train_dir)
         else:
-            cmd = "UPDATE trainings set status = 'RUNNING', train_dir = null where label = '{}'".format(label)
+            cmd += " train_dir = NULL ".format(train_dir)
+        cmd += " where label = '{}'".format(label)
+        c.execute(cmd)
     else:
+        cmd = "INSERT INTO trainings (label, status, submit_at) VALUES ('{}', 'RUNNING', '{}')".format(label, cur_time)
+        c.execute(cmd)
         if train_dir:
-            cmd = "INSERT INTO trainings (label, status, train_dir) VALUES ('{}', 'RUNNING', '{}')".format(label, train_dir)
-        else:
-            cmd = "INSERT INTO trainings (label, status) VALUES ('{}', 'RUNNING')".format(label)
-    print(cmd)
-    c.execute(cmd)
+            cmd = "UPDATE trainings set train_dir = '{}' WHERE label = '{}'".format(train_dir, label)
+            c.execute(cmd)
     conn.commit()
     conn.close()
 
