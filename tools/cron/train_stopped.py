@@ -14,7 +14,7 @@ def main():
     delete_num  = len(results) - 100
     if delete_num <= 0: return
 
-    c.execute("SELECT label, stop_at from trainings where status='STOPPED' order by stop_at asc limit {}".format(delete_num))
+    c.execute("SELECT label from trainings where status='STOPPED' order by stop_at asc limit {}".format(delete_num))
     for res in c.fetchall():
         label, = res
         train_dir = '/nfs/gdv/train/{}'.format(label)
