@@ -2,6 +2,7 @@ from utils import send_mail, conn_db
 
 import datetime
 import re
+from subprocess import check_output
 
 def main():
     cur_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -20,7 +21,7 @@ def main():
             cmd = 'kubectl get pods -l model={},signature=s{},job=worker'.format(model, signature)
             output = check_output(cmd.split()).decode('ascii')
             if output:
-                pass
+                status = 'RUNNING'
             else:
                 status = 'FINISHED'
         else:
