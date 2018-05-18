@@ -6,32 +6,17 @@ from flask import render_template, render_template_string, flash, redirect, requ
 from wtforms.validators import NumberRange
 
 from forms import TrainingsNewForm, KubecmdForm, EvalForm, StopForm, ShowForm, ModelsNewForm, ModelEditForm
-from db_parse import get_models, new_model, update_model, get_trainings, new_training, update_training, get_tb_training, update_tb_training
-from kube_parse import get_busy_cpu, get_busy_gpu, get_total_cpu, get_total_gpu
+from db_parse import get_models, new_model, update_model, get_trainings, new_training, get_tb_training, update_tb_training
+from kube_parse import get_total_nodes
 from subprocess import check_output
 import re
 import os
 import datetime
 import shutil
-import json
 
 @app.route('/')
 def index():
     return render_template('index.html')
-
-@app.route('/resource/<type>')
-def resource(type='GPU'):
-    lookup = {}
-    if type =='GPU':
-        lookup['TOTAL'] = get_total_gpu()
-        lookup['BUSY'] = get_busy_gpu()
-        lookup['IDLE'] = get_total_gpu() -  get_busy_gpu()
-    elif type == 'CPU':
-        lookup['TOTAL'] = get_total_cpu()
-        lookup['BUSY'] = get_total_cpu()
-        lookup['IDLE'] = get_total_cpu() - get_busy_cpu()
-
-    return render_template_string(json.dumps(lookup))
 
 @app.route('/trainings/new/', methods=['GET', 'POST'])
 def trainings_new():
@@ -49,8 +34,8 @@ def trainings_new():
     form.model_name.choices = [[model[0]]*2 for model in get_models()]
     if not form.train_label.choices:
         form.train_label.choices = [(',', '---')]
-    form.num_gpu.validators=[NumberRange(min=1, max=get_total_gpu())]
-    form.num_cpu.validators=[NumberRange(min=0, max=get_total_cpu())]
+    form.num_worker.validators=[NumberRange(min=1, max=get_total_nodes())]
+    form.num_ps.validators=[NumberRange(min=0, max=get_total_nodes())]
     if form.validate_on_submit():
         if form.train_option.data == 'legacy':
             train_dir, label = form.train_label.data.split(',')
