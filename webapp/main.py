@@ -7,7 +7,7 @@ from wtforms.validators import NumberRange
 
 from forms import TrainingsNewForm, KubecmdForm, EvalForm, StopForm, ShowForm, ModelsNewForm, ModelEditForm
 from db_parse import get_models, new_model, update_model, get_trainings, new_training, get_tb_training, update_tb_training
-from kube_parse import get_total_nodes
+from kube_parse import get_total_nodes, get_gpu_per_node
 from subprocess import check_output
 import re
 import os
@@ -65,7 +65,8 @@ def trainings_new():
 
         cmd = 'python3 {}/scripts/gen_k8s_yaml.py'.format(os.path.dirname(os.path.realpath(__file__)))
         cmd += ' {} train'.format(model)
-        cmd += ' --ps_num {} --worker_num {}'.format(form.num_cpu.data, form.num_gpu.data)
+        cmd += ' --ps_num {} --worker_num {}'.format(form.num_ps.data, form.num_worker.data)
+        cmd += ' --gpu_per_node {}'.format(get_gpu_per_node())
         cmd += ' --epoch {}'.format(form.num_epoch.data)
         cmd += ' --record_dir {}'.format(record_dir)
         cmd += ' --signature {}'.format(signature)
@@ -74,9 +75,9 @@ def trainings_new():
 
         m = re.search('--train_dir[ |=](\S+)', script)
         if m:
-            new_training('{}_{}'.format(model, signature), form.num_gpu.data, m.group(1))
+            new_training('{}_{}'.format(model, signature), form.num_worker.data, m.group(1))
         else:
-            new_training('{}_{}'.format(model, signature), form.num_gpu.data, None)
+            new_training('{}_{}'.format(model, signature), form.num_worker.data, None)
         return redirect(url_for('trainings', type='active'))
 
     return render_template('trainings_new.html', form=form)

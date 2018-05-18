@@ -24,31 +24,22 @@ def conn_db():
     conn = sqlite3.connect(db_file)
     return conn
 
-def get_idle_gpu():
-    cmd = "kubectl describe nodes"
+def get_idle_nodes():
+    cmd = "kubectl get nodes"
     try:
         res = check_output(cmd.split()).decode('ascii').split('\n')
+        total_nodes = len(res) - 3
     except:
         return 0
-    max_gpu = 0
-    flip = False
-    for line in res:
-        m = re.search('gpu:\s+(\d)', line)
-        if m:
-            if flip:
-                max_gpu += int(m.group(1))
-                flip = False
-            else:
-                flip = True
 
     cmd = "kubectl get pods"
     try:
         res = check_output(cmd.split()).decode('ascii').split('\n')
     except:
         return 0
-    busy_gpu = 0
+    busy_nodes = 0
     for line in res:
        if re.search('-worker-', line):
-           busy_gpu += 1
+           busy_nodes += 1
 
-    return (max_gpu - busy_gpu)
+    return (total_nodes - busy_nodes)

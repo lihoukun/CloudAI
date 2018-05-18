@@ -1,4 +1,4 @@
-from utils import send_mail, conn_db, get_idle_gpu
+from utils import send_mail, conn_db, get_idle_nodes
 
 import datetime
 import os
@@ -12,8 +12,8 @@ def main():
     res = c.fetchone()
     if res:
         label, num_gpu = res
-        avail_gpu = get_idle_gpu()
-        if num_gpu > avail_gpu:
+        avail_nodes = get_idle_nodes()
+        if num_gpu > avail_nodes:
             return 0
 
         cfg_file = '/nfs/gdv/train/{}/records/train.yaml'.format(label)

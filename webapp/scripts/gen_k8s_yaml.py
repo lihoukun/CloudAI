@@ -8,6 +8,7 @@ def parse_args():
     parser.add_argument('flow', help='choose a flow', choices=['train', 'eval', 'serve'])
     parser.add_argument('--ps_num', help='choose ps number', type=int)
     parser.add_argument('--worker_num', help='choose worker number', type=int)
+    parser.add_argument('--gpu_per_node', help='number gpu per node', type=int)
     parser.add_argument('--epoch', help='choose worker number', type=float)
     parser.add_argument('--record_dir', help='record files path')
     parser.add_argument('--signature', help='signature label')
@@ -62,7 +63,7 @@ spec:
 """.format(job, id, port, model, signature)
     return k8s_service
 
-def generate_train_job(job, id, port, model, signature, record_dir):
+def generate_train_job(job, id, port, model, signature, record_dir, gpu_per_node):
     k8s_job = """---
 apiVersion: v1
 kind: Pod
@@ -146,12 +147,12 @@ spec:
       requests:
         cpu: "12"
         memory: 56Gi
-        nvidia.com/gpu: 1
+        nvidia.com/gpu: {0}
       limits:
         cpu: "12"
         memory: 64Gi       
-        nvidia.com/gpu: 1
-"""
+        nvidia.com/gpu: {0}
+""".format(gpu_per_node)
     else:
         k8s_job += """
     - name: CUDA_VISIBLE_DEVICES
@@ -166,7 +167,7 @@ spec:
 """
     return k8s_job
 
-def generate_train_config(model, signature, ps_num, worker_num, epoch, record_dir):
+def generate_train_config(model, signature, ps_num, worker_num, epoch, record_dir, gpu_per_node):
     req_nodes = {}
     req_nodes['ps'] = 2 if ps_num is None else ps_num
     req_nodes['worker'] = 4 if worker_num is None else worker_num
@@ -177,7 +178,7 @@ def generate_train_config(model, signature, ps_num, worker_num, epoch, record_di
     for job in ['ps', 'worker']:
         for i in range(req_nodes[job]):
             k8s_config += generate_train_service(job, i, port, model, signature)
-            k8s_config += generate_train_job(job, i, port, model, signature, record_dir)
+            k8s_config += generate_train_job(job, i, port, model, signature, record_dir, gpu_per_node)
 
     return k8s_config
 
@@ -187,7 +188,7 @@ def main():
     signature = args.signature if args.signature else datetime.datetime.now().strftime("%y%m%d%H%M%S")
     epoch = args.epoch if args.epoch else 1.0
     if args.flow == 'train':
-        k8s_config = generate_train_config(args.model, signature, args.ps_num, args.worker_num, epoch, args.record_dir)
+        k8s_config = generate_train_config(args.model, signature, args.ps_num, args.worker_num, epoch, args.record_dir, args.gpu_per_node)
     elif args.flow == 'eval':
         k8s_config = generate_eval_config(args.model, signature)
     else:

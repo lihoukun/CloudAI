@@ -21,6 +21,10 @@ def get_total_nodes():
     except:
         return 0
 
+def get_gpu_per_node():
+    # hack for US
+    return 1
+
 def get_busy_ps():
     cmd = "kubectl get pods"
     try:
