@@ -22,8 +22,17 @@ def get_total_nodes():
         return 0
 
 def get_gpu_per_node():
-    # hack for US
-    return 1
+    cmd = "kubectl describe nodes"
+    try:
+        res = check_output(cmd.split()).decode('ascii').split('\n')
+    except:
+        return 0
+
+    for line in res:
+        m = re.search('nvidia.com/gpu:\s+(\d+)', line)
+        if m:
+            return m.group(1)
+    return 0
 
 def get_busy_ps():
     cmd = "kubectl get pods"
