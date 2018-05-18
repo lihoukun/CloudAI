@@ -8,16 +8,16 @@
         {{ form.csrf_token }}
 
         <p>
-            {{ form.num_gpu.label }}
-            {{ form.num_gpu() }}
-            {% for error in form.num_gpu.errors %}
+            {{ form.num_worker.label }}
+            {{ form.num_worker() }}
+            {% for error in form.num_worker.errors %}
             <span style="color: red;">[{{ error }}]</span>
             {% endfor %}
         </p>
         <p>
-            {{ form.num_cpu.label }}
-            {{ form.num_cpu() }}
-            {% for error in form.num_cpu.errors %}
+            {{ form.num_ps.label }}
+            {{ form.num_ps() }}
+            {% for error in form.num_ps.errors %}
             <span style="color: red;">[{{ error }}]</span>
             {% endfor %}
         </p>
