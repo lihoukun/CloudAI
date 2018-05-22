@@ -6,7 +6,7 @@ from flask import render_template, render_template_string, flash, redirect, requ
 from wtforms.validators import NumberRange
 
 from forms import TrainingsNewForm, KubecmdForm, EvalForm, StopForm, ShowForm, ModelsNewForm, ModelEditForm
-from db_parse import get_models, new_model, update_model, get_trainings, new_training, get_tb_training, update_tb_training
+from db_parse import get_models, new_model, update_model, get_trainings, new_training, get_tb_training, update_tb_training, update_training
 from kube_parse import get_total_nodes, get_gpu_per_node
 from subprocess import check_output
 import re
@@ -112,6 +112,7 @@ def training(label=None, desc = [], log = []):
         try:
             cmd = 'kubectl delete -f {}/train/{}/records/train.yaml'.format(os.environ['GLUSTER_HOST'], label)
             os.system(cmd)
+            update_training(label, 'RUNNING')
             flash('Training Label {} scheduled to stop'.format(label))
         except:
             flash('Failed to stop training label {}'.format(label))
