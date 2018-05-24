@@ -1,5 +1,5 @@
 # net disk related
-export SHARED_HOST = "/nfs/nvme"
+export SHARED_HOST="/nfs/nvme"
 export HOSTPATH_ENABLE="1"
 export HOSTPATH_HOST="/nfs"
 export HOSTPATH_CONTAINER="/nfs/hostpath"
