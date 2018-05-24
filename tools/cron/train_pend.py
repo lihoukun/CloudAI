@@ -16,7 +16,7 @@ def main():
         if num_gpu > avail_nodes:
             return 0
 
-        cfg_file = '/nfs/gdv/train/{}/records/train.yaml'.format(label)
+        cfg_file = '/nfs/nvme/train/{}/records/train.yaml'.format(label)
         if os.path.isfile(cfg_file):
             cmd = 'kubectl apply -f {}'.format(cfg_file)
             os.system(cmd)

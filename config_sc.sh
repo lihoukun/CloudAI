@@ -1,10 +1,10 @@
 # net disk related
-export NAS_MODE="GLUSTER"
+export SHARED_HOST = "/nfs/nvme"
 export HOSTPATH_ENABLE="1"
 export HOSTPATH_HOST="/nfs"
 export HOSTPATH_CONTAINER="/nfs/hostpath"
 export HOSTPATH_GB="1000"
-export GLUSTER_ENABLE="1"
+export GLUSTER_ENABLE="0"
 export GLUSTER_NAME="gdistvol"
 export GLUSTER_IP="2.2.2.1,2.2.2.2,2.2.2.3,2.2.2.4"
 export GLUSTER_HOST="/nfs/gdv"

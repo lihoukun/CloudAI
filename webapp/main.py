@@ -44,7 +44,7 @@ def trainings_new():
         else:
             signature = datetime.datetime.now().strftime("%y%m%d%H%M%S")
             model = form.model_name.data
-            train_dir = '{}/train/{}_{}'.format(os.environ['GLUSTER_HOST'], model, signature)
+            train_dir = '{}/train/{}_{}'.format(os.environ['SHARED_HOST'], model, signature)
 
         record_dir = '{}/records'.format(train_dir)
         if os.path.isdir(record_dir):
@@ -110,7 +110,7 @@ def training(label=None, desc = [], log = []):
     forms = StopForm(prefix='forms')
     if forms.validate_on_submit():
         try:
-            cmd = 'kubectl delete -f {}/train/{}/records/train.yaml'.format(os.environ['GLUSTER_HOST'], label)
+            cmd = 'kubectl delete -f {}/train/{}/records/train.yaml'.format(os.environ['SHARED_HOST'], label)
             os.system(cmd)
             update_training(label, 'RUNNING')
             flash('Training Label {} scheduled to stop'.format(label))

@@ -19,7 +19,7 @@ def main():
         cmd = 'kubectl get pods -l model={},signature=s{}'.format(model, signature)
         output = check_output(cmd.split()).decode('ascii')
         if output:
-            cfg_file = '/nfs/gdv/train/{}_{}/records/train.yaml'.format(model, signature)
+            cfg_file = '/nfs/nvme/train/{}_{}/records/train.yaml'.format(model, signature)
             if os.path.isfile(cfg_file):
                 cmd = 'kubectl delete -f {}'.format(cfg_file)
                 os.system(cmd)

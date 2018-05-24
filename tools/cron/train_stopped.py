@@ -17,7 +17,7 @@ def main():
     c.execute("SELECT label from trainings where status='STOPPED' order by stop_at asc limit {}".format(delete_num))
     for res in c.fetchall():
         label, = res
-        train_dir = '/nfs/gdv/train/{}'.format(label)
+        train_dir = '/nfs/nvme/train/{}'.format(label)
         if os.path.isdir(train_dir):
             os.system('rm -rf {}'.format(train_dir))
         if os.path.isdir(train_dir):

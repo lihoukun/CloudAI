@@ -1,5 +1,5 @@
 # net disk related
-NAS_MODE: "GLUSTER"
+SHARED_HOST: "/mnt/gnfs"
 HOSTPATH_ENABLE: "1"
 HOSTPATH_HOST: "/mnt/gnfs"
 HOSTPATH_CONTAINER: "/mnt/gnfs"
