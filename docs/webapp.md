@@ -11,12 +11,17 @@ sudo python3 -m pip install flask flask-wtf pyyaml gunicorn
 ```
 
 # 1. download from github
-`git clone https://github.com/lihoukun/CloudAI.git`
+```
+cd ~
+mkdir workspace
+cd workspace
+git clone https://github.com/lihoukun/CloudAI.git
+```
 
 # 2. deploy the system
 ```
-# write per data center config .sh
-source config_<DATA_CENTER>.sh
+vi config_bj.sh # and update wherever neccessary
+source config_bj.sh
 
 # deploy all 
 ./bin/exaai.sh all
@@ -33,33 +38,33 @@ source config_<DATA_CENTER>.sh
 # write ngrok yaml fiel, in US, the file at ~/.ngrok2/ngrok.yml, and the content is below
 tunnels:
   ui:
-    addr: ibip91:80
+    addr: cnumf01:80
     proto: http
-    hostname: exaai.ngrok.io
+    hostname: exaai.ap.ngrok.io
     auth: "exaai:exaai"
   notebook:
-    addr: ibip91:30088
+    addr: cnumf01:30088
     proto: http
-    hostname: notebook.exaai.ngrok.io
+    hostname: notebook.exaai.ap.ngrok.io
     auth: "exaai:exaai"
   tensorboard:
-    addr: ibip91:30060
+    addr: cnumf01:30060
     proto: http
-    hostname: tensorboard.exaai.ngrok.io
+    hostname: tensorboard.exaai.ap.ngrok.io
     auth: "exaai:exaai"
   nginx:
-    addr: ibip91:30080
+    addr: cnumf01:30080
     proto: http
-    hostname: nginx.exaai.ngrok.io
+    hostname: nginx.exaai.ap.ngrok.io
   kubeboard:
-    addr: ibip91:8001
+    addr: cnumf01:8001
     proto: http
-    hostname: kubeboard.exaai.ngrok.io
+    hostname: kubeboard.exaai.ap.ngrok.io
     auth: "exaai:exaai"
 
 # start ngrok for http
 ngrok start --all
 ```
 
-# 4. open the brower for 'hosname' defined in under 'ui' in ngrok yaml
+# 4. open the browser and visit 'exaai.ap.ngrok.io'
 
