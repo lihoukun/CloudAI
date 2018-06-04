@@ -70,3 +70,6 @@ def get_busy_ps():
            busy_cpu += 1
     return busy_cpu
 
+if __name__ == '__main__':
+    nodes = get_total_nodes()
+    print(nodes)
