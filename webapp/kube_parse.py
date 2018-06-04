@@ -28,10 +28,8 @@ def get_total_nodes():
     cmd = "kubectl get nodes"
     try:
         res = check_output(cmd.split()).decode('ascii').split('\n')
-        return len(res) - 3
     except:
         return 0
-
 
     total_nodes = 0
     for line in res:
