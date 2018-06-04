@@ -1,6 +1,17 @@
 from subprocess import check_output
 import re
 
+def is_taint(node):
+    cmd = 'kubectl describe node {}'.format(node)
+    try:
+        res = check_output(cmd.split()).decode('ascii')
+    except:
+        return 0
+    if re.search('NoSchedule', res):
+        return 0
+    else:
+        return 1
+
 def get_busy_worker():
     cmd = "kubectl get pods"
     try:
@@ -20,6 +31,19 @@ def get_total_nodes():
         return len(res) - 3
     except:
         return 0
+
+
+    total_nodes = 0
+    for line in res:
+        m = re.search('(\S+)\s+Ready\s+(\S+)', line)
+        if m:
+            if m.group(2) == 'master':
+                if is_taint(m.group(1)):
+                    total_nodes += 1
+            else:
+                total_nodes += 1
+    return total_nodes
+
 
 def get_gpu_per_node():
     cmd = "kubectl describe nodes"
