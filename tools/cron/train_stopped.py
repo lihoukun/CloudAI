@@ -2,6 +2,7 @@ from utils import send_mail, conn_db
 
 import datetime
 import os
+import sys
 
 
 def main():

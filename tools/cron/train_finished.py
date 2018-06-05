@@ -3,6 +3,7 @@ from utils import send_mail, conn_db
 import datetime
 import re
 import os
+import sys
 from subprocess import check_output
 
 def main():
