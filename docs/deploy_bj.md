@@ -1,6 +1,6 @@
 This documents the steps to set up or tear down k8s cluster.
 # 0. Prepare Nodes (One time only)
-# 0.1 Prepare images from google
+## 0.1 Prepare images from google
 ```
 docker pull exaai/kube-proxy-amd64:v1.10.1
 docker pull exaai/kube-scheduler-amd64:v1.10.1
