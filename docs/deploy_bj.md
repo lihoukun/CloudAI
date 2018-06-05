@@ -1,5 +1,6 @@
 This documents the steps to set up or tear down k8s cluster.
-# 0. (Once Per Node Only) Prepare images from google
+# 0. Prepare Nodes (One time only)
+## 0.1 Prepare images from google
 ```
 docker pull exaai/kube-proxy-amd64:v1.10.1
 docker pull exaai/kube-scheduler-amd64:v1.10.1
@@ -24,17 +25,19 @@ docker tag exaai/k8s-dns-kube-dns-amd64:1.14.8 k8s.gcr.io/k8s-dns-kube-dns-amd64
 docker tag exaai/pause-amd64:3.1 k8s.gcr.io/pause-amd64:3.1
 
 ```
-
-# 1. Create Cluster from Scratch
-## 1.1 Setup k8s network
+## 0.2 Prepare for k8s
 ```
 # on all nodes, run
 sudo sysctl net.bridge.bridge-nf-call-iptables=1
 sudo swapoff -a
-# make above permanent even after reboot
-# open /etc/fstab, comment line with swap
+# make above permanent
+sudo vi /etc/fstab #comment out line with swap
+sudo vi /etc/sysctl.conf # add new line: net.bridge.bridge-nf-call-iptables=1
+```
 
-
+# 1. Create Cluster from Scratch
+## 1.1 Setup k8s network
+```
 # Run below steps on the master node
 sudo kubeadm init --pod-network-cidr=10.244.0.0/16 --kubernetes-version=v1.10.1
 
