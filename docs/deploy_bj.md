@@ -26,16 +26,18 @@ docker tag exaai/pause-amd64:3.1 k8s.gcr.io/pause-amd64:3.1
 ```
 
 # 1. Create Cluster from Scratch
-## 1.1 Setup k8s network
+## 1.0 Prepare nodes (one time only)
 ```
 # on all nodes, run
 sudo sysctl net.bridge.bridge-nf-call-iptables=1
 sudo swapoff -a
-# make above permanent even after reboot
-sudo vi /etc/fstab #comment line with swap
+# make above permanent
+sudo vi /etc/fstab #comment out line with swap
 sudo vi /etc/sysctl.conf # add new line: net.bridge.bridge-nf-call-iptables=1
+```
 
-
+## 1.1 Setup k8s network
+```
 # Run below steps on the master node
 sudo kubeadm init --pod-network-cidr=10.244.0.0/16 --kubernetes-version=v1.10.1
 
