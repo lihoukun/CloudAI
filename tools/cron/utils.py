@@ -34,7 +34,7 @@ def is_taint(node):
         return 0
     else:
         return 1
-    
+
 def get_total_nodes():
     cmd = "kubectl get nodes"
     try:

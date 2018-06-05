@@ -3,13 +3,13 @@ import os
 import yaml
 from subprocess import check_output
 
-from deploy.k8s import deploy_pv, deploy_kubeboard
+from deploy.k8s import deploy_pv
 from deploy.flask import deploy_web
-from deploy.docker import deploy_jupyter, deploy_nginx
+from deploy.docker import deploy_jupyter
 
 def parse_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument('target', help='choose a flow', choices=['pv', 'web', 'jupyter', 'nginx', 'kubeboard', 'all', 'info'])
+    parser.add_argument('target', help='choose a flow', choices=['pv', 'web', 'jupyter', 'all', 'info'])
     args = parser.parse_args()
     return args
 
@@ -31,9 +31,7 @@ def list_info(config):
 
 def deploy_all():
     deploy_one('pv')
-    deploy_one('kubeboard')
     deploy_one('jupyter')
-    deploy_one('nginx')
     deploy_one('web')
 
 def deploy_one(target):
@@ -43,10 +41,6 @@ def deploy_one(target):
         deploy_web()
     elif target == 'jupyter':
         deploy_jupyter()
-    elif target == 'nginx':
-        deploy_nginx()
-    elif target == 'kubeboard':
-        deploy_kubeboard()
 
 def check_k8s():
     cmd = "kubectl describe nodes"

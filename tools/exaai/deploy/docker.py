@@ -10,10 +10,3 @@ def deploy_jupyter():
     print(cmd)
     os.system(cmd)
 
-def deploy_nginx():
-    os.system("docker container kill exaai-nginx")
-    os.system("docker container rm exaai-nginx")
-    cmd = "docker run --name exaai-nginx -v {0}:/data -p {1}:80 -d exaai/nginx".format(os.environ.get('SHARED_HOST'), os.environ.get('NGINX_PORT'))
-    print(cmd)
-    os.system(cmd)
-

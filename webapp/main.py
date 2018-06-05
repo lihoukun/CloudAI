@@ -176,32 +176,6 @@ def eval():
         return redirect(url_for('eval'))
     return render_template('eval.html', form=form, current=current)
 
-@app.route('/monitor/', methods=('GET', 'POST'))
-def monitor():
-    token = None
-    command = 'kubectl -n kube-system get secret'
-    try:
-        results = check_output(command.split()).decode('ascii').split('\n')
-    except:
-        return render_template('monitor.html', token = token)
-
-    for result in results:
-        if not result: continue
-        secret = result.split()[0]
-        if re.match('admin-user', secret):
-            command = 'kubectl -n kube-system describe secret {}'.format(secret)
-            try:
-                output = check_output(command.split()).decode('ascii').split('\n')
-                for line in output:
-                    if re.match('token:', line):
-                        token = line
-                        break
-            except:
-                token = None
-            break
-
-    return render_template('monitor.html', token = token)
-
 @app.route('/serve/')
 def serve():
     return  render_template('serve.html')

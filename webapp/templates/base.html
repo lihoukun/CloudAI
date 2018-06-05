@@ -41,24 +41,12 @@
         </div>
       </li>
 
-      <li class="nav-item dropdown active">
-        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-          Kubernetes
-        </a>
-        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-          <a class="dropdown-item" href="{{ url_for('monitor') }}">DashBoard</a>
-          <a class="dropdown-item" href="{{ url_for('kubecmd') }}">Cmdline</a>
-        </div>
+      <li class="nav-item active">
+        <a class="nav-link" role="button" aria-haspopup="true" aria-expanded="false" href="{{ url_for('kubecmd') }}">Kubernetes</a>
       </li>
 
-      <li class="nav-item dropdown active">
-        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-          Tools
-        </a>
-        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-          <a class="dropdown-item" href="{{ url_for('notebook') }}">Jupyter Notebook</a>
-          <a class="dropdown-item" href="{{ url_for('nginx') }}">Nginx</a>
-        </div>
+      <li class="nav-item active">
+        <a class="nav-link" role="button" aria-haspopup="true" aria-expanded="false" href="{{ url_for('notebook') }}">Jupyter</a>
       </li>
     </ul>
     <a class="navbar-brand" href="http://www.exaai.io">About</a>

@@ -1,19 +1,4 @@
 import os
-import re
-from subprocess import Popen, check_output
-
-def deploy_kubeboard():
-    cmd = "ps -u ai u"
-    res = check_output(cmd.split()).decode('ascii').split('\n')
-    for line in res:
-        if re.search('kuby proxy', line):
-            pid = line.split()[1]
-            os.system('kill {}'.format(pid))
-            print('Kill kube dashboard process with PID {}'.format(pid))
-    os.system("kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/master/src/deploy/recommended/kubernetes-dashboard.yaml")
-    yaml_file = os.path.dirname(os.path.realpath(__file__)) + '/../../cfg_files/kubeboard_admin.yaml'
-    os.system("kubectl apply -f {}".format(yaml_file))
-    Popen(['kubectl', 'proxy'])
 
 def deploy_pv():
     k8s_yaml = gen_pv_yaml()

@@ -28,9 +28,8 @@ source config_bj.sh
 
 # or deploy what is needed
 ./bin/exaai.sh pv
-./bin/exaai.sh kubeboard
 ./bin/exaai.sh jupyter
-./bin/exaai.sh flask
+./bin/exaai.sh web
 ```
 
 # 3. ngrok for http
@@ -51,15 +50,6 @@ tunnels:
     addr: cnumf01:30060
     proto: http
     hostname: tensorboard.exaai.ap.ngrok.io
-    auth: "exaai:exaai"
-  nginx:
-    addr: cnumf01:30080
-    proto: http
-    hostname: nginx.exaai.ap.ngrok.io
-  kubeboard:
-    addr: cnumf01:8001
-    proto: http
-    hostname: kubeboard.exaai.ap.ngrok.io
     auth: "exaai:exaai"
 
 # start ngrok for http
