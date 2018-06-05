@@ -2,8 +2,10 @@ from utils import send_mail, conn_db, get_idle_nodes
 
 import datetime
 import os
+import sys
 
 def main():
+    train_base = sys.argv[1]
     cur_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     conn = conn_db()
     c = conn.cursor()
@@ -16,7 +18,7 @@ def main():
         if num_gpu > avail_nodes:
             return 0
 
-        cfg_file = '/nfs/nvme/train/{}/records/train.yaml'.format(label)
+        cfg_file = '{}/train/{}/records/train.yaml'.format(train_base, label)
         if os.path.isfile(cfg_file):
             cmd = 'kubectl apply -f {}'.format(cfg_file)
             os.system(cmd)

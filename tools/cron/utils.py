@@ -24,12 +24,28 @@ def conn_db():
     conn = sqlite3.connect(db_file)
     return conn
 
-def get_idle_nodes():
+
+def get_total_nodes():
     cmd = "kubectl get nodes"
     try:
         res = check_output(cmd.split()).decode('ascii').split('\n')
-        total_nodes = len(res) - 3
     except:
+        return 0
+
+    total_nodes = 0
+    for line in res:
+        m = re.search('(\S+)\s+Ready\s+(\S+)', line)
+        if m:
+            if m.group(2) == 'master':
+                if is_taint(m.group(1)):
+                    total_nodes += 1
+            else:
+                total_nodes += 1
+    return total_nodes
+
+def get_idle_nodes():
+    total_nodes = get_total_nodes()
+    if total_nodes == 0:
         return 0
 
     cmd = "kubectl get pods"
