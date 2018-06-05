@@ -24,7 +24,17 @@ def conn_db():
     conn = sqlite3.connect(db_file)
     return conn
 
-
+def is_taint(node):
+    cmd = 'kubectl describe node {}'.format(node)
+    try:
+        res = check_output(cmd.split()).decode('ascii')
+    except:
+        return 0
+    if re.search('NoSchedule', res):
+        return 0
+    else:
+        return 1
+    
 def get_total_nodes():
     cmd = "kubectl get nodes"
     try:
