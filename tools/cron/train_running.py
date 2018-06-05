@@ -36,7 +36,7 @@ def main():
         if status  != 'RUNNING':
             sub = 'label {} change status to {}'.format(label, status)
             msg = 'as title'
-            send_mail(sub, msg)
+            #send_mail(sub, msg)
             c.execute("UPDATE trainings set status='{}', stop_at = '{}' where label = '{}'".format(status, cur_time, label))
 
     conn.commit()

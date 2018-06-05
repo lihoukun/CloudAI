@@ -27,7 +27,7 @@ def main():
             c.execute("UPDATE trainings set status='STOPPED', start_at = '{0}', stop_at = '{0}' where label = '{1}'".format(cur_time, label))
             sub = 'cfg file not found'
             msg = 'No cfg file at {}, deleted'.format(cfg_file)
-            send_mail(sub, msg)
+            #send_mail(sub, msg)
 
     conn.commit()
     c.close()

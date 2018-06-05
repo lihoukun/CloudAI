@@ -24,7 +24,7 @@ def main():
         if os.path.isdir(train_dir):
             sub = 'train dir {} cannot be deleted'.format(train_dir)
             msg = 'as title'
-            send_mail(sub, msg)
+            #send_mail(sub, msg)
         else:
             c.execute("DELETE from trainings where label = '{}'".format(label))
 

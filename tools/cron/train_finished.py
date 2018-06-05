@@ -27,7 +27,7 @@ def main():
             else:
                 sub = 'cfg file not found'
                 msg = 'No cfg file at {}, please manual delete'.format(cfg_file)
-                send_mail(sub, msg)
+                #send_mail(sub, msg)
         else:
             status = 'STOPPED'
             c.execute("UPDATE trainings set status='{}' where label = '{}'".format(status, label))
