@@ -5,6 +5,7 @@ import os
 
 
 def main():
+    train_base = sys.argv[1]
     cur_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     conn = conn_db()
     c = conn.cursor()
@@ -17,7 +18,7 @@ def main():
     c.execute("SELECT label from trainings where status='STOPPED' order by stop_at asc limit {}".format(delete_num))
     for res in c.fetchall():
         label, = res
-        train_dir = '/nfs/nvme/train/{}'.format(label)
+        train_dir = '{}/train/{}'.format(train_base, label)
         if os.path.isdir(train_dir):
             os.system('rm -rf {}'.format(train_dir))
         if os.path.isdir(train_dir):

@@ -6,6 +6,7 @@ import os
 from subprocess import check_output
 
 def main():
+    train_base = sys.argv[1]
     cur_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     conn = conn_db()
     c = conn.cursor()
@@ -19,7 +20,7 @@ def main():
         cmd = 'kubectl get pods -l model={},signature=s{}'.format(model, signature)
         output = check_output(cmd.split()).decode('ascii')
         if output:
-            cfg_file = '/nfs/nvme/train/{}_{}/records/train.yaml'.format(model, signature)
+            cfg_file = '{}/train/{}_{}/records/train.yaml'.format(train_base, model, signature)
             if os.path.isfile(cfg_file):
                 cmd = 'kubectl delete -f {}'.format(cfg_file)
                 os.system(cmd)
