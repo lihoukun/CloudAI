@@ -33,6 +33,7 @@ sudo sysctl net.bridge.bridge-nf-call-iptables=1
 sudo swapoff -a
 # make above permanent even after reboot
 sudo vi /etc/fstab #comment line with swap
+sudo vi /etc/sysctl.conf # add new line: net.bridge.bridge-nf-call-iptables=1
 
 
 # Run below steps on the master node
