@@ -37,7 +37,7 @@ def start_web():
     check_db()
 
     cwd = os.getcwd()
-    flask_dir = os.path.dirname(os.path.realpath(__file__)) + '/../../../webapp'
+    flask_dir = os.path.dirname(os.path.realpath(__file__)) + '/../../webapp'
     os.chdir(flask_dir)
     cmd = 'gunicorn main:app -b 0.0.0.0:{} -w 4'.format(os.environ.get('FLASK_PORT'))
     Popen(cmd.split())
