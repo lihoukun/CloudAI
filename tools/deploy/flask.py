@@ -11,13 +11,20 @@ def init_db(db_file):
     conn.commit()
     conn.close()
 
-def deploy_web():
+def check_update():
+    migration_base = os.path.dirname(os.path.realpath(__file__)) + '/migrations'
+    for script in reversed(os.listdir(migration_base)):
+        print(script)
+
+def check_db():
     db_file = os.environ.get('FLASK_DB')
     if not os.path.isfile(db_file):
         print("Database is not setup, setting up now")
         print(db_file)
         init_db(db_file)
+    check_update()
 
+def stop_web():
     cmd = "ps -u ai u"
     res = check_output(cmd.split()).decode('ascii').split('\n')
     for line in res:
@@ -25,6 +32,9 @@ def deploy_web():
             pid = line.split()[1]
             os.system('kill {}'.format(pid))
             print('Kill flask process with PID {}'.format(pid))
+
+def start_web():
+    check_db()
 
     cwd = os.getcwd()
     flask_dir = os.path.dirname(os.path.realpath(__file__)) + '/../../../webapp'

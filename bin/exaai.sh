@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-if [ $# -ne 1 ]; then
-    echo "Need provide one argument"
+if [ $# -ne 2 ]; then
+    echo "Need provide two argument"
     exit 1
 fi
-python3 $(dirname "$0")/../tools/exaai/exaai.py $1
+python3 $(dirname "$0")/../tools/deploy/main.py $1 $2

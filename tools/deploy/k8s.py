@@ -1,7 +1,23 @@
 import os
+import re
 
-def deploy_pv():
-    k8s_yaml = gen_pv_yaml()
+def no_pods():
+    cmd = "kubectl get pods"
+    try:
+        res = check_output(cmd.split()).decode('ascii')
+    except:
+        print('fail to check pods status')
+        return False
+    if re.search('No resources found', res):
+        return True
+    else:
+        print('cannot stop pv when pods are running')
+        return False
+
+def stop_pv():
+    if not no_pods():
+        exit(1)
+
     record_dir = os.path.dirname(os.path.realpath(__file__)) + '/records'
     if not os.path.isdir(record_dir):
         os.makedirs(record_dir, 0o775)
@@ -11,8 +27,21 @@ def deploy_pv():
         print(cmd)
         os.system(cmd)
 
+def start_pv():
+    record_dir = os.path.dirname(os.path.realpath(__file__)) + '/records'
+    if not os.path.isdir(record_dir):
+        os.makedirs(record_dir, 0o775)
+
+    k8s_file = '{}/k8s_pv.yaml'.format(record_dir)
+    if os.path.isfile(k8s_file):
+        cmd = 'kubectl delete -f {}'.format(k8s_file)
+        print(cmd)
+        os.system(cmd)
+
+    k8s_yaml = gen_pv_yaml()
     with open(k8s_file, 'w+') as f:
         f.write(k8s_yaml)
+
     cmd = 'kubectl apply -f {}'.format(k8s_file)
     print(cmd)
     os.system(cmd)
