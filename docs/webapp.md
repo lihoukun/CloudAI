@@ -24,12 +24,12 @@ vi config_bj.sh # and update wherever neccessary
 source config_bj.sh
 
 # deploy all 
-./bin/exaai.sh all
+./bin/exaai.sh restart all
 
 # or deploy what is needed
-./bin/exaai.sh pv
-./bin/exaai.sh jupyter
-./bin/exaai.sh web
+./bin/exaai.sh restart pv
+./bin/exaai.sh restart jupyter
+./bin/exaai.sh restart web
 ```
 
 # 3. ngrok for http
