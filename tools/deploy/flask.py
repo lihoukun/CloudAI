@@ -13,8 +13,25 @@ def init_db(db_file):
 
 def check_update():
     migration_base = os.path.dirname(os.path.realpath(__file__)) + '/migrations'
+    start_script = None
+
     for script in reversed(os.listdir(migration_base)):
-        print(script)
+        if not re.search('.py$', script):
+            continue
+        ret = os.system('python3 {}/{} check'.format(migration_base, script))
+        if ret == 0:
+            break
+        else:
+            start_script = script
+
+    start = False
+    for script in os.listdir(migration_base):
+        if not re.search('.py$', script):
+            continue
+        if script == start_script:
+            start = True
+        if start:
+            os.system('python3 {}/{} apply'.format(migration_base, script))
 
 def check_db():
     db_file = os.environ.get('FLASK_DB')
