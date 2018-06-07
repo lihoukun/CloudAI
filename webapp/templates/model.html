@@ -27,8 +27,15 @@
             {% endfor %}
         </p>
         <p>
+            {{ form.image.label }}
+            {{ form.image(value=data[2], cols=60) }}
+            {% for error in form.image.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+        <p>
             {{ form.desc.label }}
-            {{ form.desc(value=data[2], cols=60) }}
+            {{ form.desc(value=data[3], cols=60) }}
             {% for error in form.desc.errors %}
             <span style="color: red;">[{{ error }}]</span>
             {% endfor %}

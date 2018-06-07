@@ -41,14 +41,12 @@ def apply_update():
     cmd = "update models set image = 'exaai/tf-gpu' where image is NULL"
     print(cmd)
     c.execute(cmd)
-
     cmd = "alter table trainings add column mail_to string"
     print(cmd)
     c.execute(cmd)
 
     conn.commit()
     conn.close()
-
     return ret
 
 def main():

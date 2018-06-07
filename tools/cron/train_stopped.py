@@ -16,16 +16,16 @@ def main():
     delete_num  = len(results) - 100
     if delete_num <= 0: return
 
-    c.execute("SELECT label from trainings where status='STOPPED' order by stop_at asc limit {}".format(delete_num))
+    c.execute("SELECT label, mail_to from trainings where status='STOPPED' order by stop_at asc limit {}".format(delete_num))
     for res in c.fetchall():
-        label, = res
+        label, mail_to = res
         train_dir = '{}/train/{}'.format(train_base, label)
         if os.path.isdir(train_dir):
             os.system('rm -rf {}'.format(train_dir))
         if os.path.isdir(train_dir):
             sub = 'train dir {} cannot be deleted'.format(train_dir)
             msg = 'as title'
-            #send_mail(sub, msg)
+            send_mail(sub, mail_to, msg)
         else:
             c.execute("DELETE from trainings where label = '{}'".format(label))
 

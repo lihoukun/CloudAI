@@ -31,7 +31,9 @@ def check_update():
         if script == start_script:
             start = True
         if start:
-            os.system('python3 {}/{} apply'.format(migration_base, script))
+            cmd = 'python3 {}/{} apply'.format(migration_base, script)
+            print(cmd)
+            os.system(cmd)
 
 def check_db():
     db_file = os.environ.get('FLASK_DB')

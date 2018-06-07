@@ -13,6 +13,7 @@ class TrainingsNewForm(FlaskForm):
     num_epoch = FloatField('Number of Epoch: ')
     train_option = RadioField('Train Option', choices = [('legacy', 'Continue from Existing Training'), ('new', 'Start a New Training')], default='new')
     train_label = SelectField('Training Label: ')
+    mail_to = TextField('Send Mail: ')
     submit = SubmitField('Train')
 
 class ModelsNewForm(FlaskForm):
@@ -27,12 +28,14 @@ class ModelsNewForm(FlaskForm):
 
     model_name = TextField('Model Name: ', validators=[name_uniq_check])
     script =  TextField('Bash Script:', validators = [DataRequired()], widget=TextArea())
+    image =  TextField('Container Image:', validators = [DataRequired()])
     desc = TextField('Description: ')
     submit = SubmitField('Save')
 
 class ModelEditForm(FlaskForm):
     script =  TextAreaField('Bash Script:')
-    desc = TextField('Description: ')
+    desc = TextField('Description:')
+    image =  TextField('Container Image:')
     submit = SubmitField('Save')
 
 class EvalForm(FlaskForm):

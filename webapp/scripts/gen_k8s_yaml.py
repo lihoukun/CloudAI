@@ -12,6 +12,7 @@ def parse_args():
     parser.add_argument('--epoch', help='choose worker number', type=float)
     parser.add_argument('--record_dir', help='record files path')
     parser.add_argument('--signature', help='signature label')
+    parser.add_argument('--image', help='container image')
     args = parser.parse_args()
     return args
 
@@ -63,7 +64,7 @@ spec:
 """.format(job, id, port, model, signature)
     return k8s_service
 
-def generate_train_job(job, id, port, model, signature, record_dir, gpu_per_node):
+def generate_train_job(job, id, port, model, signature, record_dir, gpu_per_node, image):
     k8s_job = """---
 apiVersion: v1
 kind: Pod
@@ -101,14 +102,14 @@ spec:
     k8s_job += """
   containers:
   - name: tf-training
-    image: exaai/tf-gpu
+    image: {2}
     securityContext:
       privileged: true
     envFrom:
     - configMapRef:
         name: {0}-{1}-configmap
     volumeMounts:
-""".format(model, signature)
+""".format(model, signature, image)
 
     if os.environ.get('NFS_ENABLE') == '1':
         k8s_job += """
@@ -167,7 +168,7 @@ spec:
 """
     return k8s_job
 
-def generate_train_config(model, signature, ps_num, worker_num, epoch, record_dir, gpu_per_node):
+def generate_train_config(model, signature, ps_num, worker_num, epoch, record_dir, gpu_per_node, image):
     req_nodes = {}
     req_nodes['ps'] = 2 if ps_num is None else ps_num
     req_nodes['worker'] = 4 if worker_num is None else worker_num
@@ -178,7 +179,7 @@ def generate_train_config(model, signature, ps_num, worker_num, epoch, record_di
     for job in ['ps', 'worker']:
         for i in range(req_nodes[job]):
             k8s_config += generate_train_service(job, i, port, model, signature)
-            k8s_config += generate_train_job(job, i, port, model, signature, record_dir, gpu_per_node)
+            k8s_config += generate_train_job(job, i, port, model, signature, record_dir, gpu_per_node, image)
 
     return k8s_config
 
@@ -188,7 +189,7 @@ def main():
     signature = args.signature if args.signature else datetime.datetime.now().strftime("%y%m%d%H%M%S")
     epoch = args.epoch if args.epoch else 1.0
     if args.flow == 'train':
-        k8s_config = generate_train_config(args.model, signature, args.ps_num, args.worker_num, epoch, args.record_dir, args.gpu_per_node)
+        k8s_config = generate_train_config(args.model, signature, args.ps_num, args.worker_num, epoch, args.record_dir, args.gpu_per_node, args.image)
     elif args.flow == 'eval':
         k8s_config = generate_eval_config(args.model, signature)
     else:

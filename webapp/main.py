@@ -50,7 +50,7 @@ def trainings_new():
         if os.path.isdir(record_dir):
             shutil.rmtree(record_dir)
 
-        script = get_models(model)[1]
+        name, script, image, _ = get_models(model)
         m = re.search('--train_dir[ |=](\S+)',script)
         if form.train_option.data == 'legacy':
             if m:
@@ -70,14 +70,15 @@ def trainings_new():
         cmd += ' --epoch {}'.format(form.num_epoch.data)
         cmd += ' --record_dir {}'.format(record_dir)
         cmd += ' --signature {}'.format(signature)
+        cmd += ' --image {}'.format(image)
         print(cmd)
         os.system(cmd)
 
         m = re.search('--train_dir[ |=](\S+)', script)
         if m:
-            new_training('{}_{}'.format(model, signature), form.num_worker.data, m.group(1))
+            new_training('{}_{}'.format(model, signature), form.num_worker.data, form.mail_to.data, m.group(1))
         else:
-            new_training('{}_{}'.format(model, signature), form.num_worker.data, None)
+            new_training('{}_{}'.format(model, signature), form.num_worker.data, form.mail_to.data, None)
         return redirect(url_for('trainings', type='active'))
 
     return render_template('trainings_new.html', form=form)
@@ -141,7 +142,7 @@ def training(label=None, desc = [], log = []):
 def models_new():
     form = ModelsNewForm()
     if form.validate_on_submit():
-        new_model(form.model_name.data, form.script.data, form.desc.data)
+        new_model(form.model_name.data, form.script.data, form.image.data, form.desc.data)
         return redirect(url_for('models'))
     return render_template('models_new.html', form=form)
 
@@ -154,7 +155,7 @@ def model(name=None):
     data = get_models(name)
     form = ModelEditForm()
     if form.validate_on_submit():
-        update_model(name, form.script.data, form.desc.data)
+        update_model(name, form.script.data, form.image.data, form.desc.data)
         return redirect(url_for('models'))
 
     return render_template('model.html', data=data, form=form)
@@ -194,10 +195,6 @@ def kubecmd(command = None, output=[]):
 @app.route('/notebook/', methods=('GET', 'POST'))
 def notebook():
     return redirect("http://notebook.{}".format(os.environ['NGROK_DOMAIN']))
-
-@app.route('/nginx/', methods=('GET', 'POST'))
-def nginx():
-    return redirect("http://nginx.{}".format(os.environ['NGROK_DOMAIN']))
 
 @app.route('/tensorboard/', methods=('GET', 'POST'))
 def tensorboard():

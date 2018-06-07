@@ -11,6 +11,7 @@
   <thead>
     <tr>
       <th scope="col">Model</th>
+      <th scope="col">Image</th>
       <th scope="col">Description</th>
     </tr>
   </thead>
@@ -18,6 +19,7 @@
     {% for row in data %}
     <tr>
       <td><a href="{{ url_for('model', name=row[0]) }}">{{ row[0] }}</a></td>
+      <td>{{ row[1] }}</td>
       <td>{{ row[2] }}</td>
     </tr>
     {% endfor %}

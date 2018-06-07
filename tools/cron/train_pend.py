@@ -10,10 +10,10 @@ def main():
     conn = conn_db()
     c = conn.cursor()
     c.execute("update trainings set submit_at = '{}' where submit_at is NULL".format(cur_time))
-    c.execute("SELECT label, num_gpu from trainings where status='PEND' order by submit_at asc limit 1")
+    c.execute("SELECT label, num_gpu, mail_to from trainings where status='PEND' order by submit_at asc limit 1")
     res = c.fetchone()
     if res:
-        label, num_gpu = res
+        label, num_gpu, mail_to = res
         avail_nodes = get_idle_nodes()
         if num_gpu > avail_nodes:
             return 0
@@ -27,7 +27,7 @@ def main():
             c.execute("UPDATE trainings set status='STOPPED', start_at = '{0}', stop_at = '{0}' where label = '{1}'".format(cur_time, label))
             sub = 'cfg file not found'
             msg = 'No cfg file at {}, deleted'.format(cfg_file)
-            #send_mail(sub, msg)
+            send_mail(sub, mail_to, msg)
 
     conn.commit()
     c.close()

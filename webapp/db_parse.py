@@ -12,43 +12,44 @@ def get_models(name = None):
     c = conn.cursor()
 
     if name:
-        c.execute("SELECT name, script, description FROM models WHERE name = '{}'".format(name))
-        name, script, desc = c.fetchone()
+        c.execute("SELECT name, script, image, description FROM models WHERE name = '{}'".format(name))
+        name, script, image, desc = c.fetchone()
         script = script.replace("''", "'").replace('\r\n', '\n')
         models.append(name)
         models.append(script)
+        models.append(image)
         models.append(desc)
     else:
-        c.execute("SELECT name, script, description FROM models ORDER BY name")
+        c.execute("SELECT name, script, image, description FROM models ORDER BY name")
         for res in c.fetchall():
-            name, script, desc =  res
+            name, script, image, desc =  res
             script = script.replace("''", "'").replace('\r\n', '\n')
-            models.append([name, script, desc])
+            models.append([name, script, image, desc])
     conn.close()
     return models
 
-def new_model(name, script, desc):
+def new_model(name, script, image, desc):
     conn = get_conn()
     c = conn.cursor()
     script = script.replace("'", "''")
     if desc:
-        cmd = "INSERT INTO models (name, script, description) VALUES ('{}', '{}', '{}')".format(name, script, desc)
+        cmd = "INSERT INTO models (name, script, image, description) VALUES ('{}', '{}', '{}', '{}')".format(name, script, image, desc)
     else:
-        cmd = "INSERT INTO models (name, script) VALUES ('{}', '{}')".format(name, script)
+        cmd = "INSERT INTO models (name, script, image) VALUES ('{}', '{}', '{}')".format(name, script, image)
 
     print(cmd)
     c.execute(cmd)
     conn.commit()
     conn.close()
 
-def update_model(name, script, desc):
+def update_model(name, script, image, desc):
     conn = get_conn()
     c = conn.cursor()
     script = script.replace("'", "''")
     if desc:
-        cmd = "UPDATE models SET script = '{}', description = '{}' WHERE name = '{}'".format(script, desc, name)
+        cmd = "UPDATE models SET script = '{}', image = '{}', description = '{}' WHERE name = '{}'".format(script, image, desc, name)
     else:
-        cmd = "UPDATE models SET script = '{}' WHERE name = '{}'".format(script, name)
+        cmd = "UPDATE models SET script = '{}', image = '{}'  WHERE name = '{}'".format(script, image, name)
     print(cmd)
     c.execute(cmd)
     conn.commit()
@@ -91,7 +92,7 @@ def update_tb_training(log_dir):
     conn.commit()
     conn.close()
 
-def new_training(label,num_gpu, train_dir):
+def new_training(label,num_gpu, mail_to, train_dir):
     cur_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     conn = get_conn()
     c = conn.cursor()
@@ -99,11 +100,11 @@ def new_training(label,num_gpu, train_dir):
     c.execute(cmd)
     res = c.fetchone()
     if res:
-        cmd = "UPDATE trainings set status = 'PEND', num_gpu = {} submit_at = '{}', ".format(cur_time, num_gpu)
+        cmd = "UPDATE trainings set status = 'PEND', num_gpu = {}, submit_at = '{}', ".format(cur_time, num_gpu)
         if train_dir:
             cmd += " train_dir = '{}' ".format(train_dir)
         else:
-            cmd += " train_dir = NULL ".format(train_dir)
+            cmd += " train_dir = NULL "
         cmd += " where label = '{}'".format(label)
         c.execute(cmd)
     else:
@@ -112,6 +113,9 @@ def new_training(label,num_gpu, train_dir):
         if train_dir:
             cmd = "UPDATE trainings set train_dir = '{}' WHERE label = '{}'".format(train_dir, label)
             c.execute(cmd)
+    if mail_to:
+        cmd = "UPDATE trainings set mail_to = '{}' WHERE label = '{}'".format(mail_to, label)
+        c.execute(cmd)
     conn.commit()
     conn.close()
 
