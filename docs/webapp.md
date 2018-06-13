@@ -32,7 +32,17 @@ source config_bj.sh
 ./bin/exaai.sh restart web
 ```
 
-# 3. ngrok for http
+# 3. add cronjobs
+```
+crontab -e # and add following lines, replacing CloudAI workspace and shared netdrive path if needed
+
+* * * * python3 /home/ai/workspace/release/CloudAI/tools/cron/train_pend.py /nfs/nvme
+* * * * 1 python3 /home/ai/workspace/release/CloudAI/tools/cron/train_running.py /nfs/nvme
+*/5 * * * 1 python3 /home/ai/workspace/release/CloudAI/tools/cron/train_finished.py /nfs/nvme
+0 */3 * * * python3 /home/ai/workspace/release/CloudAI/tools/cron/train_stopped.py /nfs/nvme
+```
+
+# 4. ngrok for http
 ```
 # write ngrok yaml fiel, in US, the file at ~/.ngrok2/ngrok.yml, and the content is below
 tunnels:
@@ -56,5 +66,5 @@ tunnels:
 ngrok start --all
 ```
 
-# 4. open the browser and visit 'exaai.ap.ngrok.io'
+# 5. open the browser and visit 'exaai.ap.ngrok.io'
 
