@@ -36,7 +36,7 @@ source config_bj.sh
 ```
 crontab -e # and add following lines, replacing CloudAI workspace and shared netdrive path if needed
 
-* * * * python3 /home/ai/workspace/release/CloudAI/tools/cron/train_pend.py /nfs/nvme
+* * * * * python3 /home/ai/workspace/release/CloudAI/tools/cron/train_pend.py /nfs/nvme
 * * * * * python3 /home/ai/workspace/release/CloudAI/tools/cron/train_running.py /nfs/nvme
 */5 * * * * python3 /home/ai/workspace/release/CloudAI/tools/cron/train_finished.py /nfs/nvme
 0 */3 * * * python3 /home/ai/workspace/release/CloudAI/tools/cron/train_stopped.py /nfs/nvme
