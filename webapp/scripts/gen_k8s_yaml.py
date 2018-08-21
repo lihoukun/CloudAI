@@ -1,6 +1,7 @@
 import argparse
 import os
 import datetime
+import json
 
 def parse_args():
     parser = argparse.ArgumentParser()
@@ -16,16 +17,41 @@ def parse_args():
     args = parser.parse_args()
     return args
 
-def generate_train_configmap(model, signature, req_nodes, port, epoch):
-    ps_hosts, worker_hosts = [], []
-    for i in range(req_nodes['ps']):
+def generate_cluster(model, signature, ps_num, worker_num, port):
+    if ps_num is None:
+        ps_num = 2
+
+    if worker_num is None:
+        worker_num = 2
+        chief_num = 1
+    else:
+        if worker_num >= 1:
+            chief_num = 1
+            worker_num -= 1
+        else:
+            chief_num = 0
+            worker_num = 0
+
+    cluster = {}
+    cluster['chief'] = []
+    cluster['ps'] = []
+    cluster['worker'] = []
+    for i in range(ps_num):
         ps_host = '{}-{}-ps-{}.default.svc.cluster.local:{}'.format(model, signature, i, port)
-        ps_hosts.append(ps_host)
-    ps_hosts_str = ','.join(ps_hosts)
-    for i in range(req_nodes['worker']):
+        cluster['ps'].append((ps_host))
+    for i in range(worker_num):
         worker_host = '{}-{}-worker-{}.default.svc.cluster.local:{}'.format(model, signature, i, port)
-        worker_hosts.append(worker_host)
-    worker_hosts_str = ','.join(worker_hosts)
+        cluster['worker'].append(worker_host)
+    for i in range(chief_num):
+        chief_host = '{}-{}-chief-{}.default.svc.cluster.local:{}'.format(model, signature, i, port)
+        cluster['chief'].append(chief_host)
+
+    return cluster
+
+def generate_train_configmap(model, signature, cluster, epoch):
+    ps_hosts_str = ','.join(cluster['ps'])
+    combined_worker_hosts = cluster['worker'] + cluster['chief']
+    worker_hosts_str = ','.join(combined_worker_hosts)
 
     k8s_configmap = """---
 apiVersion: v1
@@ -64,7 +90,11 @@ spec:
 """.format(job, id, port, model, signature)
     return k8s_service
 
-def generate_train_job(job, id, port, model, signature, record_dir, gpu_per_node, image):
+def generate_train_job(cluster, job, id, port, model, signature, record_dir, gpu_per_node, image):
+    tf_config = {}
+    tf_config['cluster'] = cluster
+    tf_config['task'] = {'type': job, 'index': id}
+
     k8s_job = """---
 apiVersion: v1
 kind: Pod
@@ -140,21 +170,11 @@ spec:
       value: {0}
     - name: TASK_ID
       value: "{1}"
-""".format(job, id, port, record_dir)
+    - name: TF_CONFIG
+      value: "{4}"
+""".format(job, id, port, record_dir, json.dumps(tf_config))
 
-    if job == 'worker':
-        k8s_job += """
-    resources:
-      requests:
-        cpu: "6"
-        memory: 32Gi
-        nvidia.com/gpu: {0}
-      limits:
-        cpu: "8"
-        memory: 48Gi       
-        nvidia.com/gpu: {0}
-""".format(gpu_per_node)
-    else:
+    if job == 'ps':
         k8s_job += """
     - name: CUDA_VISIBLE_DEVICES
       value: " "
@@ -164,20 +184,31 @@ spec:
         memory: 16Gi
       limits:
         cpu: "6"
-        memory: 32Gi       
+        memory: 32Gi
 """
+    else:
+        k8s_job += """
+    resources:
+      requests:
+        cpu: "6"
+        memory: 32Gi
+        nvidia.com/gpu: {0}
+      limits:
+        cpu: "8"
+        memory: 48Gi
+        nvidia.com/gpu: {0}
+""".format(gpu_per_node)
+
     return k8s_job
 
 def generate_train_config(model, signature, ps_num, worker_num, epoch, record_dir, gpu_per_node, image):
-    req_nodes = {}
-    req_nodes['ps'] = 2 if ps_num is None else ps_num
-    req_nodes['worker'] = 4 if worker_num is None else worker_num
     port = 2220
+    cluster = generate_cluster(model, signature, ps_num, worker_num, port)
 
     k8s_config = ''
-    k8s_config += generate_train_configmap(model, signature, req_nodes, port, epoch)
-    for job in ['ps', 'worker']:
-        for i in range(req_nodes[job]):
+    k8s_config += generate_train_configmap(model, signature, cluster, epoch)
+    for job, hosts in cluster.items():
+        for i in range(len(hosts)):
             k8s_config += generate_train_service(job, i, port, model, signature)
             k8s_config += generate_train_job(job, i, port, model, signature, record_dir, gpu_per_node, image)
 
