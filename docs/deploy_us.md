@@ -7,6 +7,7 @@ sudo sysctl net.bridge.bridge-nf-call-iptables=1
 sudo swapoff -a
 
 # Run below steps on the master node
+# reference to https://kubernetes.io/docs/setup/independent/create-cluster-kubeadm/ for future change
 sudo kubeadm init --pod-network-cidr=192.168.0.0/16
 
 mkdir -p $HOME/.kube
