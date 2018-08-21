@@ -5,6 +5,9 @@ This documents the steps to set up or tear down k8s cluster.
 # on all nodes, run
 sudo sysctl net.bridge.bridge-nf-call-iptables=1
 sudo swapoff -a
+# make above permanent
+sudo vi /etc/fstab #comment out line with swap
+sudo vi /etc/sysctl.conf # add new line: net.bridge.bridge-nf-call-iptables=1
 
 # Run below steps on the master node
 # reference to https://kubernetes.io/docs/setup/independent/create-cluster-kubeadm/ for future change
