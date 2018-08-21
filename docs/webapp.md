@@ -44,7 +44,7 @@ crontab -e # and add following lines, replacing CloudAI workspace and shared net
 
 # 4. ngrok for http
 ```
-# write ngrok yaml fiel, in US, the file at ~/.ngrok2/ngrok.yml, and the content is below
+# write ngrok yaml file, the default location at ~/.ngrok2/ngrok.yml, and the content is like below
 tunnels:
   ui:
     addr: cnumf01:80
