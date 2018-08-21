@@ -69,5 +69,7 @@ def get_idle_nodes():
     for line in res:
        if re.search('-worker-', line):
            busy_nodes += 1
+       elif re.search('-chief-', line):
+           busy_nodes += 1
 
     return (total_nodes - busy_nodes)
