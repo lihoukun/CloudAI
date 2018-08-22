@@ -33,18 +33,21 @@ def generate_cluster(model, signature, ps_num, worker_num, port):
             worker_num = 0
 
     cluster = {}
-    cluster['chief'] = []
-    cluster['ps'] = []
-    cluster['worker'] = []
-    for i in range(ps_num):
-        ps_host = '{}-{}-ps-{}.default.svc.cluster.local:{}'.format(model, signature, i, port)
-        cluster['ps'].append((ps_host))
-    for i in range(worker_num):
-        worker_host = '{}-{}-worker-{}.default.svc.cluster.local:{}'.format(model, signature, i, port)
-        cluster['worker'].append(worker_host)
-    for i in range(chief_num):
-        chief_host = '{}-{}-chief-{}.default.svc.cluster.local:{}'.format(model, signature, i, port)
-        cluster['chief'].append(chief_host)
+    if ps_num > 0:
+        cluster['ps'] = []
+        for i in range(ps_num):
+            ps_host = '{}-{}-ps-{}.default.svc.cluster.local:{}'.format(model, signature, i, port)
+            cluster['ps'].append((ps_host))
+    if worker_num > 0:
+        cluster['worker'] = []
+        for i in range(worker_num):
+            worker_host = '{}-{}-worker-{}.default.svc.cluster.local:{}'.format(model, signature, i, port)
+            cluster['worker'].append(worker_host)
+    if chief_num > 0:
+        cluster['chief'] = []
+        for i in range(chief_num):
+            chief_host = '{}-{}-chief-{}.default.svc.cluster.local:{}'.format(model, signature, i, port)
+            cluster['chief'].append(chief_host)
 
     return cluster
 

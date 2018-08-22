@@ -51,16 +51,6 @@ def trainings_new():
             shutil.rmtree(record_dir)
 
         name, script, image, _ = get_models(model)
-        m = re.search('--train_dir[ |=](\S+)',script)
-        if form.train_option.data == 'legacy':
-            if m:
-                script = script.replace(m.group(1), train_dir)
-            else:
-                script += ' --train_dir={}'.format(train_dir)
-        else:
-            if m and m.group(1) == '$TRAIN_DIR':
-                script = script.replace(m.group(1), train_dir)
-
         gen_script(record_dir, script)
 
         cmd = 'python3 {}/scripts/gen_k8s_yaml.py'.format(os.path.dirname(os.path.realpath(__file__)))
@@ -74,7 +64,7 @@ def trainings_new():
         print(cmd)
         os.system(cmd)
 
-        m = re.search('--train_dir[ |=](\S+)', script)
+        m = re.search('--model_dir[ |=](\S+)', script)
         if m:
             new_training('{}_{}'.format(model, signature), form.num_worker.data, form.mail_to.data, m.group(1))
         else:
