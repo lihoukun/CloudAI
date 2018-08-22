@@ -10,7 +10,7 @@ def parse_args():
     parser.add_argument('--ps_num', help='choose ps number', type=int)
     parser.add_argument('--worker_num', help='choose worker number', type=int)
     parser.add_argument('--gpu_per_node', help='number gpu per node', type=int)
-    parser.add_argument('--epoch', help='choose worker number', type=float)
+    parser.add_argument('--epoch', help='choose worker number', type=int)
     parser.add_argument('--record_dir', help='record files path')
     parser.add_argument('--signature', help='signature label')
     parser.add_argument('--image', help='container image')
@@ -221,7 +221,7 @@ def main():
     args = parse_args()
     k8s_config = ''
     signature = args.signature if args.signature else datetime.datetime.now().strftime("%y%m%d%H%M%S")
-    epoch = args.epoch if args.epoch else 1.0
+    epoch = args.epoch if args.epoch else 1
     if args.flow == 'train':
         k8s_config = generate_train_config(args.model, signature, args.ps_num, args.worker_num, epoch, args.record_dir, args.gpu_per_node, args.image)
     elif args.flow == 'eval':

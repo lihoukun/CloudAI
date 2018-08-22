@@ -17,11 +17,9 @@ autossh -M 20086 -f -nNT  -L 8001:127.0.0.1:8001 -L 5000:127.0.0.1:5000  -L 8080
 ```
 NUM_GPU set to 4, as we have max 4 GPU.
 NUM_CPU set to 2, as larger number do no help performance, but only add initialize burden
-NUM_EPOCH is float. try it youself. My estimate is 0.01 takes less than 5min. So set it based on your need.
+NUM_EPOCH is int. try it youself.
 Select 'Start New Training' and select model to 'resnet-training-demo'
-Do NOT train two concurrently. Always stop first before train second. 
 During demo, repeatly click log for any worker, until you see completion.
-Even if it shows complete, still need manual click 'STOP' to kill the rest containers.
 ```
 ![image](images/train_new.png)
 
