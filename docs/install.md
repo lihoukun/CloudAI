@@ -56,6 +56,7 @@ enabled=1
 gpgcheck=1
 repo_gpgcheck=1
 gpgkey=https://packages.cloud.google.com/yum/doc/yum-key.gpg https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
+exclude=kube*
 EOF
 
 # China mainland version
@@ -72,7 +73,7 @@ EOF
 ```
 ```
 sudo setenforce 0 && \
-sudo yum install -y kubelet kubeadm kubectl && \
+sudo yum install -y kubelet kubeadm kubectl --disableexcludes=kubernetes && \
 sudo systemctl enable kubelet && \
 sudo systemctl start kubelet && \
 sudo sed -i "s/cgroup-driver=systemd/cgroup-driver=cgroupfs/g" /etc/systemd/system/kubelet.service.d/10-kubeadm.conf && \
