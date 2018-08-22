@@ -76,10 +76,6 @@ sudo setenforce 0 && \
 sudo yum install -y kubelet kubeadm kubectl --disableexcludes=kubernetes && \
 sudo systemctl enable kubelet && \
 sudo systemctl start kubelet && \
-sudo sed -i "s/cgroup-driver=systemd/cgroup-driver=cgroupfs/g" /etc/systemd/system/kubelet.service.d/10-kubeadm.conf && \
-sudo systemctl daemon-reload && \
-sudo systemctl restart kubelet && \
-sudo systemctl enable kubelet.service && \
 sudo systemctl stop firewalld && \
 sudo systemctl disable firewalld && \
 sudo swapoff -a
