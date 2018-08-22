@@ -10,7 +10,7 @@ class TrainingsNewForm(FlaskForm):
     model_name = SelectField('Select Model: ')
     num_worker = IntegerField('Number of Worker: ')
     num_ps = IntegerField('Number of PS: ')
-    num_epoch = FloatField('Number of Epoch: ')
+    num_epoch = IntegerField('Number of Epoch: ')
     train_option = RadioField('Train Option', choices = [('legacy', 'Continue from Existing Training'), ('new', 'Start a New Training')], default='new')
     train_label = SelectField('Training Label: ')
     mail_to = TextField('Send Mail: ')
