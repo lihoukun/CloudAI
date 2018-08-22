@@ -171,7 +171,7 @@ spec:
     - name: TASK_ID
       value: "{1}"
     - name: TF_CONFIG
-      value: "{4}"
+      value: '{4}'
 """.format(job, id, port, record_dir, json.dumps(tf_config))
 
     if job == 'ps':
@@ -210,7 +210,7 @@ def generate_train_config(model, signature, ps_num, worker_num, epoch, record_di
     for job, hosts in cluster.items():
         for i in range(len(hosts)):
             k8s_config += generate_train_service(job, i, port, model, signature)
-            k8s_config += generate_train_job(job, i, port, model, signature, record_dir, gpu_per_node, image)
+            k8s_config += generate_train_job(cluster, job, i, port, model, signature, record_dir, gpu_per_node, image)
 
     return k8s_config
 

@@ -1,6 +1,6 @@
 # net disk related
-export SHARED_HOST="/nfs/nvme"
-export HOSTPATH_ENABLE="1"
+export SHARED_HOST="/mnt/nfs1T"
+export HOSTPATH_ENABLE="0"
 export HOSTPATH_HOST="/nfs"
 export HOSTPATH_CONTAINER="/nfs/hostpath"
 export HOSTPATH_GB="1000"
@@ -11,10 +11,10 @@ export GLUSTER_HOST="/nfs/gdv"
 export GLUSTER_CONTAINER="/nfs/gdv"
 export GLUSTER_GB="1000"
 export NFS_ENABLE="1"
-export NFS_HOST="/nfs/nvme"
-export NFS_CONTAINER="/nfs/nvme"
-export NFS_SERVER="2.2.2.91"
-export NFS_PATH="/mnt/mnt-nvme-lv"
+export NFS_HOST="/mnt/nfs1T"
+export NFS_CONTAINER="/mnt/nfs1T"
+export NFS_SERVER="2.2.2.4"
+export NFS_PATH="/mnt/nfs1T"
 export NFS_GB="1000"
 
 # web app
