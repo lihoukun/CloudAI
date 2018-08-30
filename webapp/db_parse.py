@@ -100,12 +100,13 @@ def new_training(label,num_gpu, mail_to, train_dir):
     c.execute(cmd)
     res = c.fetchone()
     if res:
-        cmd = "UPDATE trainings set status = 'PEND', num_gpu = {}, submit_at = '{}', ".format(cur_time, num_gpu)
+        cmd = "UPDATE trainings set status = 'PEND', num_gpu = {}, submit_at = '{}', ".format(num_gpu, cur_time)
         if train_dir:
             cmd += " train_dir = '{}' ".format(train_dir)
         else:
             cmd += " train_dir = NULL "
         cmd += " where label = '{}'".format(label)
+        print(cmd)
         c.execute(cmd)
     else:
         cmd = "INSERT INTO trainings (label, status, submit_at, num_gpu) VALUES ('{}', 'PEND', '{}', {})".format(label, cur_time, num_gpu)
