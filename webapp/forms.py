@@ -20,8 +20,8 @@ class ModelsNewForm(FlaskForm):
     def name_uniq_check(form, field):
         if not field.data:
             raise ValidationError('Name cannot be empty')
-        if not re.match(r'^[a-zA-Z][A-Za-z0-9-]*$', field.data):
-            raise ValidationError('Name must start with letter, and can only contain letters numbers and dash')
+        if not re.match(r'^[a-z][a-z0-9-]*$', field.data):
+            raise ValidationError('Name must start with letter, and can only contain lowercase letters numbers and dash')
         for model in get_models():
             if field.data == model[0]:
                 raise  ValidationError('Model with name {} already exist'.format(field.data))
