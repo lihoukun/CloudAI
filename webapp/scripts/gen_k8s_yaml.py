@@ -183,10 +183,10 @@ spec:
       value: " "
     resources:
       requests:
-        cpu: "4"
+        cpu: "8"
         memory: 16Gi
       limits:
-        cpu: "6"
+        cpu: "12"
         memory: 32Gi
 """
     else:

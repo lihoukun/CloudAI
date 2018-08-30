@@ -1,8 +1,8 @@
 # net disk related
 export SHARED_HOST="/mnt/nfs1T"
-export HOSTPATH_ENABLE="0"
-export HOSTPATH_HOST="/nfs"
-export HOSTPATH_CONTAINER="/nfs/hostpath"
+export HOSTPATH_ENABLE="1"
+export HOSTPATH_HOST="/mnt/nfs1T"
+export HOSTPATH_CONTAINER="/hostpath/nfs1T"
 export HOSTPATH_GB="1000"
 export GLUSTER_ENABLE="0"
 export GLUSTER_NAME="gdistvol"
