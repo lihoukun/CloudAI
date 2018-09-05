@@ -29,6 +29,16 @@ def trainings_new():
             f.write('umask 2\n')
             f.write(script)
 
+    def transform_dir(container_dir):
+        if os.environ.get('HOSTPATH_ENABLE') == '1' and container_dir.startswith(os.environ.get('HOSTPATH_CONTAINER')):
+            return container_dir.replace(os.environ.get('HOSTPATH_CONTAINER'), os.environ.get('HOSTPATH_HOST'))
+        elif os.environ.get('GLUSTER_ENABLE') == '1' and container_dir.startswith(os.environ.get('GLUSTER_CONTAINER')):
+            return container_dir.replace(os.environ.get('GLUSTER_CONTAINER'), os.environ.get('GLUSTER_HOST'))
+        elif os.environ.get('NFS_ENABLE') == '1' and container_dir.startswith(os.environ.get('NFS_CONTAINER')):
+            return container_dir.replace(os.environ.get('NFS_CONTAINER'), os.environ.get('NFS_HOST'))
+        else:
+            return container_dir
+
     form = TrainingsNewForm()
     form.train_label.choices = [('{},{}'.format(train[2], train[0]), train[0]) for train in get_trainings('STOPPED') if train[2]]
     form.model_name.choices = [[model[0]]*2 for model in get_models()]
@@ -66,7 +76,8 @@ def trainings_new():
 
         m = re.search('--model_dir[ |=](\S+)', script)
         if m:
-            new_training('{}_{}'.format(model, signature), form.num_worker.data, form.mail_to.data, m.group(1))
+            host_dir = transform_dir(m.group(1))
+            new_training('{}_{}'.format(model, signature), form.num_worker.data, form.mail_to.data, host_dir)
         else:
             new_training('{}_{}'.format(model, signature), form.num_worker.data, form.mail_to.data, None)
         return redirect(url_for('trainings', type='active'))

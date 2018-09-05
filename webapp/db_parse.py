@@ -113,6 +113,7 @@ def new_training(label,num_gpu, mail_to, train_dir):
         c.execute(cmd)
         if train_dir:
             cmd = "UPDATE trainings set train_dir = '{}' WHERE label = '{}'".format(train_dir, label)
+            print(cmd)
             c.execute(cmd)
     if mail_to:
         cmd = "UPDATE trainings set mail_to = '{}' WHERE label = '{}'".format(mail_to, label)
