@@ -48,20 +48,15 @@ def trainings_new():
     form.num_ps.validators=[NumberRange(min=0, max=get_total_nodes())]
     if form.validate_on_submit():
         if form.train_option.data == 'legacy':
-            train_dir, label = form.train_label.data.split(',')
+            model_dir, label = form.train_label.data.split(',')
             m = re.match('(\S+)_(\d+)$', label)
             model, signature = m.group(1), m.group(2)
         else:
             signature = datetime.datetime.now().strftime("%y%m%d%H%M%S")
             model = form.model_name.data
-            train_dir = '{}/train/{}_{}'.format(os.environ['SHARED_HOST'], model, signature)
-
-        record_dir = '{}/records'.format(train_dir)
-        if os.path.isdir(record_dir):
-            shutil.rmtree(record_dir)
 
         name, script, image, _ = get_models(model)
-        gen_script(record_dir, script)
+        record_dir = '{}/train/{}_{}/records'.format(os.environ['SHARED_HOST'], model, signature)
 
         cmd = 'python3 {}/scripts/gen_k8s_yaml.py'.format(os.path.dirname(os.path.realpath(__file__)))
         cmd += ' {} train'.format(model)
@@ -74,12 +69,16 @@ def trainings_new():
         print(cmd)
         os.system(cmd)
 
-        m = re.search('--model_dir[ |=](\S+)', script)
-        if m:
-            host_dir = transform_dir(m.group(1))
-            new_training('{}_{}'.format(model, signature), form.num_worker.data, form.mail_to.data, host_dir)
+        if form.train_option.data == 'legacy':
+            new_training('{}_{}'.format(model, signature), form.num_worker.data, form.mail_to.data, model_dir)
         else:
-            new_training('{}_{}'.format(model, signature), form.num_worker.data, form.mail_to.data, None)
+            gen_script(record_dir, script)
+            m = re.search('--model_dir[ |=](\S+)', script)
+            if m:
+                model_dir = transform_dir(m.group(1))
+                new_training('{}_{}'.format(model, signature), form.num_worker.data, form.mail_to.data, model_dir)
+            else:
+                new_training('{}_{}'.format(model, signature), form.num_worker.data, form.mail_to.data, None)
         return redirect(url_for('trainings', type='active'))
 
     return render_template('trainings_new.html', form=form)
