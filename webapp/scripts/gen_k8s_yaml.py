@@ -52,9 +52,18 @@ def generate_cluster(model, signature, ps_num, worker_num, port):
     return cluster
 
 def generate_train_configmap(model, signature, cluster, epoch):
-    ps_hosts_str = ','.join(cluster['ps'])
-    combined_worker_hosts = cluster['worker'] + cluster['chief']
-    worker_hosts_str = ','.join(combined_worker_hosts)
+    ps_hosts_str = ''
+    if 'ps' in cluster:
+        ps_hosts_str = ','.join(cluster['ps'])
+
+    worker_hosts_str = ''
+    if 'worker' in cluster:
+        worker_hosts_str = ','.join(cluster['worker'])
+    if 'chief' in cluster:
+        if worker_hosts_str != '':
+            worker_hosts_str += ',' + ','.join(cluster['chief'])
+        else:
+            worker_hosts_str = ','.join(cluster['chief'])
 
     k8s_configmap = """---
 apiVersion: v1
