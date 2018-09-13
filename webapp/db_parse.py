@@ -55,6 +55,14 @@ def update_model(name, script, image, desc):
     conn.commit()
     conn.close()
 
+def delete_model(name):
+    conn = get_conn()
+    c = conn.cursor()
+    cmd = "DELETE from models where name = '{}'".format(name)
+    c.execute(cmd)
+    conn.commit()
+    conn.close()
+
 def get_trainings(status = None):
     trainings = []
     conn = get_conn()

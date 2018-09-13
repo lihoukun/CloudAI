@@ -42,6 +42,10 @@
         </p>
         <p>{{ form.submit() }}</p>
     </form>
+    <form action="" method="post">
+        {{ formd.csrf_token }}
+        <p>{{ formd.submit() }}</p>
+    </form>
 <br/>
 <br/>
 {% endblock %}

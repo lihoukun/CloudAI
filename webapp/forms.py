@@ -36,7 +36,10 @@ class ModelEditForm(FlaskForm):
     script =  TextAreaField('Bash Script:')
     desc = TextField('Description:')
     image =  TextField('Container Image:')
-    submit = SubmitField('Save')
+    submit = SubmitField('Update')
+
+class ModelDeleteForm(FlaskForm):
+    submit = SubmitField('Delete')
 
 class EvalForm(FlaskForm):
     log_dir = SelectField('Availabel Lables: ')

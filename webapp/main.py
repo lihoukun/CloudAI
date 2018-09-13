@@ -5,8 +5,8 @@ app.config['SECRET_KEY'] = 'exaairocks'
 from flask import render_template, render_template_string, flash, redirect, request, url_for
 from wtforms.validators import NumberRange
 
-from forms import TrainingsNewForm, KubecmdForm, EvalForm, StopForm, ShowForm, ModelsNewForm, ModelEditForm
-from db_parse import get_models, new_model, update_model, get_trainings, new_training, get_tb_training, update_tb_training, update_training
+from forms import TrainingsNewForm, KubecmdForm, EvalForm, StopForm, ShowForm, ModelsNewForm, ModelEditForm, ModelDeleteForm
+from db_parse import get_models, new_model, update_model, delete_model, get_trainings, new_training, get_tb_training, update_tb_training, update_training
 from kube_parse import get_total_nodes, get_gpu_per_node
 from subprocess import check_output
 import re
@@ -158,6 +158,10 @@ def model(name=None):
         update_model(name, form.script.data, form.image.data, form.desc.data)
         return redirect(url_for('models'))
 
+    formd = ModelDeleteForm()
+    if formd.validate_on_submit():
+        delete_model(name)
+        return redirect(url_for('models'))
     return render_template('model.html', data=data, form=form)
 
 @app.route('/eval/', methods=('GET', 'POST'))
