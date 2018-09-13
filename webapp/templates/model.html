@@ -17,34 +17,37 @@
     <br/>
     <br/>
     <form action="" method="post">
-        {{ form.csrf_token }}
+        {{ forms.csrf_token }}
         <p>
-            {{ form.script.label }}<br/>
-            {% set f = form.script.process_data(data[1]) %}
-            {{ form.script(cols=80, rows=20) }}
-            {% for error in form.script.errors %}
+            {{ forms.script.label }}<br/>
+            {% set f = forms.script.process_data(data[1]) %}
+            {{ forms.script(cols=80, rows=20) }}
+            {% for error in forms.script.errors %}
             <span style="color: red;">[{{ error }}]</span>
             {% endfor %}
         </p>
         <p>
-            {{ form.image.label }}
-            {{ form.image(value=data[2], cols=60) }}
-            {% for error in form.image.errors %}
+            {{ forms.image.label }}
+            {{ forms.image(value=data[2], cols=60) }}
+            {% for error in forms.image.errors %}
             <span style="color: red;">[{{ error }}]</span>
             {% endfor %}
         </p>
         <p>
-            {{ form.desc.label }}
-            {{ form.desc(value=data[3], cols=60) }}
-            {% for error in form.desc.errors %}
+            {{ forms.desc.label }}
+            {{ forms.desc(value=data[3], cols=60) }}
+            {% for error in forms.desc.errors %}
             <span style="color: red;">[{{ error }}]</span>
             {% endfor %}
         </p>
-        <p>{{ form.submit() }}</p>
+		<button type="submit" class="btn btn-primary">UPDATE</button>
     </form>
+
+    <br/>
+    <br/>
     <form action="" method="post">
         {{ formd.csrf_token }}
-        <p>{{ formd.submit() }}</p>
+		<button type="submit" class="btn btn-danger">DELETE</button>
     </form>
 <br/>
 <br/>

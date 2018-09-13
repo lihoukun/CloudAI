@@ -153,16 +153,17 @@ def models():
 @app.route('/model/<name>', methods=['GET', 'POST'])
 def model(name=None):
     data = get_models(name)
-    form = ModelEditForm()
-    if form.validate_on_submit():
-        update_model(name, form.script.data, form.image.data, form.desc.data)
+    forms = ModelEditForm(prefix='forms')
+    if forms.validate_on_submit():
+        update_model(name, forms.script.data, forms.image.data, forms.desc.data)
         return redirect(url_for('models'))
-
-    formd = ModelDeleteForm()
+	
+    formd = ModelDeleteForm(prefix='formd')
     if formd.validate_on_submit():
         delete_model(name)
+        flash("model {} has been deleted".format(name))
         return redirect(url_for('models'))
-    return render_template('model.html', data=data, form=form)
+    return render_template('model.html', data=data, forms=forms, formd=formd)
 
 @app.route('/eval/', methods=('GET', 'POST'))
 def eval():
