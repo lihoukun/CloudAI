@@ -106,6 +106,12 @@ def generate_train_job(cluster, job, id, port, model, signature, record_dir, gpu
     tf_config = {}
     tf_config['cluster'] = cluster
     tf_config['task'] = {'type': job, 'index': id}
+    job_name, job_id = job, id
+    if job == 'chief':
+        job_name = 'worker'
+        if worker in cluster:
+            job_id = len(cluster['worker']) + id
+
 
     k8s_job = """---
 apiVersion: v1
@@ -184,7 +190,7 @@ spec:
       value: "{1}"
     - name: TF_CONFIG
       value: '{4}'
-""".format(job, id, port, record_dir, json.dumps(tf_config))
+""".format(job_name, job_id, port, record_dir, json.dumps(tf_config))
 
     if job == 'ps':
         k8s_job += """
