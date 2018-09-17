@@ -111,7 +111,11 @@ def generate_train_job(cluster, job, id, port, model, signature, record_dir, gpu
         job_name = 'worker'
         if 'worker' in cluster:
             job_id = len(cluster['worker']) + id
-
+    num_workers = 0
+    if 'worker' in cluster:
+        num_workers += len(cluster['worker'])
+    if 'chief' in cluster:
+        num_workers += len(cluster['chief'])
 
     k8s_job = """---
 apiVersion: v1
@@ -190,7 +194,9 @@ spec:
       value: "{1}"
     - name: TF_CONFIG
       value: '{4}'
-""".format(job_name, job_id, port, record_dir, json.dumps(tf_config))
+    - name: NUM_WORKERS
+      value: '{5}'
+""".format(job_name, job_id, port, record_dir, json.dumps(tf_config), num_workers)
 
     if job == 'ps':
         k8s_job += """

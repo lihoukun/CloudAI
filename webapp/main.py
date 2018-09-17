@@ -172,13 +172,21 @@ def eval():
     form.log_dir.choices = [(train[2], train[0]) for train in get_trainings() if train[2]]
     if form.validate_on_submit():
         log_dir = form.log_dir.data
+        custom_dir = form.custom_dir.data
         os.system("docker kill exaai-tensorboard")
         os.system("docker rm exaai-tensorboard")
-        cmd = "docker run --name exaai-tensorboard -d -p {0}:6006 -v {1}:/local/mnt/workspace".format(os.environ.get('TENSORBOARD_PORT'), log_dir)
-        cmd +=" exaai/tensorboard tensorboard --logdir=/local/mnt/workspace"
-        os.system(cmd)
-        update_tb_training(log_dir)
-        flash('TensorBoard for log_dir {} Loaded'.format(log_dir))
+        if custom_dir:
+            cmd = "docker run --name exaai-tensorboard -d -p {0}:6006 -v {1}:/local/mnt/workspace".format(os.environ.get('TENSORBOARD_PORT'), custom_dir)
+            cmd +=" exaai/tensorboard tensorboard --logdir=/local/mnt/workspace"
+            os.system(cmd)
+            update_tb_training('')
+            flash('TensorBoard for log_dir {} Loaded'.format(custom_dir))
+        else:
+            cmd = "docker run --name exaai-tensorboard -d -p {0}:6006 -v {1}:/local/mnt/workspace".format(os.environ.get('TENSORBOARD_PORT'), log_dir)
+            cmd +=" exaai/tensorboard tensorboard --logdir=/local/mnt/workspace"
+            os.system(cmd)
+            update_tb_training(log_dir)
+            flash('TensorBoard for log_dir {} Loaded'.format(log_dir))
         return redirect(url_for('eval'))
     return render_template('eval.html', form=form, current=current)
 

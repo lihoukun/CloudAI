@@ -11,6 +11,8 @@
 {% endif %}
 <form action="" method="post">
     {{ form.csrf_token }}
+    {{ form.custom_dir.label }}
+    {{ form.custom_dir() }}
     {{ form.log_dir.label }}
     {{ form.log_dir() }}
     {{ form.submit() }}

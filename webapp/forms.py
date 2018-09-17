@@ -1,4 +1,5 @@
 import re
+import os
 from flask_wtf import FlaskForm
 from wtforms import TextField, BooleanField, IntegerField, SelectField, RadioField, SubmitField, TextAreaField, FloatField
 from wtforms.widgets import TextArea
@@ -42,7 +43,13 @@ class ModelDeleteForm(FlaskForm):
     submit = SubmitField('Delete')
 
 class EvalForm(FlaskForm):
+    def dir_check(form, field):
+        if field.data:
+            if not os.path.isdir(field.data):
+                raise ValidationError('Custom dir does not exist')
+
     log_dir = SelectField('Availabel Lables: ')
+    custom_dir = TextField('Custom Dir: ', validators=[dir_check])
     submit = SubmitField('Load!')
 
 class StopForm(FlaskForm):
