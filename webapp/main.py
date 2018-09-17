@@ -175,12 +175,12 @@ def eval():
         custom_dir = form.custom_dir.data
         os.system("docker kill exaai-tensorboard")
         os.system("docker rm exaai-tensorboard")
-        if custom_dir:
+        if custom_dir != '':
             cmd = "docker run --name exaai-tensorboard -d -p {0}:6006 -v {1}:/local/mnt/workspace".format(os.environ.get('TENSORBOARD_PORT'), custom_dir)
             cmd +=" exaai/tensorboard tensorboard --logdir=/local/mnt/workspace"
             os.system(cmd)
             update_tb_training('')
-            flash('TensorBoard for log_dir {} Loaded'.format(custom_dir))
+            flash('TensorBoard for custom_dir {} Loaded'.format(custom_dir))
         else:
             cmd = "docker run --name exaai-tensorboard -d -p {0}:6006 -v {1}:/local/mnt/workspace".format(os.environ.get('TENSORBOARD_PORT'), log_dir)
             cmd +=" exaai/tensorboard tensorboard --logdir=/local/mnt/workspace"

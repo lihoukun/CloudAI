@@ -11,10 +11,11 @@
 {% endif %}
 <form action="" method="post">
     {{ form.csrf_token }}
-    {{ form.custom_dir.label }}
-    {{ form.custom_dir() }}
-    {{ form.log_dir.label }}
-    {{ form.log_dir() }}
+	<p>{{ form.custom_dir.label }} {{ form.custom_dir() }}</p>
+	{% for error in form.custom_dir.errors %}
+		<span style="color: red;">[{{ error }}]</span>
+	{% endfor %}
+	<p>{{ form.log_dir.label }} {{ form.log_dir() }}</p>
     {{ form.submit() }}
 </form>
 <br/>

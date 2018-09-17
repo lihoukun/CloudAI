@@ -95,7 +95,7 @@ def update_tb_training(log_dir):
 
     cmd = "UPDATE trainings set tensorboard = 0"
     c.execute(cmd)
-    if log_dir != ''
+    if log_dir != '':
         cmd = "UPDATE trainings set tensorboard = 1 WHERE train_dir = '{}'".format(log_dir)
         c.execute(cmd)
     conn.commit()
