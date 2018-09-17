@@ -109,7 +109,7 @@ def generate_train_job(cluster, job, id, port, model, signature, record_dir, gpu
     job_name, job_id = job, id
     if job == 'chief':
         job_name = 'worker'
-        if worker in cluster:
+        if 'worker' in cluster:
             job_id = len(cluster['worker']) + id
 
 
