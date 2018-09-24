@@ -75,6 +75,42 @@ spec:
   storageClassName: hostpath
 """.format(hostpath_pv_gb, os.environ.get('HOSTPATH_HOST'), hostpath_pvc_gb)
 
+    if os.environ.get('NFS_ENABLE') == '1':
+        nfs_pv_gb = int(os.environ.get('NFS_GB'))
+        nfs_pvc_gb = nfs_pv_gb / 2
+        k8s_yaml += """---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: nfs-pv
+spec:
+  capacity:
+    storage: {0}Gi
+  volumeMode: Filesystem
+  accessModes:
+  - ReadWriteMany
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nfs
+  mountOptions:
+    - fsc
+  nfs:
+    path: "{1}"
+    server: {3}
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: nfs-pvc
+spec:
+  accessModes:
+  - ReadWriteMany
+  resources:
+    requests:
+      storage: {2}Gi
+  storageClassName: nfs
+""".format(hostpath_pv_gb, os.environ.get('NFS_HOST'), hostpath_pvc_gb, os.environ.get('NFS_SERVER'))
+
+
     if os.environ.get('GLUSTER_ENABLE') == '1':
         gluster_pv_gb = int(os.environ.get('GLUSTER_GB'))
         gluster_pvc_gb = gluster_pv_gb / 2

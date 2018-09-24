@@ -135,10 +135,9 @@ spec:
     if os.environ.get('NFS_ENABLE') == '1':
         k8s_job += """
   - name: nfs-volume
-    nfs:
-      server: "{}"
-      path: "{}"
-""".format(os.environ.get('NFS_SERVER'), os.environ.get('NFS_PATH'))
+    persistentVolumeClaim:
+      claimName: nfs-pvc
+"""
     if os.environ.get('GLUSTER_ENABLE') == '1':
         k8s_job += """
   - name: gluster-volume
