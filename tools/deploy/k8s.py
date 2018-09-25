@@ -19,8 +19,8 @@ def stop_pv():
     if not no_pods():
         exit(1)
 
-    os.system('kubectl delete pv --all')
     os.system('kubectl delete pvc --all')
+    os.system('kubectl delete pv --all')
 
 def start_pv():
     record_dir = os.path.dirname(os.path.realpath(__file__)) + '/records'
@@ -108,8 +108,52 @@ spec:
     requests:
       storage: {2}Gi
   storageClassName: nfs
-""".format(hostpath_pv_gb, os.environ.get('NFS_HOST'), hostpath_pvc_gb, os.environ.get('NFS_SERVER'))
+""".format(nfs_pv_gb, os.environ.get('NFS_HOST'), nfs_pvc_gb, os.environ.get('NFS_SERVER'))
 
+    if os.environ.get('CEPH_ENABLE') == '1':
+        ceph_pv_gb = int(os.environ.get('CEPH_GB'))
+        ceph_pvc_gb = ceph_pv_gb / 2
+        k8s_yaml += """---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: ceph-secret
+data:
+  key: {3}
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: ceph-pv
+spec:
+  capacity:
+    storage: {0}Gi
+  accessModes:
+  - ReadWriteMany
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: ceph
+  cephfs:
+    monitors:
+      - {1}
+    user: admin
+    secretRef:
+      name: ceph-secret
+    readOnly: false
+  mountOptions:
+    - fsc
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: ceph-pvc
+spec:
+  accessModes:
+  - ReadWriteMany
+  resources:
+    requests:
+      storage: {2}Gi
+  storageClassName: ceph
+""".format(ceph_pv_gb, os.environ.get('CEPH_SERVER'), ceph_pvc_gb, os.environ.get('CEPH_SECRET'))
 
     if os.environ.get('GLUSTER_ENABLE') == '1':
         gluster_pv_gb = int(os.environ.get('GLUSTER_GB'))

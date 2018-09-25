@@ -132,6 +132,12 @@ spec:
   volumes:
 """.format(job, id, model, signature)
 
+    if os.environ.get('CEPH_ENABLE') == '1':
+        k8s_job += """
+  - name: ceph-volume
+    persistentVolumeClaim:
+      claimName: ceph-pvc
+"""
     if os.environ.get('NFS_ENABLE') == '1':
         k8s_job += """
   - name: nfs-volume
@@ -162,6 +168,11 @@ spec:
     volumeMounts:
 """.format(model, signature, image)
 
+    if os.environ.get('CEPH_ENABLE') == '1':
+        k8s_job += """
+    - name: ceph-volume
+      mountPath: "{}"
+""".format(os.environ.get('CEPH_CONTAINER'))
     if os.environ.get('NFS_ENABLE') == '1':
         k8s_job += """
     - name: nfs-volume
