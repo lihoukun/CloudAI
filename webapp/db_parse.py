@@ -12,19 +12,21 @@ def get_models(name = None):
     c = conn.cursor()
 
     if name:
-        c.execute("SELECT name, script, image, description FROM models WHERE name = '{}'".format(name))
-        name, script, image, desc = c.fetchone()
+        c.execute("SELECT name, script, image, log_dir, mnt_option, description FROM models WHERE name = '{}'".format(name))
+        name, script, image, log_dir, mnt_option, desc = c.fetchone()
         script = script.replace("''", "'").replace('\r\n', '\n')
         models.append(name)
         models.append(script)
         models.append(image)
+        models.append(log_dir)
+        models.append(mnt_option)
         models.append(desc)
     else:
-        c.execute("SELECT name, script, image, description FROM models ORDER BY name")
+        c.execute("SELECT name, script, image, log_dir, mnt_option, description FROM models ORDER BY name")
         for res in c.fetchall():
-            name, script, image, desc =  res
+            name, script, image, log_dir, mnt_option, desc =  res
             script = script.replace("''", "'").replace('\r\n', '\n')
-            models.append([name, script, image, desc])
+            models.append([name, script, image, log_dir, mnt_option, desc])
     conn.close()
     return models
 
@@ -101,7 +103,7 @@ def update_tb_training(log_dir):
     conn.commit()
     conn.close()
 
-def new_training(label,num_gpu, mail_to, train_dir):
+def new_training(label, num_gpu, mail_to):
     cur_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     conn = get_conn()
     c = conn.cursor()
@@ -109,21 +111,12 @@ def new_training(label,num_gpu, mail_to, train_dir):
     c.execute(cmd)
     res = c.fetchone()
     if res:
-        cmd = "UPDATE trainings set status = 'PEND', num_gpu = {}, submit_at = '{}', ".format(num_gpu, cur_time)
-        if train_dir:
-            cmd += " train_dir = '{}' ".format(train_dir)
-        else:
-            cmd += " train_dir = NULL "
-        cmd += " where label = '{}'".format(label)
+        cmd = "UPDATE trainings set status = 'PEND', num_gpu = {}, submit_at = '{}' where label = '{}' ".format(num_gpu, cur_time,label)
         print(cmd)
         c.execute(cmd)
     else:
         cmd = "INSERT INTO trainings (label, status, submit_at, num_gpu) VALUES ('{}', 'PEND', '{}', {})".format(label, cur_time, num_gpu)
         c.execute(cmd)
-        if train_dir:
-            cmd = "UPDATE trainings set train_dir = '{}' WHERE label = '{}'".format(train_dir, label)
-            print(cmd)
-            c.execute(cmd)
     if mail_to:
         cmd = "UPDATE trainings set mail_to = '{}' WHERE label = '{}'".format(mail_to, label)
         c.execute(cmd)

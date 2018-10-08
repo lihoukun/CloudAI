@@ -55,7 +55,7 @@ def trainings_new():
             signature = datetime.datetime.now().strftime("%y%m%d%H%M%S")
             model = form.model_name.data
 
-        name, script, image, _ = get_models(model)
+        name, script, image, log_dir, mnt_option, _ = get_models(model)
         record_dir = '{}/train/{}_{}/records'.format(os.environ['SHARED_HOST'], model, signature)
 
         cmd = 'python3 {}/scripts/gen_k8s_yaml.py'.format(os.path.dirname(os.path.realpath(__file__)))
@@ -69,16 +69,9 @@ def trainings_new():
         print(cmd)
         os.system(cmd)
 
-        if form.train_option.data == 'legacy':
-            new_training('{}_{}'.format(model, signature), form.num_worker.data, form.mail_to.data, model_dir)
-        else:
+        if form.train_option.data != 'legacy':
             gen_script(record_dir, script)
-            m = re.search('--model_dir[ |=](\S+)', script)
-            if m:
-                model_dir = transform_dir(m.group(1))
-                new_training('{}_{}'.format(model, signature), form.num_worker.data, form.mail_to.data, model_dir)
-            else:
-                new_training('{}_{}'.format(model, signature), form.num_worker.data, form.mail_to.data, None)
+        new_training('{}_{}'.format(model, signature), form.num_worker.data, form.mail_to.data)
         return redirect(url_for('trainings', type='active'))
 
     return render_template('trainings_new.html', form=form)
