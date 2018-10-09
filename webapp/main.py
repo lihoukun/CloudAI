@@ -147,7 +147,7 @@ def model(name=None):
     data = get_models(name)
 
     form = ModelDeleteForm()
-    if formd.validate_on_submit():
+    if form.validate_on_submit():
         delete_model(name)
         flash("model {} has been deleted".format(name))
         return redirect(url_for('models'))

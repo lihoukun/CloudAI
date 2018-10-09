@@ -4,24 +4,18 @@
 <br/>
 <br/>
 <h1>Model: {{ data[0] }}</h1>
-<ul>
-    <p>pre-defined ENV variables for bash script to use</p>
-    <li>JOB_NAME: either 'ps' or 'worker' or 'chief'</li>
-    <li>TASK_ID: the index of the job</li>
-    <li>MODEL_NAME: {{ data[0] }} in this case</li>
-    <li>PS_HOSTS:  a string of ps hosts:port seperated by commar</li>
-    <li>WORKER_HOSTS: a string of worker hosts:port seperated by commar</li>
-    <li>NUM_EPOCH: for training duration</li>
-    <li>NUM_WORKERS: nodes that use GPU</li>
-    <li>TF_CONFIG: used for tensorflow</li>
-</ul>
 <br/>
 <br/>
-<p>Bash Script<br/>{{ data[1]) }}</p>
-<p>Container Image: {{ data[2]) }}</p>
-<p>Log Dir: {{ data[3]) }}</p>
-<p>Mount_option: {{ data[4]) }}</p>
-<p>Description: {{ data[5]) }}</p>
+<h3>Bash Script:<h3>
+<ul>{{ data[1] }}</ul>
+<h3>Container Image:</h3>
+<ul>{{ data[2] }}</ul>
+<h3>Log Dir: </h3>
+<ul>{{ data[3] }}</ul>
+<h3>Mount Option: </h3>
+<ul>{{ data[4] }}</ul>
+<h3>Description: </h3>
+<ul>{{ data[5] }}</ul>
 
 <br/>
 <br/>
