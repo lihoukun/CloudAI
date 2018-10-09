@@ -5,14 +5,13 @@ app.config['SECRET_KEY'] = 'exaairocks'
 from flask import render_template, render_template_string, flash, redirect, request, url_for
 from wtforms.validators import NumberRange
 
-from forms import TrainingsNewForm, KubecmdForm, EvalForm, StopForm, ShowForm, ModelsNewForm, ModelEditForm, ModelDeleteForm
+from forms import TrainingsNewForm, KubecmdForm, EvalForm, StopForm, ShowForm, ModelsNewForm, ModelDeleteForm
 from db_parse import get_models, new_model, update_model, delete_model, get_trainings, new_training, get_tb_training, update_tb_training, update_training
 from kube_parse import get_total_nodes, get_gpu_per_node
 from subprocess import check_output
 import re
 import os
 import datetime
-import shutil
 
 @app.route('/')
 def index():
@@ -135,7 +134,7 @@ def training(label=None, desc = [], log = []):
 def models_new():
     form = ModelsNewForm()
     if form.validate_on_submit():
-        new_model(form.model_name.data, form.script.data, form.image.data, form.desc.data)
+        new_model(form.model_name.data, form.script.data, form.image.data, form.log_dir.data, form.mnt_option.data, form.desc.data)
         return redirect(url_for('models'))
     return render_template('models_new.html', form=form)
 
@@ -146,17 +145,13 @@ def models():
 @app.route('/model/<name>', methods=['GET', 'POST'])
 def model(name=None):
     data = get_models(name)
-    forms = ModelEditForm(prefix='forms')
-    if forms.validate_on_submit():
-        update_model(name, forms.script.data, forms.image.data, forms.desc.data)
-        return redirect(url_for('models'))
-	
-    formd = ModelDeleteForm(prefix='formd')
+
+    form = ModelDeleteForm()
     if formd.validate_on_submit():
         delete_model(name)
         flash("model {} has been deleted".format(name))
         return redirect(url_for('models'))
-    return render_template('model.html', data=data, forms=forms, formd=formd)
+    return render_template('model.html', data=data, form=form)
 
 @app.route('/eval/', methods=('GET', 'POST'))
 def eval():

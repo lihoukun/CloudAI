@@ -14,6 +14,7 @@
         <li>NUM_EPOCH: for training duration</li>
         <li>NUM_WORKERS: nodes that use GPU</li>
         <li>TF_CONFIG: used for tensorflow</li>
+        <li>MNT_CONTAINER_DIR: mounted path depending on mnt_option</li>
     </ul>
     <form action="" method="post">
         {{ form.csrf_token }}
@@ -35,6 +36,21 @@
             {{ form.image.label }}
             {{ form.image(size=60) }}
             {% for error in form.image.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+
+        <p>
+            {{ form.log_dir.label }}
+            {{ form.log_dir(size=60) }}
+            {% for error in form.log_dir.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+        <p>
+            {{ form.mnt_option.label }}
+            {{ form.mnt_option() }}
+            {% for error in form.mnt_option.errors %}
             <span style="color: red;">[{{ error }}]</span>
             {% endfor %}
         </p>

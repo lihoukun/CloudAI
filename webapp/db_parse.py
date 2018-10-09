@@ -30,17 +30,24 @@ def get_models(name = None):
     conn.close()
     return models
 
-def new_model(name, script, image, desc):
+def new_model(name, script, image, log_dir, mnt_option, desc):
     conn = get_conn()
     c = conn.cursor()
     script = script.replace("'", "''")
-    if desc:
-        cmd = "INSERT INTO models (name, script, image, description) VALUES ('{}', '{}', '{}', '{}')".format(name, script, image, desc)
-    else:
-        cmd = "INSERT INTO models (name, script, image) VALUES ('{}', '{}', '{}')".format(name, script, image)
-
+    cmd = "INSERT INTO models (name, script, image, mnt_option) VALUES ('{}', '{}', '{}', '{}')".format(name, script, image, mnt_option)
     print(cmd)
     c.execute(cmd)
+
+    if desc:
+        cmd = "UPDATE models set description = '{}'".format(desc)
+        print(cmd)
+        c.execute(cmd)
+
+    if log_dir:
+        cmd = "UPDATE models set log_dir = '{}'".format(log_dir)
+        print(cmd)
+        c.execute(cmd)
+
     conn.commit()
     conn.close()
 

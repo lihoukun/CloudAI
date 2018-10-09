@@ -35,14 +35,6 @@ class ModelsNewForm(FlaskForm):
     desc = TextField('Description: ')
     submit = SubmitField('Save')
 
-class ModelEditForm(FlaskForm):
-    script =  TextField('Bash Script:', validators = [DataRequired()], widget=TextArea())
-    image =  TextField('Container Image:', validators = [DataRequired()])
-    log_dir =  TextField('Tensorboard Load Dir for TF')
-    mnt_option = SelectField('Select Mnt Option:', choices=[('HOSTPATH', 'HOSTPATH')], default='HOSTPATH')
-    desc = TextField('Description:')
-    submit = SubmitField('Update')
-
 class ModelDeleteForm(FlaskForm):
     submit = SubmitField('Delete')
 
