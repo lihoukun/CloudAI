@@ -4,6 +4,7 @@
 <br/>
 <br/>
 <h1>Model: {{ data[0] }}</h1>
+<<<<<<< HEAD:webapp/templates/template.html
 <ul>
     <p>pre-defined ENV variables for bash script to use</p>
     <li>JOB_NAME: either 'ps' or 'worker' or 'chief'</li>
@@ -21,6 +22,20 @@
 <p>Log Dir: {{ data[3]) }}</p>
 <p>Mount_option: {{ data[4]) }}</p>
 <p>Description: {{ data[5]) }}</p>
+=======
+<br/>
+<br/>
+<h3>Bash Script:<h3>
+<ul>{{ data[1] }}</ul>
+<h3>Container Image:</h3>
+<ul>{{ data[2] }}</ul>
+<h3>Log Dir: </h3>
+<ul>{{ data[3] }}</ul>
+<h3>Mount Option: </h3>
+<ul>{{ data[4] }}</ul>
+<h3>Description: </h3>
+<ul>{{ data[5] }}</ul>
+>>>>>>> b5c74ab62027ef79c78cf8569e5e4ab53fc6105c:webapp/templates/model.html
 
 <br/>
 <br/>

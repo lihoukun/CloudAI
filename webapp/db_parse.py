@@ -39,12 +39,12 @@ def new_model(name, script, image, log_dir, mnt_option, desc):
     c.execute(cmd)
 
     if desc:
-        cmd = "UPDATE models set description = '{}'".format(desc)
+        cmd = "UPDATE models set description = '{}' where name = '{}' ".format(desc, name)
         print(cmd)
         c.execute(cmd)
 
     if log_dir:
-        cmd = "UPDATE models set log_dir = '{}'".format(log_dir)
+        cmd = "UPDATE models set log_dir = '{}' where name = '{}'".format(log_dir, name)
         print(cmd)
         c.execute(cmd)
 
