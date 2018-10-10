@@ -174,8 +174,6 @@ def template(name=None):
 
 @app.route('/eval/', methods=('GET', 'POST'))
 def eval():
-    for t in TrainingModel.query.filter(log_dir.isnot(None)).all():
-
     form = EvalForm()
     form.log_dir.choices = [(t.log_dir, t.name) for t in TrainingModel.query.filter(log_dir.isnot(None)).all()]
     if form.validate_on_submit():
