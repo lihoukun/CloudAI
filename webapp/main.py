@@ -10,7 +10,6 @@ from database import db_session
 from models import TrainingModel, TemplateModel
 from kube_parse import get_total_nodes, get_gpu_per_node
 from subprocess import check_output
-import re
 import os
 
 
