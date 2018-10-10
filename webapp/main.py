@@ -5,7 +5,7 @@ app.config['SECRET_KEY'] = 'exaairocks'
 from flask import render_template, flash, redirect, request, url_for
 from wtforms.validators import NumberRange
 
-from forms import TrainingsNewForm, KubecmdForm, EvalForm, StopForm, ShowForm, ModelsNewForm, DeleteForm
+from forms import TrainingsNewForm, KubecmdForm, EvalForm, StopForm, ShowForm, TemplatesNewForm, DeleteForm
 from database import db_session
 from models import TrainingModel, TemplateModel
 from kube_parse import get_total_nodes, get_gpu_per_node
@@ -55,7 +55,7 @@ def trainings_new():
         num_cpu = form.num_cpu.data
         num_gpu = form.num_gpu.data
         num_epoch = form.num_epoch.data
-        result = TemplateModel.query.filter(name == template_name).first()
+        result = TemplateModel.query.filter_by(name=template_name).first()
         script, image, log_dir, mnt_option = result.bash_script, result.image_dir, result.log_dir, result.mnt_option
         record_dir = '{}/train/{}/records'.format(os.environ['SHARED_HOST'], train_name)
 
@@ -108,10 +108,9 @@ def training(name=None, desc = [], log = []):
         try:
             cmd = 'kubectl delete -f {}/train/{}/records/train.yaml'.format(os.environ['SHARED_HOST'], name)
             os.system(cmd)
-            t = TrainingModel.query.filter(name=name).first()
+            t = TrainingModel.query.filter_by(name=name).first()
             t.status = 'RUNNING'
             db_session.commit()
-            update_training(label, 'RUNNING')
             flash('Training Label {} scheduled to stop'.format(name))
         except:
             flash('Failed to stop training label {}'.format(name))
@@ -146,7 +145,7 @@ def templates_new():
                           log_dir=form.log_dir.data, mnt_option=form.mnt_option.data, description=form.desc.data)
         db_session.add(t)
         db_session.commit()
-        return redirect(url_for('models'))
+        return redirect(url_for('templates'))
 
     return render_template('templates_new.html', form=form)
 
@@ -161,12 +160,13 @@ def templates():
 
 @app.route('/template/<name>', methods=['GET', 'POST'])
 def template(name=None):
-    t = TemplateModel.query.filter(name=name).first()
+    t = TemplateModel.query.filter_by(name=name).first()
     data = [t.name, t.bash_script, t.image_dir, t.log_dir, t.mnt_option, t.description]
 
     form = DeleteForm()
     if form.validate_on_submit():
-        delete_model(name)
+        db_session.delete(t)
+        db_session.commit()
         flash("model {} has been deleted".format(name))
         return redirect(url_for('templates'))
     return render_template('template.html', data=data, form=form)
@@ -175,7 +175,7 @@ def template(name=None):
 @app.route('/eval/', methods=('GET', 'POST'))
 def eval():
     form = EvalForm()
-    form.log_dir.choices = [(t.log_dir, t.name) for t in TrainingModel.query.filter(log_dir.isnot(None)).all()]
+    form.log_dir.choices = [(t.log_dir, t.name) for t in TrainingModel.query.filter(TrainingModel.log_dir.isnot(None)).all()]
     if form.validate_on_submit():
         log_dir = form.log_dir.data
         custom_dir = form.custom_dir.data
@@ -188,7 +188,7 @@ def eval():
         cmd +=" exaai/tensorboard tensorboard --logdir=/local/mnt/workspace"
         os.system(cmd)
         return redirect("http://tensorboard.{}".format(os.environ['NGROK_DOMAIN']))
-    return render_template('eval.html', form=form, current=current)
+    return render_template('eval.html', form=form)
 
 
 @app.route('/serve/')

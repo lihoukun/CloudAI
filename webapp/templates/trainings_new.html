@@ -8,16 +8,23 @@
         {{ form.csrf_token }}
 
         <p>
-            {{ form.num_worker.label }}
-            {{ form.num_worker() }}
-            {% for error in form.num_worker.errors %}
+            {{ form.train_name.label }}
+            {{ form.train_name() }}
+            {% for error in form.train_name.errors %}
             <span style="color: red;">[{{ error }}]</span>
             {% endfor %}
         </p>
         <p>
-            {{ form.num_ps.label }}
-            {{ form.num_ps() }}
-            {% for error in form.num_ps.errors %}
+            {{ form.num_gpu.label }}
+            {{ form.num_gpu() }}
+            {% for error in form.num_gpu.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+        <p>
+            {{ form.num_cpu.label }}
+            {{ form.num_cpu() }}
+            {% for error in form.num_cpu.errors %}
             <span style="color: red;">[{{ error }}]</span>
             {% endfor %}
         </p>
@@ -29,31 +36,12 @@
             {% endfor %}
         </p>
         <p>
-            {% for option in form.train_option %}
-              {{ option() }}
-              {{ option.label }}<br/>
-              <div style="padding-left: 2em;">
-              {% if loop.index  == 1 %}
-                {{ form.train_label.label }}
-                {{ form.train_label() }}
-                {% for error in form.train_label.errors %}
-                <span style="color: red;">[{{ error }}]</span>
-                {% endfor %}
-              {% else %}
-                {{ form.model_name.label }}
-                {{ form.model_name() }}
-                {% for error in form.model_name.errors %}
-                <span style="color: red;">[{{ error }}]</span>
-                {% endfor %}
-                <a href="{{ url_for('models') }}">Model Detail</a>
-              {% endif %}
-              </div>
-              <br/>
-            {% endfor %}
-
-            {% for error in form.train_option.errors %}
+            {{ form.template_name.label }}
+            {{ form.template_name() }}
+            {% for error in form.template_name.errors %}
             <span style="color: red;">[{{ error }}]</span>
             {% endfor %}
+            <a href="{{ url_for('templates') }}">Templates Detail</a>
         </p>
         <p>
             {{ form.mail_to.label }}

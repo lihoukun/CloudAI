@@ -25,7 +25,7 @@ export CEPH_GB="1000"
 # web app
 export FLASK_DEBUG="1"
 export FLASK_APP="main.py"
-export FLASK_DB='/home/ai/workspace/sqlite3.db'
+export FLASK_DB='/home/ai/workspace/CloudAI/webapp/sqlite3.db'
 
 # Jupyter notebook
 export JUPYTER_UID="1000"

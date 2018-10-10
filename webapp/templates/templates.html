@@ -3,7 +3,7 @@
 {% block content %}
 <br/>
 <br/>
-<a href="{{ url_for('models_new') }}" class="btn btn-primary btn-lg" role="button">New Model</a>
+<a href="{{ url_for('templates_new') }}" class="btn btn-primary btn-lg" role="button">New Template</a>
 <a href="{{ url_for('trainings_new') }}" class="btn btn-primary btn-lg" role="button">New Training</a>
 <br/>
 <br/>
@@ -18,7 +18,7 @@
   <tbody>
     {% for row in data %}
     <tr>
-      <td><a href="{{ url_for('model', name=row[0]) }}">{{ row[0] }}</a></td>
+      <td><a href="{{ url_for('template', name=row[0]) }}">{{ row[0] }}</a></td>
       <td>{{ row[1] }}</td>
       <td>{{ row[2] }}</td>
     </tr>
