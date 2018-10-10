@@ -1,42 +1,71 @@
 import re
 import os
 from flask_wtf import FlaskForm
-from wtforms import TextField, BooleanField, IntegerField, SelectField, RadioField, SubmitField, TextAreaField, FloatField
+from wtforms import StringField, IntegerField, SelectField, SubmitField
 from wtforms.widgets import TextArea
-from wtforms.validators import NumberRange, DataRequired, ValidationError
+from wtforms.validators import DataRequired, ValidationError
 
-from db_parse import get_models
+from models import TemplateModel, TrainingModel
+
 
 class TrainingsNewForm(FlaskForm):
-    model_name = SelectField('Select Model: ')
-    num_worker = IntegerField('Number of Worker: ')
-    num_ps = IntegerField('Number of PS: ')
-    num_epoch = IntegerField('Number of Epoch: ')
-    train_option = RadioField('Train Option', choices = [('legacy', 'Continue from Existing Training'), ('new', 'Start a New Training')], default='new')
-    train_label = SelectField('Training Label: ')
-    mail_to = TextField('Send Mail: ')
-    submit = SubmitField('Train')
-
-class ModelsNewForm(FlaskForm):
     def name_uniq_check(form, field):
         if not field.data:
             raise ValidationError('Name cannot be empty')
         if not re.match(r'^[a-z][a-z0-9-]*$', field.data):
             raise ValidationError('Name must start with letter, and can only contain lowercase letters numbers and dash')
-        for model in get_models():
-            if field.data == model[0]:
-                raise  ValidationError('Model with name {} already exist'.format(field.data))
+        for t in TrainingModel.query.all():
+            if field.data == t.name:
+                raise  ValidationError('Training with label {} already exist'.format(field.data))
 
-    model_name = TextField('Model Name: ', validators=[name_uniq_check])
-    script =  TextField('Bash Script:', validators = [DataRequired()], widget=TextArea())
-    image =  TextField('Container Image:', validators = [DataRequired()])
-    log_dir =  TextField('Tensorboard Load Dir for TF')
+    train_name = StringField('Training Label: ', validators=[name_uniq_check])
+    template_name = SelectField('Select Template: ')
+    num_gpu = IntegerField('Number of Worker: ')
+    num_cpu = IntegerField('Number of PS: ')
+    num_epoch = IntegerField('Number of Epoch: ')
+    mail_to = StringField('Send Mail: ')
+    submit = SubmitField('Train')
+
+
+class TrainingResumeForm(FlaskForm):
+    num_worker = IntegerField('Number of Worker: ')
+    num_ps = IntegerField('Number of PS: ')
+    num_epoch = IntegerField('Number of Epoch: ')
+    mail_to = StringField('Send Mail: ')
+    submit = SubmitField('Train')
+
+
+class TemplatesNewForm(FlaskForm):
+    def name_uniq_check(form, field):
+        if not field.data:
+            raise ValidationError('Name cannot be empty')
+        if not re.match(r'^[a-z][a-z0-9-]*$', field.data):
+            raise ValidationError('Name must start with letter, and can only contain lowercase letters numbers and dash')
+        for t in TemplateModel.query.all():
+            if field.data == t.name:
+                raise  ValidationError('Template with name {} already exist'.format(field.data))
+
+    name = StringField('Template Name: ', validators=[name_uniq_check])
+    script = StringField('Bash Script:', validators = [DataRequired()], widget=TextArea())
+    image = StringField('Container Image:', validators = [DataRequired()])
+    log_dir = StringField('Tensorboard Load Dir for TF')
     mnt_option = SelectField('Select Mnt Option:', choices=[('HOSTPATH', 'HOSTPATH')], default='HOSTPATH')
-    desc = TextField('Description: ')
+    desc = StringField('Description: ')
     submit = SubmitField('Save')
 
-class ModelDeleteForm(FlaskForm):
+
+class TemplatesEditForm(FlaskForm):
+    script = StringField('Bash Script:', validators = [DataRequired()], widget=TextArea())
+    image = StringField('Container Image:', validators = [DataRequired()])
+    log_dir = StringField('Tensorboard Load Dir for TF')
+    mnt_option = SelectField('Select Mnt Option:', choices=[('HOSTPATH', 'HOSTPATH')], default='HOSTPATH')
+    desc = StringField('Description: ')
+    submit = SubmitField('Save')
+
+
+class DeleteForm(FlaskForm):
     submit = SubmitField('Delete')
+
 
 class EvalForm(FlaskForm):
     def dir_check(form, field):
@@ -45,7 +74,7 @@ class EvalForm(FlaskForm):
                 raise ValidationError('Custom dir does not exist')
 
     log_dir = SelectField('Availabel Lables: ')
-    custom_dir = TextField('Custom Dir: ', validators=[dir_check])
+    custom_dir = StringField('Custom Dir: ', validators=[dir_check])
     submit = SubmitField('Load!')
 
 class StopForm(FlaskForm):

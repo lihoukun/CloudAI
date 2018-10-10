@@ -77,7 +77,7 @@ def get_trainings(status = None):
     conn = get_conn()
     c = conn.cursor()
 
-    cmd = "SELECT label, status, train_dir FROM trainings"
+    cmd = "SELECT label, status FROM trainings"
     if status:
         cmd += " WHERE status = '{}'".format(status)
     cmd += " ORDER by label"
@@ -93,7 +93,7 @@ def get_tb_training():
     conn = get_conn()
     c = conn.cursor()
 
-    cmd = "SELECT label, status, train_dir FROM trainings WHERE tensorboard = 1"
+    cmd = "SELECT label, status FROM trainings WHERE tensorboard = 1"
     c.execute(cmd)
     res = c.fetchone()
     return res

@@ -3,21 +3,21 @@ import os
 import datetime
 import json
 
+
 def parse_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument('model', help='choose a model')
-    parser.add_argument('flow', help='choose a flow', choices=['train', 'eval', 'serve'])
     parser.add_argument('--ps_num', help='choose ps number', type=int)
     parser.add_argument('--worker_num', help='choose worker number', type=int)
     parser.add_argument('--gpu_per_node', help='number gpu per node', type=int)
     parser.add_argument('--epoch', help='choose worker number', type=int)
     parser.add_argument('--record_dir', help='record files path')
-    parser.add_argument('--signature', help='signature label')
+    parser.add_argument('--name', help='job name')
     parser.add_argument('--image', help='container image')
     args = parser.parse_args()
     return args
 
-def generate_cluster(model, signature, ps_num, worker_num, port):
+
+def generate_cluster(name, ps_num, worker_num, port):
     if ps_num is None:
         ps_num = 2
 
@@ -36,22 +36,23 @@ def generate_cluster(model, signature, ps_num, worker_num, port):
     if ps_num > 0:
         cluster['ps'] = []
         for i in range(ps_num):
-            ps_host = '{}-{}-ps-{}.default.svc.cluster.local:{}'.format(model, signature, i, port)
+            ps_host = '{}-ps-{}.default.svc.cluster.local:{}'.format(name, i, port)
             cluster['ps'].append((ps_host))
     if worker_num > 0:
         cluster['worker'] = []
         for i in range(worker_num):
-            worker_host = '{}-{}-worker-{}.default.svc.cluster.local:{}'.format(model, signature, i, port)
+            worker_host = '{}-worker-{}.default.svc.cluster.local:{}'.format(name, i, port)
             cluster['worker'].append(worker_host)
     if chief_num > 0:
         cluster['chief'] = []
         for i in range(chief_num):
-            chief_host = '{}-{}-chief-{}.default.svc.cluster.local:{}'.format(model, signature, i, port)
+            chief_host = '{}-chief-{}.default.svc.cluster.local:{}'.format(name, i, port)
             cluster['chief'].append(chief_host)
 
     return cluster
 
-def generate_train_configmap(model, signature, cluster, epoch):
+
+def generate_train_configmap(name, cluster, epoch):
     ps_hosts_str = ''
     if 'ps' in cluster:
         ps_hosts_str = ','.join(cluster['ps'])
@@ -69,25 +70,23 @@ def generate_train_configmap(model, signature, cluster, epoch):
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {0}-{1}-configmap
+  name: {0}-configmap
 data:
-  PS_HOSTS: "{2}"
-  WORKER_HOSTS: "{3}"
-  NUM_EPOCH: "{4}"
-  MODEL_NAME: "{0}"
-  SIGNATURE: "{1}"
-""".format(model, signature, ps_hosts_str, worker_hosts_str, epoch)
+  PS_HOSTS: "{1}"
+  WORKER_HOSTS: "{2}"
+  NUM_EPOCH: "{3}"
+""".format(name, ps_hosts_str, worker_hosts_str, epoch)
     return k8s_configmap
 
-def generate_train_service(job, id, port, model, signature):
+
+def generate_train_service(job, id, port, name):
     k8s_service = """---
 apiVersion: v1
 kind: Service
 metadata:
-  name: {3}-{4}-{0}-{1}
+  name: {3}-{0}-{1}
   labels:
-    model: {3}
-    signature: s{4}
+    name: {3}
 spec:
   type: ClusterIP
   ports:
@@ -97,12 +96,12 @@ spec:
   selector:
     job: {0}
     task: t{1}
-    model: {3}
-    signature: s{4}
-""".format(job, id, port, model, signature)
+    name: {3}
+""".format(job, id, port, name)
     return k8s_service
 
-def generate_train_job(cluster, job, id, port, model, signature, record_dir, gpu_per_node, image):
+
+def generate_train_job(cluster, job, id, port, name, record_dir, gpu_per_node, image):
     tf_config = {}
     tf_config['cluster'] = cluster
     tf_config['task'] = {'type': job, 'index': id}
@@ -121,16 +120,15 @@ def generate_train_job(cluster, job, id, port, model, signature, record_dir, gpu
 apiVersion: v1
 kind: Pod
 metadata:
-  name: {2}-{3}-{0}-{1}
+  name: {2}-{0}-{1}
   labels:
     job: {0}
     task: t{1}
-    model: {2}
-    signature: s{3}
+    name: {2}
 spec:
   restartPolicy: OnFailure
   volumes:
-""".format(job, id, model, signature)
+""".format(job, id, name)
 
     if os.environ.get('CEPH_ENABLE') == '1':
         k8s_job += """
@@ -159,14 +157,14 @@ spec:
     k8s_job += """
   containers:
   - name: tf-training
-    image: {2}
+    image: {1}
     securityContext:
       privileged: true
     envFrom:
     - configMapRef:
-        name: {0}-{1}-configmap
+        name: {0}-configmap
     volumeMounts:
-""".format(model, signature, image)
+""".format(name, image)
 
     if os.environ.get('CEPH_ENABLE') == '1':
         k8s_job += """
@@ -235,30 +233,25 @@ spec:
 
     return k8s_job
 
-def generate_train_config(model, signature, ps_num, worker_num, epoch, record_dir, gpu_per_node, image):
+
+def generate_train_config(name, ps_num, worker_num, epoch, record_dir, gpu_per_node, image):
     port = 2220
-    cluster = generate_cluster(model, signature, ps_num, worker_num, port)
+    cluster = generate_cluster(name, ps_num, worker_num, port)
 
     k8s_config = ''
-    k8s_config += generate_train_configmap(model, signature, cluster, epoch)
+    k8s_config += generate_train_configmap(name, cluster, epoch)
     for job, hosts in cluster.items():
         for i in range(len(hosts)):
-            k8s_config += generate_train_service(job, i, port, model, signature)
-            k8s_config += generate_train_job(cluster, job, i, port, model, signature, record_dir, gpu_per_node, image)
+            k8s_config += generate_train_service(job, i, port, name)
+            k8s_config += generate_train_job(cluster, job, i, port, name, record_dir, gpu_per_node, image)
 
     return k8s_config
 
+
 def main():
     args = parse_args()
-    k8s_config = ''
-    signature = args.signature if args.signature else datetime.datetime.now().strftime("%y%m%d%H%M%S")
     epoch = args.epoch if args.epoch else 1
-    if args.flow == 'train':
-        k8s_config = generate_train_config(args.model, signature, args.ps_num, args.worker_num, epoch, args.record_dir, args.gpu_per_node, args.image)
-    elif args.flow == 'eval':
-        k8s_config = generate_eval_config(args.model, signature)
-    else:
-        pass
+    k8s_config = generate_train_config(args.name, args.ps_num, args.worker_num, epoch, args.record_dir, args.gpu_per_node, args.image)
 
     if args.record_dir:
         if not os.path.isdir(args.record_dir):
@@ -271,6 +264,7 @@ def main():
         print("Yaml config generated at {}".format(cfg_file))
     else:
         print(k8s_config)
+
 
 if __name__ == "__main__":
     main()

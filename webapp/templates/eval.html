@@ -4,11 +4,6 @@
 <br/>
 <br/>
 <h1>Evaluation</h1>
-{% if current %}
-<p>Current tensorboard label: {{ current[2] }}</p>
-{% else %}
-<p>Current tensorboard label: N/A </p>
-{% endif %}
 <form action="" method="post">
     {{ form.csrf_token }}
 	<p>{{ form.custom_dir.label }} {{ form.custom_dir() }}</p>
@@ -20,7 +15,6 @@
 </form>
 <br/>
 <br/>
-<h1><a class="btn btn-primary btn-lg active" role="button" aria-pressed="true" href="{{ url_for('tensorboard') }}">TensorBoard</a></h1>
 <br/>
 <br/>
 {% endblock %}
