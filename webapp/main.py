@@ -12,7 +12,6 @@ from kube_parse import get_total_nodes, get_gpu_per_node
 from subprocess import check_output
 import re
 import os
-import datetime
 
 
 @app.teardown_appcontext
@@ -165,13 +164,8 @@ def template(name=None):
     t = TemplateModel.query.filter(name=name).first()
     data = [t.name, t.bash_script, t.image_dir, t.log_dir, t.mnt_option, t.description]
 
-<<<<<<< HEAD
     form = DeleteForm()
-    if formd.validate_on_submit():
-=======
-    form = ModelDeleteForm()
     if form.validate_on_submit():
->>>>>>> b5c74ab62027ef79c78cf8569e5e4ab53fc6105c
         delete_model(name)
         flash("model {} has been deleted".format(name))
         return redirect(url_for('templates'))
