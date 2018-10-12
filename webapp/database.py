@@ -1,8 +1,9 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy import Column, Integer, String
+from sqlalchemy import Column, Integer, String, DateTime
 import os
+import datetime
 
 #engine = create_engine(os.environ.get('FLASK_DB'), convert_unicode=True)
 engine = create_engine('sqlite:///sqlite3.db', convert_unicode=True)
@@ -23,12 +24,17 @@ class TrainingModel(Base):
     bash_script = Column(String(9999))
     image_dir = Column(String(99))
     log_dir = Column(String(99))
+    record_dir = Column(String(99))
     mnt_option = Column(String(99))
     email = Column(String(99))
     status = Column(String(99))
+    submit_at = Column(DateTime)
+    start_at = Column(DateTime)
+    stop_at = Column(DateTime)
+
 
     def __init__(self, name=None, num_gpu=0, num_cpu=0, num_epoch=None, bash_script=None, image_dir=None, log_dir=None,
-                 mnt_option=None, email=None, status=None):
+                 record_dir=None, mnt_option=None, email=None, status=None):
         self.name = name
         self.num_gpu = num_gpu
         self.num_cpu = num_cpu
@@ -36,9 +42,11 @@ class TrainingModel(Base):
         self.bash_script = bash_script
         self.image_dir = image_dir
         self.log_dir = log_dir
+        self.record_dir = record_dir
         self.mnt_option = mnt_option
         self.email = email
         self.status = status
+        self.submit_at = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
     def __repr__(self):
         return '<Training %r>' % (self.name)

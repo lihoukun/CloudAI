@@ -7,7 +7,7 @@ from wtforms.validators import NumberRange
 
 from forms import TrainingsNewForm, KubecmdForm, EvalForm, StopForm, ShowForm, TemplatesNewForm, DeleteForm
 from database import db_session
-from models import TrainingModel, TemplateModel
+from database import TrainingModel, TemplateModel
 from kube_parse import get_total_nodes, get_gpu_per_node
 from subprocess import check_output
 import os
@@ -56,7 +56,7 @@ def trainings_new():
         num_epoch = form.num_epoch.data
         result = TemplateModel.query.filter_by(name=template_name).first()
         script, image, log_dir, mnt_option = result.bash_script, result.image_dir, result.log_dir, result.mnt_option
-        record_dir = '{}/train/{}/records'.format(os.environ['SHARED_HOST'], train_name)
+        record_dir = '{}/train/{}'.format(os.environ['SHARED_HOST'], train_name)
 
         gen_script(record_dir, script)
 
@@ -71,7 +71,8 @@ def trainings_new():
         os.system(cmd)
 
         t = TrainingModel(name=train_name, num_gpu=num_gpu, num_cpu=num_cpu, num_epoch=num_epoch, bash_script=script,
-                          image_dir=image, log_dir=log_dir, mnt_option=mnt_option, email=form.mail_to.data, status='PEND')
+                          image_dir=image, log_dir=log_dir, record_dir=record_dir, mnt_option=mnt_option,
+                          email=form.mail_to.data, status='PENDING')
         db_session.add(t)
         db_session.commit()
         return redirect(url_for('trainings', type='active'))

@@ -44,6 +44,9 @@ def get_total_nodes():
                 total_nodes += 1
     return total_nodes
 
+def get_avail_worker():
+    return get_total_nodes() - get_busy_worker()
+
 
 def get_gpu_per_node():
     cmd = "kubectl describe nodes"
