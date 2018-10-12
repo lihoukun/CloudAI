@@ -28,7 +28,7 @@ Subject: %s
 def pending():
     t = TrainingModel.query.filter_by(status='PENDING').order_by('submit_at').first()
     if t:
-        name, num_gpu, mail_to = t.name, t.num_gpu, t.num_cpu
+        name, num_gpu, mail_to = t.name, t.num_gpu, t.email
         avail_nodes = get_avail_worker()
         if num_gpu > avail_nodes:
             return 0
@@ -49,11 +49,11 @@ def pending():
 
 
 def running():
-    for t in TrainingModel.query.filter_by(status='RUNNING').order_by(submit_at):
+    for t in TrainingModel.query.filter_by(status='RUNNING').order_by('submit_at'):
         cmd = 'kubectl get pods -l name={}'.format(t.name)
         output = check_output(cmd.split()).decode('ascii')
         if output:
-            cmd = 'kubectl get pods -l name={},job=worker'.format(t.name)
+            cmd = 'kubectl get pods -l name={},job=chief'.format(t.name)
             output = check_output(cmd.split()).decode('ascii')
             if output:
                 lines = output.split('\n')
@@ -70,16 +70,13 @@ def running():
         if t.status  != 'RUNNING':
             sub = 'Training {} COMPLETED'.format(t.name)
             msg = 'as title'
-            send_mail(sub, mail_to, msg)
+            send_mail(sub, t.email, msg)
             t.stop_at = datetime.datetime.now()
             db_session.commit()
 
 
 def completed():
-    c.execute("SELECT label, mail_to from trainings where status='FINISHED' order by stop_at asc")
-    for t in TrainingModel.query.filter_by(status='COMPLETED').order_by(stop_at):
-        label, mail_to = res
-
+    for t in TrainingModel.query.filter_by(status='COMPLETED').order_by('stop_at'):
         cmd = 'kubectl get pods -l name={}'.format(t.name)
         output = check_output(cmd.split()).decode('ascii')
         if output:
@@ -90,7 +87,7 @@ def completed():
             else:
                 sub = 'cfg file not found'
                 msg = 'No cfg file at {}, please manual delete'.format(cfg_file)
-                send_mail(sub, mail_to, msg)
+                send_mail(sub, t.email, msg)
 
         t.status = 'ARCHIVED'
         db_session.commit()
@@ -100,3 +97,5 @@ if __name__ == '__main__':
     os.chdir(os.path.dirname(os.path.abspath(__file__)))
     if sys.argv[1] == 'pending':
         pending()
+    elif sys.argv[1] == 'running':
+        running()
