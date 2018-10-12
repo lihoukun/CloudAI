@@ -46,7 +46,7 @@ class TrainingModel(Base):
         self.mnt_option = mnt_option
         self.email = email
         self.status = status
-        self.submit_at = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        self.submit_at = datetime.datetime.now()
 
     def __repr__(self):
         return '<Training %r>' % (self.name)

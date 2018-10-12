@@ -8,7 +8,8 @@ def check_db():
     if not os.path.isfile(db_file):
         print("Database is not setup, setting up now")
         print(db_file)
-        cmd = 'python3 {}/../../webapp/database.py'.format(os.path.dirname(os.path.abspath(__file__)))
+        os.chdir(os.path.dirname(os.path.abspath(db_file)))
+        cmd = 'python3 database.py'
         os.system(cmd)
 
 

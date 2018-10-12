@@ -28,7 +28,7 @@
       <td>{{ row[0] }}</td>
       <td>{{ row[1] }}</td>
       {% if type == 'active' %}
-      <td><a href="{{ url_for('training', label=row[0]) }}">link</a></td>
+      <td><a href="{{ url_for('training', name=row[0]) }}">link</a></td>
       {% endif %}
       {% if row[2] %}
       <td>{{ row[2] }}</td>

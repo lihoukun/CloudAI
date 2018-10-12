@@ -26,9 +26,7 @@ Subject: %s
     server.quit()
 
 def pending():
-    t = TrainingModel.query.filter_by(status='PENDING').order_by(submit_at).first()
-    c.execute("update trainings set submit_at = '{}' where submit_at is NULL".format(cur_time))
-    c.execute("SELECT label, num_gpu, mail_to from trainings where status='PENDING' order by submit_at asc limit 1")
+    t = TrainingModel.query.filter_by(status='PENDING').order_by('submit_at').first()
     if t:
         name, num_gpu, mail_to = t.name, t.num_gpu, t.num_cpu
         avail_nodes = get_avail_worker()
@@ -36,14 +34,13 @@ def pending():
             return 0
 
         cfg_file = '{}/train.yaml'.format(t.record_dir)
+        t.start_at = datetime.datetime.now()
         if os.path.isfile(cfg_file):
             cmd = 'kubectl apply -f {}'.format(cfg_file)
             os.system(cmd)
             t.status = 'RUNNING'
-            t.start_at = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         else:
             t.status = 'STOPPED'
-            t.start_at = t.stop_at = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
             sub = 'cfg file not found'
             msg = 'No cfg file at {}, deleted'.format(cfg_file)
             send_mail(sub, mail_to, msg)
@@ -74,7 +71,7 @@ def running():
             sub = 'Training {} COMPLETED'.format(t.name)
             msg = 'as title'
             send_mail(sub, mail_to, msg)
-            t.stop_at = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            t.stop_at = datetime.datetime.now()
             db_session.commit()
 
 
@@ -100,5 +97,6 @@ def completed():
 
 
 if __name__ == '__main__':
+    os.chdir(os.path.dirname(os.path.abspath(__file__)))
     if sys.argv[1] == 'pending':
         pending()
