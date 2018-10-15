@@ -240,11 +240,17 @@ def template(name=None):
     return render_template('template.html', data=data, formd=formd, formu=formu)
 
 
-@app.route('/eval/', methods=('GET', 'POST'))
-def eval():
+@app.route('/tensorboard/', methods=('GET', 'POST'))
+def tensorboard():
     form = EvalForm()
-    form.log_dir.choices = [(t.log_dir, t.name) for t in TrainingModel.query.filter(TrainingModel.log_dir.isnot(None)).all()]
-    if form.validate_on_submit():
+    choices = []
+    for t in TrainingModel.query.filter(TrainingModel.log_dir.isnot(None)).all():
+        if t.log_dir:
+            choices.append((t.log_dir, t.name))
+    if not choices:
+        choices.append(('--', '--'))
+    form.log_dir.choices = choices
+    if choices[0] != '--' and form.validate_on_submit():
         log_dir = form.log_dir.data
         custom_dir = form.custom_dir.data
         os.system("docker kill exaai-tensorboard")
@@ -256,7 +262,7 @@ def eval():
         cmd +=" exaai/tensorboard tensorboard --logdir=/local/mnt/workspace"
         os.system(cmd)
         return redirect("http://tensorboard.{}".format(os.environ['NGROK_DOMAIN']))
-    return render_template('eval.html', form=form)
+    return render_template('tensorboard.html', form=form)
 
 
 @app.route('/serve/')
