@@ -5,8 +5,10 @@ from sqlalchemy import Column, Integer, String, DateTime
 import os
 import datetime
 
-#engine = create_engine(os.environ.get('FLASK_DB'), convert_unicode=True)
-engine = create_engine('sqlite:///sqlite3.db', convert_unicode=True)
+if os.environ.get('FLASK_DB'):
+    engine = create_engine('sqlite:////{}'.format(os.environ.get('FLASK_DB')), convert_unicode=True)
+else:
+    engine = create_engine('sqlite:///sqlite3.db', convert_unicode=True)
 db_session = scoped_session(sessionmaker(autocommit=False,
                                          autoflush=False,
                                          bind=engine))
@@ -32,7 +34,6 @@ class TrainingModel(Base):
     start_at = Column(DateTime)
     stop_at = Column(DateTime)
 
-
     def __init__(self, name=None, num_gpu=0, num_cpu=0, num_epoch=None, bash_script=None, image_dir=None, log_dir=None,
                  record_dir=None, mnt_option=None, email=None, status=None):
         self.name = name
@@ -49,11 +50,7 @@ class TrainingModel(Base):
         self.submit_at = datetime.datetime.now()
 
     def __repr__(self):
-        return '<Training %r>' % (self.name)
-
-    #@validates('num_gpu')
-    #def validate_num_gpu(self, key, value):
-    #    assert int(value) > 0
+        return '<Training %r>'.format(self.name)
 
 
 class TemplateModel(Base):
@@ -75,7 +72,7 @@ class TemplateModel(Base):
         self.description = description
 
     def __repr__(self):
-        return '<Template %r>' % (self.name)
+        return '<Template {}>'.format(self.name)
 
 
 def init_db():
@@ -83,6 +80,7 @@ def init_db():
     # they will be registered properly on the metadata.  Otherwise
     # you will have to import them first before calling init_db()
     Base.metadata.create_all(bind=engine)
+
 
 if __name__ == '__main__':
     init_db()

@@ -5,7 +5,7 @@ import os
 import sys
 import smtplib
 from subprocess import check_output
-import re
+
 
 def send_mail(sub, mail_to, msg):
     if not mail_to: return 0
