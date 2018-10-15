@@ -87,11 +87,7 @@ def trainings_new():
 def trainings(type='active'):
     data = []
     for t in TrainingModel.query.all():
-        name, status, log_dir = t.name, t.status, t.log_dir
-        if type == 'active' and status != 'STOPPED':
-            data.append([name, status, log_dir])
-        if type != 'active' and status == 'STOPPED':
-            data.append([name, status, log_dir])
+        data.append([t.name, t.status, t.num_gpu])
 
     return render_template('trainings.html', data=data, type=type)
 

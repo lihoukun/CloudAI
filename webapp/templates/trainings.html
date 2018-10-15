@@ -4,36 +4,35 @@
 <br/>
 <br/>
 <a href="{{ url_for('trainings_new') }}" class="btn btn-primary btn-lg" role="button">New Training</a>
+<!--
 {% if type == 'active' %}
 <a href="{{ url_for('trainings', type='archive') }}" class="btn btn-info pull-right" role="button">List Archived Trainings</a>
 {% else %}
 <a href="{{ url_for('trainings', type='active') }}" class="btn btn-info pull-right" role="button">List Active Trainings</a>
 {% endif %}
+-->
 <br/>
 <br/>
 <table class="table table-hover table-primary table-striped">
   <thead>
     <tr>
-      <th scope="col">Training Label</th>
+      <th scope="col">Training Name</th>
       <th scope="col">Status</th>
-      {% if type == 'active' %}
       <th scope="col">Pods Status</th>
-      {% endif %}
-      <th scope="col">Model Dir</th>
+      <th scope="col">GPU Usage</th>
     </tr>
   </thead>
   <tbody>
     {% for row in data %}
     <tr>
-		<td><a href="{{ url_for('training_cfg', name=row[0]) }}">{{ row[0] }}</a></td>
+      <td><a href="{{ url_for('training_cfg', name=row[0]) }}">{{ row[0] }}</a></td>
       <td>{{ row[1] }}</td>
       {% if type == 'active' %}
       <td><a href="{{ url_for('training_info', name=row[0]) }}">link</a></td>
-      {% endif %}
-      {% if row[2] %}
-      <td>{{ row[2] }}</td>
       {% else %}
       <td></td>
+      {% endif %}
+      <td>{{ row[2] }}</td>
       {% endif %}
     </tr>
     {% endfor %}
