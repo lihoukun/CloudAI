@@ -77,11 +77,14 @@ class EvalForm(FlaskForm):
     custom_dir = StringField('Custom Dir: ', validators=[dir_check])
     submit = SubmitField('Load!')
 
+
 class StopForm(FlaskForm):
     submit = SubmitField('Stop')
 
+
 class ShowForm(FlaskForm):
-    submit = SubmitField('show')
+    submit = SubmitField('Show')
+
 
 class KubecmdForm(FlaskForm):
     namespace = SelectField('namespace', choices = [('kube-system', 'kube-system'), ('default', 'default')])

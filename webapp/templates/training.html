@@ -25,9 +25,9 @@
         <td>{{ row[2] }}</td>
         <td>
             <form action="" method="post">
-                {{ formd.csrf_token }}
+                {{ formi.csrf_token }}
                 <input type="hidden" name="name" value="{{ row[0] }}" />
-                <p>{{ formd.submit() }}</p>
+                <p>{{ formi.submit() }}</p>
             </form>
         </td>
          <td>

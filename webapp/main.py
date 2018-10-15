@@ -103,27 +103,41 @@ def training(name=None, desc = [], log = []):
                 data.append(line.split()[:3])
         data.pop(0)
 
-    forms = StopForm(prefix='forms')
-    if forms.validate_on_submit():
-        try:
-            cmd = 'kubectl delete -f {}/train/{}/records/train.yaml'.format(os.environ['SHARED_HOST'], name)
-            os.system(cmd)
-            t = TrainingModel.query.filter_by(name=name).first()
-            t.status = 'RUNNING'
-            db_session.commit()
-            flash('Training Label {} scheduled to stop'.format(name))
-        except:
-            flash('Failed to stop training label {}'.format(name))
-        return redirect(url_for('trainings', type='active'))
+    t = TrainingModel.query.filter_by(name=name).first()
+    if t.status == 'COMPLETED':
+        forms = DeleteForm(prefix='forms')
+        if forms.validate_on_submit():
+            try:
+                cmd = 'rm -rf {}'.format(t.record_dir)
+                os.system(cmd)
+                db_session.delete(t)
+                db_session.commit()
+                flash('Training {} scheduled to delete'.format(name))
+            except:
+                flash('Failed to delete training {}'.format(name))
+            return redirect(url_for('trainings', type='active'))
+    else:
+        forms = StopForm(prefix='forms')
+        if forms.validate_on_submit():
+            try:
+                cmd = 'kubectl delete -f {}/train.yaml'.format(t.record_dir)
+                os.system(cmd)
+                t.status = 'COMPLETED'
+                db_session.commit()
+                flash('Training {} scheduled to stop'.format(name))
+            except:
+                flash('Failed to stop training {}'.format(name))
+            return redirect(url_for('trainings', type='active'))
 
-    formd = ShowForm(prefix='formd')
-    if formd.validate_on_submit():
+    formi = ShowForm(prefix='formi')
+    if formi.validate_on_submit():
         name = request.form['name']
         try:
             cmd = 'kubectl describe pod {}'.format(name)
             desc = check_output(cmd.split()).decode('ascii').split('\n')
         except:
-            desc = ['Oops, getting errors while retrieving descriptions', 'Maybe the conainer is not ready or teminated?']
+            desc = ['Oops, getting errors while retrieving descriptions',
+                    'Maybe the conainer is not ready or teminated?']
     forml = ShowForm(prefix='forml')
     if forml.validate_on_submit():
         name = request.form['name']
