@@ -16,16 +16,52 @@
 </ul>
 <br/>
 <br/>
-<p>Bash Script<br/>{{ data[1]) }}</p>
-<p>Container Image: {{ data[2]) }}</p>
-<p>Log Dir: {{ data[3]) }}</p>
-<p>Mount_option: {{ data[4]) }}</p>
-<p>Description: {{ data[5]) }}</p>
+
+    <form action="" method="post">
+        {{ formu.csrf_token }}
+        <p>
+            {{ formu.script.label }}<br/>
+            {% set f = formu.script.process_data(data[1]) %}
+            {{ formu.script(cols=80, rows=20) }}
+            {% for error in formu.script.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+        <p>
+            {{ formu.image.label }}
+            {{ formu.image(value=data[2], cols=60) }}
+            {% for error in formu.image.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+        <p>
+            {{ formu.log_dir.label }}
+            {{ formu.log_dir(value=data[3], cols=60) }}
+            {% for error in formu.log_dir.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </p>   <p>
+            {{ formu.mnt_option.label }}
+            {{ formu.mnt_option(value=data[4], cols=60) }}
+            {% for error in formu.mnt_option.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+        <p>
+            {{ formu.desc.label }}
+            {{ formu.desc(value=data[5], cols=60) }}
+            {% for error in formu.desc.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+		<button type="submit" class="btn btn-primary">UPDATE</button>
+    </form>
+
 
 <br/>
 <br/>
 <form action="" method="post">
-    {{ form.csrf_token }}
+    {{ formd.csrf_token }}
     <button type="submit" class="btn btn-danger">DELETE</button>
 </form>
 <br/>

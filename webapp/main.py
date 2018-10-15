@@ -5,7 +5,7 @@ app.config['SECRET_KEY'] = 'exaairocks'
 from flask import render_template, flash, redirect, request, url_for
 from wtforms.validators import NumberRange
 
-from forms import TrainingsNewForm, KubecmdForm, EvalForm, StopForm, ShowForm, TemplatesNewForm, DeleteForm
+from forms import TrainingsNewForm, KubecmdForm, EvalForm, StopForm, ShowForm, TemplatesNewForm, TemplatesEditForm, DeleteForm
 from database import db_session
 from database import TrainingModel, TemplateModel
 from kube_parse import get_total_nodes, get_gpu_per_node
@@ -163,13 +163,25 @@ def template(name=None):
     t = TemplateModel.query.filter_by(name=name).first()
     data = [t.name, t.bash_script, t.image_dir, t.log_dir, t.mnt_option, t.description]
 
-    form = DeleteForm()
-    if form.validate_on_submit():
+    formu = TemplatesEditForm()
+    if formu.validate_on_submit():
+        t.bash_script = formu.script.data
+        t.image_dir = formu.image.data
+        t.log_dir = formu.log_dir.data
+        t.mnt_option = formu.mnt_option.data
+        t.description = formu.desc.data
+
+        db_session.commit()
+        flash("template {} has been updated".format(name))
+        return redirect(url_for('templates'))
+
+    formd = DeleteForm()
+    if formd.validate_on_submit():
         db_session.delete(t)
         db_session.commit()
-        flash("model {} has been deleted".format(name))
+        flash("template {} has been deleted".format(name))
         return redirect(url_for('templates'))
-    return render_template('template.html', data=data, form=form)
+    return render_template('template.html', data=data, formd=formd, formu=formu)
 
 
 @app.route('/eval/', methods=('GET', 'POST'))
