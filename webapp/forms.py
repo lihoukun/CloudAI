@@ -28,11 +28,11 @@ class TrainingsNewForm(FlaskForm):
 
 
 class TrainingResumeForm(FlaskForm):
-    num_worker = IntegerField('Number of Worker: ')
-    num_ps = IntegerField('Number of PS: ')
+    num_gpu = IntegerField('Number of Worker: ')
+    num_cpu = IntegerField('Number of PS: ')
     num_epoch = IntegerField('Number of Epoch: ')
     mail_to = StringField('Send Mail: ')
-    submit = SubmitField('Train')
+    submit = SubmitField('Resume Training')
 
 
 class TemplatesNewForm(FlaskForm):

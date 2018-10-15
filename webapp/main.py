@@ -190,7 +190,7 @@ def training_info(name=None, desc = [], log = []):
         except:
             log = ['Oops, getting error while retrieving logs', 'Maybe the job is not ready or terminated?']
 
-    return render_template('training_info.html', name=name, data=data, forms=forms, formd=formd, forml=forml, desc=desc, log=log)
+    return render_template('training_info.html', name=name, data=data, forms=forms, formi=formi, forml=forml, desc=desc, log=log)
 
 
 @app.route('/templates/new/', methods=['GET', 'POST'])
