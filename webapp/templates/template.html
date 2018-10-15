@@ -3,7 +3,7 @@
 {% block content %}
 <br/>
 <br/>
-<h1>Model: {{ data[0] }}</h1>
+<h1>Template: {{ data[0] }}</h1>
 <ul>
     <p>pre-defined ENV variables for bash script to use</p>
     <li>JOB_NAME: either 'ps' or 'worker' or 'chief'</li>
@@ -42,7 +42,7 @@
             {% endfor %}
         </p>   <p>
             {{ formu.mnt_option.label }}
-            {{ formu.mnt_option(value=data[4], cols=60) }}
+            {{ formu.mnt_option(value=data[4]) }}
             {% for error in formu.mnt_option.errors %}
             <span style="color: red;">[{{ error }}]</span>
             {% endfor %}

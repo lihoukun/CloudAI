@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+
+{% block content %}
+<br/>
+<br/>
+<h1>Template: {{ data[0] }}</h1>
+{% if data[1] == 'COMPLETED' %}
+    <form action="" method="post">
+        {{ form.csrf_token }}
+        <p>{{ form.submit() }}</p>
+        <p>
+            {{ form.num_gpu.label }}
+            {{ form.num_gpu(value=data[2]) }}
+            {% for error in form.num_gpu.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+        <p>
+            {{ form.num_cpu.label }}
+            {{ form.num_cpu(value=data[3]) }}
+            {% for error in form.num_cpu.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+        <p>
+            {{ form.num_epoch.label }}
+            {{ form.num_epoch(value=data[4]) }}
+            {% for error in form.num_epoch.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+        <p>
+            {{ form.mail_to.label }}
+            {{ form.mail_to(value=data[5]) }}
+        </p>
+    </form>
+{% else %}
+<h3>Number of Worker:</h3>
+<p>{{ data[2] }}</p>
+<h3>Number of PS:</h3>
+<p>{{ data[3] }}</p>
+<h3>Number of Epoch:</h3>
+<p>{{ data[4] }}</p>
+<h3>Mail To:</h3>
+<p>{{ data[5] }}</p>
+{% endif %}
+<br/>
+<br/>
+<h3>Bash Script:</h3>
+<p>{{ data[6] }}</p>
+<h3>Image Dir:</h3>
+<p>{{ data[7] }}</p>
+<h3>Log Dir:</h3>
+<p>{{ data[8] }}</p>
+<h3>Mnt Option:</h3>
+<p>{{ data[9] }}</p>
+<br/>
+<br/>
+{% endblock %}

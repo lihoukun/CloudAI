@@ -5,12 +5,15 @@ app.config['SECRET_KEY'] = 'exaairocks'
 from flask import render_template, flash, redirect, request, url_for
 from wtforms.validators import NumberRange
 
-from forms import TrainingsNewForm, KubecmdForm, EvalForm, StopForm, ShowForm, TemplatesNewForm, TemplatesEditForm, DeleteForm
+from forms import TrainingsNewForm, TrainingResumeForm
+from forms import KubecmdForm, EvalForm, StopForm, ShowForm, DeleteForm
+from forms import TemplatesNewForm, TemplatesEditForm
 from database import db_session
 from database import TrainingModel, TemplateModel
 from kube_parse import get_total_nodes, get_gpu_per_node
 from subprocess import check_output
 import os
+import datetime
 
 
 @app.teardown_appcontext
@@ -92,8 +95,48 @@ def trainings(type='active'):
 
     return render_template('trainings.html', data=data, type=type)
 
-@app.route('/training/<name>', methods=['GET', 'POST'])
-def training(name=None, desc = [], log = []):
+
+@app.route('/training/config/<name>', methods=['GET', 'POST'])
+def training_cfg(name=None):
+    t = TrainingModel.query.filter_by(name=name).first()
+    data = [name, t.status, t.num_gpu, t.num_cpu, t.num_epoch, t.email,
+            t.bash_script, t.image_dir, t.log_dir, t.mnt_option]
+
+    form = TrainingResumeForm()
+    form.num_gpu.validators=[NumberRange(min=1, max=get_total_nodes())]
+    form.num_cpu.validators=[NumberRange(min=0, max=get_total_nodes())]
+    if form.validate_on_submit():
+        num_cpu = form.num_cpu.data
+        num_gpu = form.num_gpu.data
+        num_epoch = form.num_epoch.data
+        email = form.mail_to.data
+
+        cmd = 'python3 {}/scripts/gen_k8s_yaml.py'.format(os.path.dirname(os.path.realpath(__file__)))
+        cmd += ' --ps_num {} --worker_num {}'.format(num_cpu, num_gpu)
+        cmd += ' --gpu_per_node {}'.format(get_gpu_per_node())
+        cmd += ' --epoch {}'.format(num_epoch)
+        cmd += ' --record_dir {}'.format(t.record_dir)
+        cmd += ' --name {}'.format(name)
+        cmd += ' --image {}'.format(t.image_dir)
+        print(cmd)
+        os.system(cmd)
+
+        t.num_cpu = num_cpu
+        t.num_gpu = num_gpu
+        t.num_epoch = num_epoch
+        t.email = email
+        t.status = 'PENDING'
+        t.submit_at = datetime.datetime.now()
+        t.start_at = None
+        t.stop_at = None
+        db_session.commit()
+        return redirect(url_for('trainings', type='active'))
+
+    return render_template('training_cfg.html', form=form, data=data)
+
+
+@app.route('/training/info/<name>', methods=['GET', 'POST'])
+def training_info(name=None, desc = [], log = []):
     data = []
     cmd = 'kubectl get pods -l name={}'.format(name)
     output = check_output(cmd.split()).decode('ascii')
@@ -147,7 +190,7 @@ def training(name=None, desc = [], log = []):
         except:
             log = ['Oops, getting error while retrieving logs', 'Maybe the job is not ready or terminated?']
 
-    return render_template('training.html', name=name, data=data, forms=forms, formd=formd, forml=forml, desc=desc, log=log)
+    return render_template('training_info.html', name=name, data=data, forms=forms, formd=formd, forml=forml, desc=desc, log=log)
 
 
 @app.route('/templates/new/', methods=['GET', 'POST'])
