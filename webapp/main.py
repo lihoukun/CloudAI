@@ -111,6 +111,9 @@ def training_cfg(name=None):
         num_epoch = form.num_epoch.data
         email = form.mail_to.data
 
+        cmd = 'kubectl delete -f {}/train.yaml'.format(t.record_dir)
+        os.system(cmd)
+
         cmd = 'python3 {}/scripts/gen_k8s_yaml.py'.format(os.path.dirname(os.path.realpath(__file__)))
         cmd += ' --ps_num {} --worker_num {}'.format(num_cpu, num_gpu)
         cmd += ' --gpu_per_node {}'.format(get_gpu_per_node())

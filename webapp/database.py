@@ -8,7 +8,7 @@ import datetime
 if os.environ.get('FLASK_DB'):
     engine = create_engine('sqlite:////{}'.format(os.environ.get('FLASK_DB')), convert_unicode=True)
 else:
-    engine = create_engine('sqlite:///sqlite3.db', convert_unicode=True)
+    engine = create_engine('sqlite:////{}/sqlite3.db'.format(os.path.dirname(os.path.abspath(__file__))), convert_unicode=True)
 db_session = scoped_session(sessionmaker(autocommit=False,
                                          autoflush=False,
                                          bind=engine))
