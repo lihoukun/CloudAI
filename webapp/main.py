@@ -250,13 +250,16 @@ def tensorboard():
     if not choices:
         choices.append(('--', '--'))
     form.log_dir.choices = choices
-    if choices[0] != '--' and form.validate_on_submit():
+    if form.validate_on_submit():
         log_dir = form.log_dir.data
         custom_dir = form.custom_dir.data
         os.system("docker kill exaai-tensorboard")
         os.system("docker rm exaai-tensorboard")
         if custom_dir != '':
             cmd = "docker run --name exaai-tensorboard -d -p {0}:6006 -v {1}:/local/mnt/workspace".format(os.environ.get('TENSORBOARD_PORT'), custom_dir)
+        elif choices[0][0] == '--':
+            flash('No tensorboard dir chosen')
+            return render_template('tensorboard.html', form=form)
         else:
             cmd = "docker run --name exaai-tensorboard -d -p {0}:6006 -v {1}:/local/mnt/workspace".format(os.environ.get('TENSORBOARD_PORT'), log_dir)
         cmd +=" exaai/tensorboard tensorboard --logdir=/local/mnt/workspace"
