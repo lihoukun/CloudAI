@@ -66,9 +66,9 @@ def running():
                         break
                 if is_finished: t.status = 'COMPLETED'
         else:
-            t.status = 'COMPLETED'
+            t.status = 'KILLED'
 
-        if t.status  == 'COMPLETED':
+        if t.status  != 'RUNNING':
             sub = 'Training {} COMPLETED'.format(t.name)
             msg = 'as title'
             send_mail(sub, t.email, msg)

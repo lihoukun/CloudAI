@@ -4,7 +4,7 @@
 <br/>
 <br/>
 <h1>Template: {{ data[0] }}</h1>
-{% if data[1] == 'COMPLETED' %}
+{% if data[1] == 'COMPLETED' or data[1] == 'KILLED' %}
     <form action="" method="post">
         {{ form.csrf_token }}
         <p>{{ form.submit() }}</p>
