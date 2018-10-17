@@ -35,7 +35,7 @@ def trainings_new():
         with open(filename, 'w+') as f:
             f.write('set -x\n')
             f.write('umask 2\n')
-            f.write(script)
+            f.write(script.replace('\r\n', os.linesep))
 
     def transform_dir(container_dir):
         if os.environ.get('HOSTPATH_ENABLE') == '1' and container_dir.startswith(os.environ.get('HOSTPATH_CONTAINER')):
