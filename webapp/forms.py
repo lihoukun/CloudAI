@@ -15,7 +15,7 @@ class TrainingsNewForm(FlaskForm):
             raise ValidationError('Name must start with letter, and can only contain lowercase letters numbers and dash')
         for t in TrainingModel.query.all():
             if field.data == t.name:
-                raise  ValidationError('Training with label {} already exist'.format(field.data))
+                raise ValidationError('Training with label {} already exist'.format(field.data))
 
     train_name = StringField('Training Label: ', validators=[name_uniq_check])
     template_name = SelectField('Select Template: ')
@@ -42,10 +42,16 @@ class TemplatesNewForm(FlaskForm):
             raise ValidationError('Name must start with letter, and can only contain lowercase letters numbers and dash')
         for t in TemplateModel.query.all():
             if field.data == t.name:
-                raise  ValidationError('Template with name {} already exist'.format(field.data))
+                raise ValidationError('Template with name {} already exist'.format(field.data))
+
+    def cmd_format_check(form, field):
+        if not field.data:
+            raise ValidationError('Name cannot be empty')
+        if re.search('"'):
+            raise ValidationError('Name cannot contain double quote')
 
     name = StringField('Template Name: ', validators=[name_uniq_check])
-    script = StringField('Bash Script:', validators = [DataRequired()])
+    script = StringField('Bash Script:', validators = [cmd_format_check()])
     image = StringField('Container Image:', validators = [DataRequired()])
     log_dir = StringField('Tensorboard Load Dir for TF')
     mnt_option = SelectField('Select Mnt Option:', choices=[('HOSTPATH', 'HOSTPATH')], default='HOSTPATH')
