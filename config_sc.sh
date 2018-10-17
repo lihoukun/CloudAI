@@ -24,16 +24,7 @@ export CEPH_GB="1000"
 
 # web app
 export FLASK_DEBUG="1"
-export FLASK_APP="main.py"
 export FLASK_DB='/home/ai/workspace/CloudAI/webapp/sqlite3.db'
-
-# Jupyter notebook
-export JUPYTER_UID="1000"
-export JUPYTER_GID="1000"
 
 # NETWORKING
 export NGROK_DOMAIN="exaai.ngrok.io"
-export FLASK_PORT="5000"
-export TENSORBOARD_PORT="30060"
-export NGINX_PORT="30080"
-export JUPYTER_PORT="30088"

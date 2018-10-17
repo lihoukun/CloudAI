@@ -146,7 +146,7 @@ def training_info(name=None, desc = [], log = []):
         data.pop(0)
 
     t = TrainingModel.query.filter_by(name=name).first()
-    if t.status == 'COMPLETED':
+    if t.status == 'KILLED':
         forms = DeleteForm(prefix='forms')
         if forms.validate_on_submit():
             try:
@@ -154,7 +154,7 @@ def training_info(name=None, desc = [], log = []):
                 os.system(cmd)
                 db_session.delete(t)
                 db_session.commit()
-                flash('Training {} scheduled to delete'.format(name))
+                flash('Training {} deleted'.format(name))
             except:
                 flash('Failed to delete training {}'.format(name))
             return redirect(url_for('trainings', type='active'))
@@ -164,11 +164,11 @@ def training_info(name=None, desc = [], log = []):
             try:
                 cmd = 'kubectl delete -f {}/train.yaml'.format(t.record_dir)
                 os.system(cmd)
-                t.status = 'COMPLETED'
+                t.status = 'KILLED'
                 db_session.commit()
-                flash('Training {} scheduled to stop'.format(name))
+                flash('Training {} killed'.format(name))
             except:
-                flash('Failed to stop training {}'.format(name))
+                flash('Failed to kill training {}'.format(name))
             return redirect(url_for('trainings', type='active'))
 
     formi = ShowForm(prefix='formi')

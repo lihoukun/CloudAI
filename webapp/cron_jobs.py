@@ -40,7 +40,8 @@ def pending():
             os.system(cmd)
             t.status = 'RUNNING'
         else:
-            t.status = 'STOPPED'
+            os.system('rm -rf {}'.format(t.record_dir))
+            db_session.delete(t)
             sub = 'cfg file not found'
             msg = 'No cfg file at {}, deleted'.format(cfg_file)
             send_mail(sub, mail_to, msg)
@@ -67,7 +68,7 @@ def running():
         else:
             t.status = 'COMPLETED'
 
-        if t.status  != 'RUNNING':
+        if t.status  == 'COMPLETED':
             sub = 'Training {} COMPLETED'.format(t.name)
             msg = 'as title'
             send_mail(sub, t.email, msg)
