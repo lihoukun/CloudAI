@@ -191,7 +191,7 @@ spec:
 """.format(os.environ.get('HOSTPATH_CONTAINER'))
 
     k8s_job += """
-    command: ["{3}"]
+    command: ["bash", "-c", "{3}"]
     ports:
     - name: tf-training-ports
       containerPort: {2}
