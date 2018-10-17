@@ -1,5 +1,5 @@
 # net disk related
-export SHARED_HOST="/mnt/nfs1T"
+export SHARED_HOST="/home/ai"
 export HOSTPATH_ENABLE="1"
 export HOSTPATH_HOST="/mnt"
 export HOSTPATH_CONTAINER="/hostpath"

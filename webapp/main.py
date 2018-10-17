@@ -28,25 +28,6 @@ def index():
 
 @app.route('/trainings/new/', methods=['GET', 'POST'])
 def trainings_new():
-    def gen_script(record_dir, script):
-        if not os.path.isdir(record_dir):
-            os.makedirs(record_dir, 0o775)
-        filename = '{}/tensorflow.sh'.format(record_dir)
-        with open(filename, 'w+') as f:
-            f.write('set -x\n')
-            f.write('umask 2\n')
-            f.write(script.replace('\r\n', os.linesep))
-
-    def transform_dir(container_dir):
-        if os.environ.get('HOSTPATH_ENABLE') == '1' and container_dir.startswith(os.environ.get('HOSTPATH_CONTAINER')):
-            return container_dir.replace(os.environ.get('HOSTPATH_CONTAINER'), os.environ.get('HOSTPATH_HOST'))
-        elif os.environ.get('GLUSTER_ENABLE') == '1' and container_dir.startswith(os.environ.get('GLUSTER_CONTAINER')):
-            return container_dir.replace(os.environ.get('GLUSTER_CONTAINER'), os.environ.get('GLUSTER_HOST'))
-        elif os.environ.get('NFS_ENABLE') == '1' and container_dir.startswith(os.environ.get('NFS_CONTAINER')):
-            return container_dir.replace(os.environ.get('NFS_CONTAINER'), os.environ.get('NFS_HOST'))
-        else:
-            return container_dir
-
     form = TrainingsNewForm()
     form.template_name.choices = [[t.name]*2 for t in TemplateModel.query.all()]
     form.num_gpu.validators=[NumberRange(min=1, max=get_total_nodes())]
@@ -59,9 +40,7 @@ def trainings_new():
         num_epoch = form.num_epoch.data
         result = TemplateModel.query.filter_by(name=template_name).first()
         script, image, log_dir, mnt_option = result.bash_script, result.image_dir, result.log_dir, result.mnt_option
-        record_dir = '{}/train/{}'.format(os.environ['SHARED_HOST'], train_name)
-
-        gen_script(record_dir, script)
+        record_dir = '{}/records/{}'.format(os.environ['SHARED_HOST'], train_name)
 
         cmd = 'python3 {}/scripts/gen_k8s_yaml.py'.format(os.path.dirname(os.path.realpath(__file__)))
         cmd += ' --ps_num {} --worker_num {}'.format(num_cpu, num_gpu)
@@ -71,6 +50,7 @@ def trainings_new():
         cmd += ' --name {}'.format(train_name)
         cmd += ' --image {}'.format(image)
         cmd += ' --mnt {}'.format(mnt_option)
+        cmd += ' --script {}'.format(script)
         print(cmd)
         os.system(cmd)
 
@@ -119,6 +99,7 @@ def training_cfg(name=None):
         cmd += ' --name {}'.format(name)
         cmd += ' --image {}'.format(t.image_dir)
         cmd += ' --mnt {}'.format(t.mnt_option)
+        cmd += ' --script {}'.format(t.bash_script)
         print(cmd)
         os.system(cmd)
 

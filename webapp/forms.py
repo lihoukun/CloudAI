@@ -2,7 +2,6 @@ import re
 import os
 from flask_wtf import FlaskForm
 from wtforms import StringField, IntegerField, SelectField, SubmitField
-from wtforms.widgets import TextArea
 from wtforms.validators import DataRequired, ValidationError
 
 from database import TemplateModel, TrainingModel
@@ -46,7 +45,7 @@ class TemplatesNewForm(FlaskForm):
                 raise  ValidationError('Template with name {} already exist'.format(field.data))
 
     name = StringField('Template Name: ', validators=[name_uniq_check])
-    script = StringField('Bash Script:', validators = [DataRequired()], widget=TextArea())
+    script = StringField('Bash Script:', validators = [DataRequired()])
     image = StringField('Container Image:', validators = [DataRequired()])
     log_dir = StringField('Tensorboard Load Dir for TF')
     mnt_option = SelectField('Select Mnt Option:', choices=[('HOSTPATH', 'HOSTPATH')], default='HOSTPATH')
@@ -55,7 +54,7 @@ class TemplatesNewForm(FlaskForm):
 
 
 class TemplatesEditForm(FlaskForm):
-    script = StringField('Bash Script:', validators = [DataRequired()], widget=TextArea())
+    script = StringField('Bash Script:', validators = [DataRequired()])
     image = StringField('Container Image:', validators = [DataRequired()])
     log_dir = StringField('Tensorboard Load Dir for TF')
     mnt_choices = []
