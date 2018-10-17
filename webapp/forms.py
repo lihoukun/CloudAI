@@ -51,7 +51,7 @@ class TemplatesNewForm(FlaskForm):
             raise ValidationError('Name cannot contain double quote')
 
     name = StringField('Template Name: ', validators=[name_uniq_check])
-    script = StringField('Bash Script:', validators = [cmd_format_check()])
+    script = StringField('Bash Script:', validators = [cmd_format_check])
     image = StringField('Container Image:', validators = [DataRequired()])
     log_dir = StringField('Tensorboard Load Dir for TF')
     mnt_option = SelectField('Select Mnt Option:', choices=[('HOSTPATH', 'HOSTPATH')], default='HOSTPATH')
