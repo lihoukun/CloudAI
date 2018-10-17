@@ -50,7 +50,7 @@ def trainings_new():
         cmd += ' --name {}'.format(train_name)
         cmd += ' --image {}'.format(image)
         cmd += ' --mnt {}'.format(mnt_option)
-        cmd += ' --script {}'.format(script)
+        cmd += ' --script "{}"'.format(script)
         print(cmd)
         os.system(cmd)
 
@@ -99,7 +99,7 @@ def training_cfg(name=None):
         cmd += ' --name {}'.format(name)
         cmd += ' --image {}'.format(t.image_dir)
         cmd += ' --mnt {}'.format(t.mnt_option)
-        cmd += ' --script {}'.format(t.bash_script)
+        cmd += ' --script "{}"'.format(t.bash_script)
         print(cmd)
         os.system(cmd)
 

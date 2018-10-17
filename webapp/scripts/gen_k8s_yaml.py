@@ -236,7 +236,7 @@ spec:
     return k8s_job
 
 
-def generate_train_config(name, ps_num, worker_num, epoch, gpu_per_node, image, mnt_option):
+def generate_train_config(name, ps_num, worker_num, epoch, gpu_per_node, image, mnt_option, script):
     port = 2220
     cluster = generate_cluster(name, ps_num, worker_num, port)
 

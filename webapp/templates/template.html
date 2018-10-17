@@ -22,7 +22,7 @@
         <p>
             {{ formu.script.label }}<br/>
             {% set f = formu.script.process_data(data[1]) %}
-            {{ formu.script(size=200) }}
+            {{ formu.script(size=80) }}
             {% for error in formu.script.errors %}
             <span style="color: red;">[{{ error }}]</span>
             {% endfor %}
