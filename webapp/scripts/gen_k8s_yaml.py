@@ -13,6 +13,7 @@ def parse_args():
     parser.add_argument('--record_dir', help='record files path')
     parser.add_argument('--name', help='job name')
     parser.add_argument('--image', help='container image')
+    parser.add_argument('--mnt', help='mnt option')
     args = parser.parse_args()
     return args
 
@@ -101,7 +102,7 @@ spec:
     return k8s_service
 
 
-def generate_train_job(cluster, job, id, port, name, record_dir, gpu_per_node, image):
+def generate_train_job(cluster, job, id, port, name, record_dir, gpu_per_node, image, mnt_option):
     tf_config = {}
     tf_config['cluster'] = cluster
     tf_config['task'] = {'type': job, 'index': id}
@@ -130,30 +131,31 @@ spec:
   volumes:
 """.format(job, id, name)
 
-    if os.environ.get('CEPH_ENABLE') == '1':
+    if mnt_option == 'CEPH':
         k8s_job += """
   - name: ceph-volume
     persistentVolumeClaim:
       claimName: ceph-pvc
 """
-    if os.environ.get('NFS_ENABLE') == '1':
+    elif mnt_option == 'NFS':
         k8s_job += """
   - name: nfs-volume
     persistentVolumeClaim:
       claimName: nfs-pvc
 """
-    if os.environ.get('GLUSTER_ENABLE') == '1':
+    elif mnt_option == 'GLUSTER':
         k8s_job += """
   - name: gluster-volume
     persistentVolumeClaim:
       claimName: gluster-pvc
 """
-    if os.environ.get('HOSTPATH_ENABLE') == '1':
+    elif mnt_option == 'HOSTPATH':
         k8s_job += """
   - name: hostpath-volume
     persistentVolumeClaim:
       claimName: hostpath-pvc
 """
+
     k8s_job += """
   containers:
   - name: tf-training
@@ -166,22 +168,22 @@ spec:
     volumeMounts:
 """.format(name, image)
 
-    if os.environ.get('CEPH_ENABLE') == '1':
+    if mnt_option == 'CEPH':
         k8s_job += """
     - name: ceph-volume
       mountPath: "{}"
 """.format(os.environ.get('CEPH_CONTAINER'))
-    if os.environ.get('NFS_ENABLE') == '1':
+    elif mnt_option == 'NFS':
         k8s_job += """
     - name: nfs-volume
       mountPath: "{}"
 """.format(os.environ.get('NFS_CONTAINER'))
-    if os.environ.get('GLUSTER_ENABLE') == '1':
+    elif mnt_option == 'GLUSTER':
         k8s_job += """
     - name: gluster-volume
       mountPath: "{}"
 """.format(os.environ.get('GLUSTER_CONTAINER'))
-    if os.environ.get('HOSTPATH_ENABLE') == '1':
+    elif mnt_option == 'HOSTPATH':
         k8s_job += """
     - name: hostpath-volume
       mountPath: "{}"
@@ -234,7 +236,7 @@ spec:
     return k8s_job
 
 
-def generate_train_config(name, ps_num, worker_num, epoch, record_dir, gpu_per_node, image):
+def generate_train_config(name, ps_num, worker_num, epoch, record_dir, gpu_per_node, image, mnt_option):
     port = 2220
     cluster = generate_cluster(name, ps_num, worker_num, port)
 
@@ -243,7 +245,7 @@ def generate_train_config(name, ps_num, worker_num, epoch, record_dir, gpu_per_n
     for job, hosts in cluster.items():
         for i in range(len(hosts)):
             k8s_config += generate_train_service(job, i, port, name)
-            k8s_config += generate_train_job(cluster, job, i, port, name, record_dir, gpu_per_node, image)
+            k8s_config += generate_train_job(cluster, job, i, port, name, record_dir, gpu_per_node, image, mnt_option)
 
     return k8s_config
 
@@ -251,7 +253,8 @@ def generate_train_config(name, ps_num, worker_num, epoch, record_dir, gpu_per_n
 def main():
     args = parse_args()
     epoch = args.epoch if args.epoch else 1
-    k8s_config = generate_train_config(args.name, args.ps_num, args.worker_num, epoch, args.record_dir, args.gpu_per_node, args.image)
+    k8s_config = generate_train_config(args.name, args.ps_num, args.worker_num, epoch,
+                                       args.record_dir, args.gpu_per_node, args.image, args.mnt)
 
     if args.record_dir:
         if not os.path.isdir(args.record_dir):

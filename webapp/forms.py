@@ -58,7 +58,16 @@ class TemplatesEditForm(FlaskForm):
     script = StringField('Bash Script:', validators = [DataRequired()], widget=TextArea())
     image = StringField('Container Image:', validators = [DataRequired()])
     log_dir = StringField('Tensorboard Load Dir for TF')
-    mnt_option = SelectField('Select Mnt Option:', choices=[('HOSTPATH', 'HOSTPATH')], default='HOSTPATH')
+    mnt_choices = []
+    if os.environ.get('HOSTPATH_ENABLE') == '1':
+        mnt_choices.append(['HOSTPATH', 'HOSTPATH'])
+    if os.environ.get('NFS_ENABLE') == '1':
+        mnt_choices.append(['NFS', 'NFS'])
+    if os.environ.get('GLUSTER_ENABLE') == '1':
+        mnt_choices.append(['GLUSTER', 'GLUSTER'])
+    if os.environ.get('CEPH_ENABLE') == '1':
+        mnt_choices.append(['CEPH', 'CEPH'])
+    mnt_option = SelectField('Select Mnt Option:', choices=mnt_choices)
     desc = StringField('Description: ')
     submit = SubmitField('Save')
 

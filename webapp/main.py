@@ -70,6 +70,7 @@ def trainings_new():
         cmd += ' --record_dir {}'.format(record_dir)
         cmd += ' --name {}'.format(train_name)
         cmd += ' --image {}'.format(image)
+        cmd += ' --mnt {}'.format(mnt_option)
         print(cmd)
         os.system(cmd)
 
@@ -117,6 +118,7 @@ def training_cfg(name=None):
         cmd += ' --record_dir {}'.format(t.record_dir)
         cmd += ' --name {}'.format(name)
         cmd += ' --image {}'.format(t.image_dir)
+        cmd += ' --mnt {}'.format(t.mnt_option)
         print(cmd)
         os.system(cmd)
 
