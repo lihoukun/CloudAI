@@ -21,18 +21,9 @@ def parse_args():
 
 def generate_cluster(name, ps_num, worker_num, port):
     if ps_num is None:
-        ps_num = 2
-
+        ps_num = 1
     if worker_num is None:
         worker_num = 2
-        chief_num = 1
-    else:
-        if worker_num >= 1:
-            chief_num = 1
-            worker_num -= 1
-        else:
-            chief_num = 0
-            worker_num = 0
 
     cluster = {}
     if ps_num > 0:
@@ -45,12 +36,6 @@ def generate_cluster(name, ps_num, worker_num, port):
         for i in range(worker_num):
             worker_host = '{}-worker-{}.default.svc.cluster.local:{}'.format(name, i, port)
             cluster['worker'].append(worker_host)
-    if chief_num > 0:
-        cluster['chief'] = []
-        for i in range(chief_num):
-            chief_host = '{}-chief-{}.default.svc.cluster.local:{}'.format(name, i, port)
-            cluster['chief'].append(chief_host)
-
     return cluster
 
 
@@ -62,11 +47,6 @@ def generate_train_configmap(name, cluster, epoch):
     worker_hosts_str = ''
     if 'worker' in cluster:
         worker_hosts_str = ','.join(cluster['worker'])
-    if 'chief' in cluster:
-        if worker_hosts_str != '':
-            worker_hosts_str += ',' + ','.join(cluster['chief'])
-        else:
-            worker_hosts_str = ','.join(cluster['chief'])
 
     k8s_configmap = """---
 apiVersion: v1
@@ -108,15 +88,9 @@ def generate_train_job(cluster, job, id, port, name, gpu_per_node, image, mnt_op
     tf_config['cluster'] = cluster
     tf_config['task'] = {'type': job, 'index': id}
     job_name, job_id = job, id
-    if job == 'chief':
-        job_name = 'worker'
-        if 'worker' in cluster:
-            job_id = len(cluster['worker']) + id
     num_workers = 0
     if 'worker' in cluster:
         num_workers += len(cluster['worker'])
-    if 'chief' in cluster:
-        num_workers += len(cluster['chief'])
 
     k8s_job = """---
 apiVersion: v1

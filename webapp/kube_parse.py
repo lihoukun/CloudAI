@@ -22,8 +22,6 @@ def get_busy_worker():
     for line in res:
        if re.search('-worker-', line):
            busy_gpu += 1
-       elif re.search('-chief-', line):
-           busy_gpu += 1
     return busy_gpu
 
 def get_total_nodes():

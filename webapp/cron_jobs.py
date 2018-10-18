@@ -54,7 +54,7 @@ def running():
         cmd = 'kubectl get pods -l name={}'.format(t.name)
         output = check_output(cmd.split()).decode('ascii')
         if output:
-            cmd = 'kubectl get pods -l name={},job=chief'.format(t.name)
+            cmd = 'kubectl get pods -l name={},job=worker'.format(t.name)
             output = check_output(cmd.split()).decode('ascii')
             if output:
                 lines = output.split('\n')
