@@ -3,7 +3,7 @@ import os
 from flask_wtf import FlaskForm
 from wtforms import StringField, IntegerField, SelectField, SubmitField
 from wtforms.validators import DataRequired, ValidationError
-
+from wtforms.widgets import TextArea
 from database import TemplateModel, TrainingModel
 
 
@@ -47,25 +47,35 @@ class TemplatesNewForm(FlaskForm):
     def cmd_format_check(form, field):
         if not field.data:
             raise ValidationError('Name cannot be empty')
-        if re.search('"'):
-            raise ValidationError('Name cannot contain double quote')
+        if re.search('"', field.data):
+            raise ValidationError('script cannot contain double quote')
+        if re.search('\n', field.data):
+            raise ValidationError('script cannot contain return')
 
     mnt_choices = []
     if os.environ.get('HOSTPATH_ENABLE') == '1':
         mnt_choice = os.environ.get('HOSTPATH_CONTAINER')
-        mnt_choices.append([mnt_choice, mnt_choice])
+        mnt_path = '/mnt/{}'.format(mnt_choice)
+        display_choice = '{}: {}'.format(mnt_choice, mnt_path)
+        mnt_choices.append([mnt_choice, display_choice])
     if os.environ.get('NFS_ENABLE') == '1':
         mnt_choice = os.environ.get('NFS_CONTAINER')
-        mnt_choices.append([mnt_choice, mnt_choice])
+        mnt_path = '/mnt/{}'.format(mnt_choice)
+        display_choice = '{}: {}'.format(mnt_choice, mnt_path)
+        mnt_choices.append([mnt_choice, display_choice])
     if os.environ.get('GLUSTER_ENABLE') == '1':
         mnt_choice = os.environ.get('GLUSTER_CONTAINER')
-        mnt_choices.append([mnt_choice, mnt_choice])
+        mnt_path = '/mnt/{}'.format(mnt_choice)
+        display_choice = '{}: {}'.format(mnt_choice, mnt_path)
+        mnt_choices.append([mnt_choice, display_choice])
     if os.environ.get('CEPH_ENABLE') == '1':
         mnt_choice = os.environ.get('CEPH_CONTAINER')
-        mnt_choices.append([mnt_choice, mnt_choice])
+        mnt_path = '/mnt/{}'.format(mnt_choice)
+        display_choice = '{}: {}'.format(mnt_choice, mnt_path)
+        mnt_choices.append([mnt_choice, display_choice])
     mnt_option = SelectField('Select Mnt Option:', choices=mnt_choices)
     name = StringField('Template Name: ', validators=[name_uniq_check])
-    script = StringField('Bash Script:', validators = [cmd_format_check])
+    script = StringField('Bash Script:', validators = [cmd_format_check], widget=TextArea())
     image = StringField('Container Image:', validators = [DataRequired()])
     log_dir = StringField('Tensorboard Log Dir')
     mnt_option = SelectField('Select Mnt Option:', choices=mnt_choices)
@@ -74,22 +84,38 @@ class TemplatesNewForm(FlaskForm):
 
 
 class TemplatesEditForm(FlaskForm):
-    script = StringField('Bash Script:', validators = [DataRequired()])
+    def cmd_format_check(form, field):
+        if not field.data:
+            raise ValidationError('Name cannot be empty')
+        if re.search('"', field.data):
+            raise ValidationError('script cannot contain double quote')
+        if re.search('\n', field.data):
+            raise ValidationError('script cannot contain return')
+
+    script = StringField('Bash Script:', validators = [cmd_format_check], widget=TextArea())
     image = StringField('Container Image:', validators = [DataRequired()])
     log_dir = StringField('Tensorboard Log Dir')
     mnt_choices = []
     if os.environ.get('HOSTPATH_ENABLE') == '1':
         mnt_choice = os.environ.get('HOSTPATH_CONTAINER')
-        mnt_choices.append([mnt_choice, mnt_choice])
+        mnt_path = '/mnt/{}'.format(mnt_choice)
+        display_choice = '{}: {}'.format(mnt_choice, mnt_path)
+        mnt_choices.append([mnt_choice, display_choice])
     if os.environ.get('NFS_ENABLE') == '1':
         mnt_choice = os.environ.get('NFS_CONTAINER')
-        mnt_choices.append([mnt_choice, mnt_choice])
+        mnt_path = '/mnt/{}'.format(mnt_choice)
+        display_choice = '{}: {}'.format(mnt_choice, mnt_path)
+        mnt_choices.append([mnt_choice, display_choice])
     if os.environ.get('GLUSTER_ENABLE') == '1':
         mnt_choice = os.environ.get('GLUSTER_CONTAINER')
-        mnt_choices.append([mnt_choice, mnt_choice])
+        mnt_path = '/mnt/{}'.format(mnt_choice)
+        display_choice = '{}: {}'.format(mnt_choice, mnt_path)
+        mnt_choices.append([mnt_choice, display_choice])
     if os.environ.get('CEPH_ENABLE') == '1':
         mnt_choice = os.environ.get('CEPH_CONTAINER')
-        mnt_choices.append([mnt_choice, mnt_choice])
+        mnt_path = '/mnt/{}'.format(mnt_choice)
+        display_choice = '{}: {}'.format(mnt_choice, mnt_path)
+        mnt_choices.append([mnt_choice, display_choice])
     mnt_option = SelectField('Select Mnt Option:', choices=mnt_choices)
     desc = StringField('Description: ')
     submit = SubmitField('Save')

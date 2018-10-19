@@ -229,7 +229,15 @@ def tensorboard():
     choices = []
     for t in TrainingModel.query.filter(TrainingModel.log_dir.isnot(None)).all():
         if t.log_dir:
-            choices.append((t.log_dir, t.name))
+            if t.mnt_option == 'hostpath':
+                log_dir = t.log_dir.replace('/mnt/hostpath', os.environ.get('HOSTPATH_HOST'))
+            elif t.mnt_option == 'gluster':
+                log_dir = t.log_dir.replace('/mnt/gluster', os.environ.get('GLUSTER_HOST'))
+            elif t.mnt_option == 'nfs':
+                log_dir = t.log_dir.replace('/mnt/nfs', os.environ.get('NFS_HOST'))
+            elif t.mnt_option == 'cephfs':
+                log_dir = t.log_dir.replace('/mnt/cephfs', os.environ.get('CEPH_HOST'))
+            choices.append((log_dir, t.name))
     if not choices:
         choices.append(('--', '--'))
     form.log_dir.choices = choices
