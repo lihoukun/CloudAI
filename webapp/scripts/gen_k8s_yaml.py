@@ -146,22 +146,22 @@ spec:
     if mnt_option == 'CEPH':
         k8s_job += """
     - name: ceph-volume
-      mountPath: "{}"
+      mountPath: "/mnt/{}"
 """.format(os.environ.get('CEPH_CONTAINER'))
     elif mnt_option == 'NFS':
         k8s_job += """
     - name: nfs-volume
-      mountPath: "{}"
+      mountPath: "/mnt/{}"
 """.format(os.environ.get('NFS_CONTAINER'))
     elif mnt_option == 'GLUSTER':
         k8s_job += """
     - name: gluster-volume
-      mountPath: "{}"
+      mountPath: "/mnt/{}"
 """.format(os.environ.get('GLUSTER_CONTAINER'))
     elif mnt_option == 'HOSTPATH':
         k8s_job += """
     - name: hostpath-volume
-      mountPath: "{}"
+      mountPath: "/mnt/{}"
 """.format(os.environ.get('HOSTPATH_CONTAINER'))
 
     k8s_job += """
