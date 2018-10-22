@@ -29,13 +29,6 @@
             {% endfor %}
         </p>
         <p>
-            {{ form.num_epoch.label }}
-            {{ form.num_epoch() }}
-            {% for error in form.num_epoch.errors %}
-            <span style="color: red;">[{{ error }}]</span>
-            {% endfor %}
-        </p>
-        <p>
             {{ form.params.label }}
             {{ form.params() }}
             {% for error in form.params.errors %}

@@ -17,7 +17,6 @@ autossh -M 20086 -f -nNT  -L 8001:127.0.0.1:8001 -L 5000:127.0.0.1:5000  -L 8080
 ```
 NUM_GPU set to 4, as we have max 4 GPU.
 NUM_CPU set to 2, as larger number do no help performance, but only add initialize burden
-NUM_EPOCH is int. try it youself.
 Select 'Start New Training' and select model to 'resnet-training-demo'
 During demo, repeatly click log for any worker, until you see completion.
 ```

@@ -29,7 +29,6 @@ class TrainingsNewForm(FlaskForm):
     template_name = SelectField('Select Template: ')
     num_gpu = IntegerField('Number of Worker: ')
     num_cpu = IntegerField('Number of PS: ')
-    num_epoch = IntegerField('Number of Epoch: ')
     params = StringField('Hyper Params in json: ', validators=[params_format_check])
     mail_to = StringField('Send Mail: ')
     submit = SubmitField('Train')
@@ -45,9 +44,8 @@ class TrainingResumeForm(FlaskForm):
 
     num_gpu = IntegerField('Number of Worker: ')
     num_cpu = IntegerField('Number of PS: ')
-    num_epoch = IntegerField('Number of Epoch: ')
-    mail_to = StringField('Send Mail: ')
     params = StringField('Hyper Params in json: ', validators=[params_format_check])
+    mail_to = StringField('Send Mail: ')
     submit = SubmitField('Resume Training')
 
 

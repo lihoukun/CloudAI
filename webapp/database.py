@@ -22,7 +22,6 @@ class TrainingModel(Base):
     name = Column(String(99), unique=True)
     num_gpu = Column(Integer)
     num_cpu = Column(Integer)
-    num_epoch = Column(Integer)
     bash_script = Column(String(9999))
     image_dir = Column(String(99))
     log_dir = Column(String(99))
@@ -35,12 +34,11 @@ class TrainingModel(Base):
     start_at = Column(DateTime)
     stop_at = Column(DateTime)
 
-    def __init__(self, name=None, num_gpu=0, num_cpu=0, num_epoch=None, bash_script=None, image_dir=None, log_dir=None,
+    def __init__(self, name=None, num_gpu=0, num_cpu=0, bash_script=None, image_dir=None, log_dir=None,
                  record_dir=None, mnt_option=None, params=None, email=None, status=None):
         self.name = name
         self.num_gpu = num_gpu
         self.num_cpu = num_cpu
-        self.num_epoch = num_epoch
         self.bash_script = bash_script
         self.image_dir = image_dir
         self.log_dir = log_dir

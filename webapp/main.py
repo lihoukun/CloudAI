@@ -37,7 +37,6 @@ def trainings_new():
         template_name = form.template_name.data
         num_cpu = form.num_cpu.data
         num_gpu = form.num_gpu.data
-        num_epoch = form.num_epoch.data
         params = form.params.data
         result = TemplateModel.query.filter_by(name=template_name).first()
         script, image, log_dir, mnt_option = result.bash_script, result.image_dir, result.log_dir, result.mnt_option
@@ -46,7 +45,6 @@ def trainings_new():
         cmd = 'python3 {}/scripts/gen_k8s_yaml.py'.format(os.path.dirname(os.path.realpath(__file__)))
         cmd += ' --ps_num {} --worker_num {}'.format(num_cpu, num_gpu)
         cmd += ' --gpu_per_node {}'.format(get_gpu_per_node())
-        cmd += ' --epoch {}'.format(num_epoch)
         cmd += ' --record_dir {}'.format(record_dir)
         cmd += ' --name {}'.format(train_name)
         cmd += ' --image {}'.format(image)
@@ -57,7 +55,7 @@ def trainings_new():
         print(cmd)
         os.system(cmd)
 
-        t = TrainingModel(name=train_name, num_gpu=num_gpu, num_cpu=num_cpu, num_epoch=num_epoch, bash_script=script,
+        t = TrainingModel(name=train_name, num_gpu=num_gpu, num_cpu=num_cpu, bash_script=script,
                           image_dir=image, log_dir=log_dir, record_dir=record_dir, mnt_option=mnt_option,
                           email=form.mail_to.data, status='PENDING', params=params)
         db_session.add(t)
@@ -79,8 +77,8 @@ def trainings(type='active'):
 @app.route('/training/config/<name>', methods=['GET', 'POST'])
 def training_cfg(name=None):
     t = TrainingModel.query.filter_by(name=name).first()
-    data = [name, t.status, t.num_gpu, t.num_cpu, t.num_epoch, t.email,
-            t.bash_script, t.image_dir, t.log_dir, t.mnt_option, t.params]
+    data = [name, t.status, t.num_gpu, t.num_cpu, t.params, t.email,
+            t.bash_script, t.image_dir, t.log_dir, t.mnt_option]
 
     form = TrainingResumeForm()
     form.num_gpu.validators=[NumberRange(min=1, max=get_total_nodes())]
@@ -88,7 +86,6 @@ def training_cfg(name=None):
     if form.validate_on_submit():
         num_cpu = form.num_cpu.data
         num_gpu = form.num_gpu.data
-        num_epoch = form.num_epoch.data
         params = form.params.data
         email = form.mail_to.data
 
@@ -98,7 +95,6 @@ def training_cfg(name=None):
         cmd = 'python3 {}/scripts/gen_k8s_yaml.py'.format(os.path.dirname(os.path.realpath(__file__)))
         cmd += ' --ps_num {} --worker_num {}'.format(num_cpu, num_gpu)
         cmd += ' --gpu_per_node {}'.format(get_gpu_per_node())
-        cmd += ' --epoch {}'.format(num_epoch)
         cmd += ' --record_dir {}'.format(t.record_dir)
         cmd += ' --name {}'.format(name)
         cmd += ' --image {}'.format(t.image_dir)
@@ -111,7 +107,6 @@ def training_cfg(name=None):
 
         t.num_cpu = num_cpu
         t.num_gpu = num_gpu
-        t.num_epoch = num_epoch
         t.email = email
         t.status = 'PENDING'
         t.submit_at = datetime.datetime.now()

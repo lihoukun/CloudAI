@@ -9,7 +9,6 @@ def parse_args():
     parser.add_argument('--ps_num', help='choose ps number', type=int)
     parser.add_argument('--worker_num', help='choose worker number', type=int)
     parser.add_argument('--gpu_per_node', help='number gpu per node', type=int)
-    parser.add_argument('--epoch', help='choose worker number', type=int)
     parser.add_argument('--record_dir', help='record files path')
     parser.add_argument('--name', help='job name')
     parser.add_argument('--image', help='container image')
@@ -40,7 +39,7 @@ def generate_cluster(name, ps_num, worker_num, port):
     return cluster
 
 
-def generate_train_configmap(name, cluster, epoch, params):
+def generate_train_configmap(name, cluster, params):
     ps_hosts_str = ''
     if 'ps' in cluster:
         ps_hosts_str = ','.join(cluster['ps'])
@@ -57,8 +56,7 @@ metadata:
 data:
   PS_HOSTS: "{1}"
   WORKER_HOSTS: "{2}"
-  NUM_EPOCH: "{3}"
-""".format(name, ps_hosts_str, worker_hosts_str, epoch)
+""".format(name, ps_hosts_str, worker_hosts_str)
 
     if params:
         for k, v in json.loads(params).items():
@@ -218,12 +216,12 @@ spec:
     return k8s_job
 
 
-def generate_train_config(name, ps_num, worker_num, epoch, gpu_per_node, image, mnt_option, script, params):
+def generate_train_config(name, ps_num, worker_num, gpu_per_node, image, mnt_option, script, params):
     port = 2220
     cluster = generate_cluster(name, ps_num, worker_num, port)
 
     k8s_config = ''
-    k8s_config += generate_train_configmap(name, cluster, epoch, params)
+    k8s_config += generate_train_configmap(name, cluster, params)
     for job, hosts in cluster.items():
         for i in range(len(hosts)):
             k8s_config += generate_train_service(job, i, port, name)
@@ -234,9 +232,8 @@ def generate_train_config(name, ps_num, worker_num, epoch, gpu_per_node, image, 
 
 def main():
     args = parse_args()
-    epoch = args.epoch if args.epoch else 1
     params = args.params if args.params else None
-    k8s_config = generate_train_config(args.name, args.ps_num, args.worker_num, epoch,
+    k8s_config = generate_train_config(args.name, args.ps_num, args.worker_num,
                                        args.gpu_per_node, args.image, args.mnt, args.script, params)
 
     if args.record_dir:
