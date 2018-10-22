@@ -47,8 +47,8 @@ class TemplatesNewForm(FlaskForm):
     def cmd_format_check(form, field):
         if not field.data:
             raise ValidationError('Name cannot be empty')
-        if re.search('"', field.data):
-            raise ValidationError('script cannot contain double quote')
+        if re.search("'", field.data):
+            raise ValidationError('script cannot contain single quote')
         if re.search('\n', field.data):
             raise ValidationError('script cannot contain return')
 
@@ -87,8 +87,8 @@ class TemplatesEditForm(FlaskForm):
     def cmd_format_check(form, field):
         if not field.data:
             raise ValidationError('Name cannot be empty')
-        if re.search('"', field.data):
-            raise ValidationError('script cannot contain double quote')
+        if re.search("'", field.data):
+            raise ValidationError('script cannot contain single quote')
         if re.search('\n', field.data):
             raise ValidationError('script cannot contain return')
 

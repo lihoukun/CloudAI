@@ -50,7 +50,7 @@ def trainings_new():
         cmd += ' --name {}'.format(train_name)
         cmd += ' --image {}'.format(image)
         cmd += ' --mnt {}'.format(mnt_option)
-        cmd += ' --script "{}"'.format(script)
+        cmd += " --script '{}'".format(script)
         print(cmd)
         os.system(cmd)
 
@@ -203,6 +203,7 @@ def template(name=None):
     data = [t.name, t.bash_script, t.image_dir, t.log_dir, t.mnt_option, t.description]
 
     formu = TemplatesEditForm()
+    formu.mnt_option.default = t.mnt_option
     if formu.validate_on_submit():
         t.bash_script = formu.script.data
         t.image_dir = formu.image.data
