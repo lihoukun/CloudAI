@@ -106,25 +106,25 @@ spec:
   volumes:
 """.format(job, id, name)
 
-    if mnt_option == 'CEPH':
+    if mnt_option == 'cephfs':
         k8s_job += """
   - name: ceph-volume
     persistentVolumeClaim:
       claimName: ceph-pvc
 """
-    elif mnt_option == 'NFS':
+    elif mnt_option == 'nfs':
         k8s_job += """
   - name: nfs-volume
     persistentVolumeClaim:
       claimName: nfs-pvc
 """
-    elif mnt_option == 'GLUSTER':
+    elif mnt_option == 'gluster':
         k8s_job += """
   - name: gluster-volume
     persistentVolumeClaim:
       claimName: gluster-pvc
 """
-    elif mnt_option == 'HOSTPATH':
+    elif mnt_option == 'hostpath':
         k8s_job += """
   - name: hostpath-volume
     persistentVolumeClaim:
@@ -143,22 +143,22 @@ spec:
     volumeMounts:
 """.format(name, image)
 
-    if mnt_option == 'CEPH':
+    if mnt_option == 'cephfs':
         k8s_job += """
     - name: ceph-volume
       mountPath: "/mnt/{}"
 """.format(os.environ.get('CEPH_CONTAINER'))
-    elif mnt_option == 'NFS':
+    elif mnt_option == 'nfs':
         k8s_job += """
     - name: nfs-volume
       mountPath: "/mnt/{}"
 """.format(os.environ.get('NFS_CONTAINER'))
-    elif mnt_option == 'GLUSTER':
+    elif mnt_option == 'gluster':
         k8s_job += """
     - name: gluster-volume
       mountPath: "/mnt/{}"
 """.format(os.environ.get('GLUSTER_CONTAINER'))
-    elif mnt_option == 'HOSTPATH':
+    elif mnt_option == 'hostpath':
         k8s_job += """
     - name: hostpath-volume
       mountPath: "/mnt/{}"

@@ -202,8 +202,7 @@ def template(name=None):
     t = TemplateModel.query.filter_by(name=name).first()
     data = [t.name, t.bash_script, t.image_dir, t.log_dir, t.mnt_option, t.description]
 
-    formu = TemplatesEditForm()
-    formu.mnt_option.default = t.mnt_option
+    formu = TemplatesEditForm(mnt_option=t.mnt_option)
     if formu.validate_on_submit():
         t.bash_script = formu.script.data
         t.image_dir = formu.image.data
