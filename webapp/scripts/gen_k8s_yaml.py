@@ -15,6 +15,7 @@ def parse_args():
     parser.add_argument('--image', help='container image')
     parser.add_argument('--mnt', help='mnt option')
     parser.add_argument('--script', help='script cmd')
+    parser.add_argument('--params', help=' hyper params setting')
     args = parser.parse_args()
     return args
 
@@ -39,7 +40,7 @@ def generate_cluster(name, ps_num, worker_num, port):
     return cluster
 
 
-def generate_train_configmap(name, cluster, epoch):
+def generate_train_configmap(name, cluster, epoch, params):
     ps_hosts_str = ''
     if 'ps' in cluster:
         ps_hosts_str = ','.join(cluster['ps'])
@@ -58,6 +59,12 @@ data:
   WORKER_HOSTS: "{2}"
   NUM_EPOCH: "{3}"
 """.format(name, ps_hosts_str, worker_hosts_str, epoch)
+
+    for k, v in json.loads(params):
+        k8s_configmap += """
+  {0}:{1}
+""".format(k, v)
+
     return k8s_configmap
 
 
@@ -210,12 +217,12 @@ spec:
     return k8s_job
 
 
-def generate_train_config(name, ps_num, worker_num, epoch, gpu_per_node, image, mnt_option, script):
+def generate_train_config(name, ps_num, worker_num, epoch, gpu_per_node, image, mnt_option, script, params):
     port = 2220
     cluster = generate_cluster(name, ps_num, worker_num, port)
 
     k8s_config = ''
-    k8s_config += generate_train_configmap(name, cluster, epoch)
+    k8s_config += generate_train_configmap(name, cluster, epoch, params)
     for job, hosts in cluster.items():
         for i in range(len(hosts)):
             k8s_config += generate_train_service(job, i, port, name)
@@ -228,7 +235,7 @@ def main():
     args = parse_args()
     epoch = args.epoch if args.epoch else 1
     k8s_config = generate_train_config(args.name, args.ps_num, args.worker_num, epoch,
-                                       args.gpu_per_node, args.image, args.mnt, args.script)
+                                       args.gpu_per_node, args.image, args.mnt, args.script, args.params)
 
     if args.record_dir:
         if not os.path.isdir(args.record_dir):

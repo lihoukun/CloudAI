@@ -29,6 +29,13 @@
             <span style="color: red;">[{{ error }}]</span>
             {% endfor %}
         </p>
+         <p>
+            {{ form.params.label }}
+            {{ form.params(value=data[10]) }}
+            {% for error in form.params.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </p>
         <p>
             {{ form.mail_to.label }}
             {{ form.mail_to(value=data[5]) }}

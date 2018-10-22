@@ -1,5 +1,6 @@
 import re
 import os
+import json
 from flask_wtf import FlaskForm
 from wtforms import StringField, IntegerField, SelectField, SubmitField
 from wtforms.validators import DataRequired, ValidationError
@@ -17,20 +18,36 @@ class TrainingsNewForm(FlaskForm):
             if field.data == t.name:
                 raise ValidationError('Training with label {} already exist'.format(field.data))
 
+    def params_format_check(form, field):
+        if field.data:
+            try:
+                json.loads(field.data):
+            except:
+                raise ValidationError('Not valid json format')
+
     train_name = StringField('Training Label: ', validators=[name_uniq_check])
     template_name = SelectField('Select Template: ')
     num_gpu = IntegerField('Number of Worker: ')
     num_cpu = IntegerField('Number of PS: ')
     num_epoch = IntegerField('Number of Epoch: ')
+    params = StringField('Hyper Params in json: ', validators=[params_format_check])
     mail_to = StringField('Send Mail: ')
     submit = SubmitField('Train')
 
 
 class TrainingResumeForm(FlaskForm):
+    def params_format_check(form, field):
+        if field.data:
+            try:
+                json.loads(field.data):
+            except:
+                raise ValidationError('Not valid json format')
+
     num_gpu = IntegerField('Number of Worker: ')
     num_cpu = IntegerField('Number of PS: ')
     num_epoch = IntegerField('Number of Epoch: ')
     mail_to = StringField('Send Mail: ')
+    params = StringField('Hyper Params in json: ', validators=[params_format_check])
     submit = SubmitField('Resume Training')
 
 

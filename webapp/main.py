@@ -38,6 +38,7 @@ def trainings_new():
         num_cpu = form.num_cpu.data
         num_gpu = form.num_gpu.data
         num_epoch = form.num_epoch.data
+        params = form.params.data
         result = TemplateModel.query.filter_by(name=template_name).first()
         script, image, log_dir, mnt_option = result.bash_script, result.image_dir, result.log_dir, result.mnt_option
         record_dir = '{}/records/{}'.format(os.environ['SHARED_HOST'], train_name)
@@ -51,12 +52,13 @@ def trainings_new():
         cmd += ' --image {}'.format(image)
         cmd += ' --mnt {}'.format(mnt_option)
         cmd += " --script '{}'".format(script)
+        cmd += ' --params {}'.format(params)
         print(cmd)
         os.system(cmd)
 
         t = TrainingModel(name=train_name, num_gpu=num_gpu, num_cpu=num_cpu, num_epoch=num_epoch, bash_script=script,
                           image_dir=image, log_dir=log_dir, record_dir=record_dir, mnt_option=mnt_option,
-                          email=form.mail_to.data, status='PENDING')
+                          email=form.mail_to.data, status='PENDING', params=params)
         db_session.add(t)
         db_session.commit()
         return redirect(url_for('trainings', type='active'))
@@ -77,7 +79,7 @@ def trainings(type='active'):
 def training_cfg(name=None):
     t = TrainingModel.query.filter_by(name=name).first()
     data = [name, t.status, t.num_gpu, t.num_cpu, t.num_epoch, t.email,
-            t.bash_script, t.image_dir, t.log_dir, t.mnt_option]
+            t.bash_script, t.image_dir, t.log_dir, t.mnt_option, t.params]
 
     form = TrainingResumeForm()
     form.num_gpu.validators=[NumberRange(min=1, max=get_total_nodes())]
@@ -86,6 +88,7 @@ def training_cfg(name=None):
         num_cpu = form.num_cpu.data
         num_gpu = form.num_gpu.data
         num_epoch = form.num_epoch.data
+        params = form.params.data
         email = form.mail_to.data
 
         cmd = 'kubectl delete -f {}/train.yaml'.format(t.record_dir)
@@ -99,7 +102,8 @@ def training_cfg(name=None):
         cmd += ' --name {}'.format(name)
         cmd += ' --image {}'.format(t.image_dir)
         cmd += ' --mnt {}'.format(t.mnt_option)
-        cmd += ' --script "{}"'.format(t.bash_script)
+        cmd += " --script '{}'".format(t.bash_script)
+        cmd += ' --params {}'.format(params)
         print(cmd)
         os.system(cmd)
 

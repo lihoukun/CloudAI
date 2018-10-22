@@ -28,6 +28,7 @@ class TrainingModel(Base):
     log_dir = Column(String(99))
     record_dir = Column(String(99))
     mnt_option = Column(String(99))
+    params = Column(String(999))
     email = Column(String(99))
     status = Column(String(99))
     submit_at = Column(DateTime)
@@ -35,7 +36,7 @@ class TrainingModel(Base):
     stop_at = Column(DateTime)
 
     def __init__(self, name=None, num_gpu=0, num_cpu=0, num_epoch=None, bash_script=None, image_dir=None, log_dir=None,
-                 record_dir=None, mnt_option=None, email=None, status=None):
+                 record_dir=None, mnt_option=None, params=None, email=None, status=None):
         self.name = name
         self.num_gpu = num_gpu
         self.num_cpu = num_cpu
@@ -47,6 +48,7 @@ class TrainingModel(Base):
         self.mnt_option = mnt_option
         self.email = email
         self.status = status
+        self.params = params
         self.submit_at = datetime.datetime.now()
 
     def __repr__(self):
