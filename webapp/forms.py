@@ -20,6 +20,8 @@ class TrainingsNewForm(FlaskForm):
 
     def params_format_check(form, field):
         if field.data:
+            if re.search("'", field.data):
+                raise ValidationError('params cannot contain single quote')
             try:
                 json.loads(field.data)
             except:
@@ -37,6 +39,8 @@ class TrainingsNewForm(FlaskForm):
 class TrainingResumeForm(FlaskForm):
     def params_format_check(form, field):
         if field.data:
+            if re.search("'", field.data):
+                raise ValidationError('params cannot contain single quote')
             try:
                 json.loads(field.data)
             except:
