@@ -14,6 +14,7 @@ from kube_parse import get_total_nodes, get_gpu_per_node
 from subprocess import check_output
 import os
 import datetime
+import json
 
 
 @app.teardown_appcontext
@@ -52,6 +53,8 @@ def trainings_new():
         cmd += " --script '{}'".format(script)
         if params:
             cmd += ' --params \'{}\''.format(params)
+        if log_dir:
+            cmd += ' --log_dir \'{}\''.format(log_dir)
         print(cmd)
         os.system(cmd)
 
@@ -102,6 +105,8 @@ def training_cfg(name=None):
         cmd += " --script '{}'".format(t.bash_script)
         if params:
             cmd += ' --params \'{}\''.format(params)
+        if t.log_dir:
+            cmd += ' --log_dir \'{}\''.format(t.log_dir)
         print(cmd)
         os.system(cmd)
 

@@ -10,6 +10,7 @@ def parse_args():
     parser.add_argument('--worker_num', help='choose worker number', type=int)
     parser.add_argument('--gpu_per_node', help='number gpu per node', type=int)
     parser.add_argument('--record_dir', help='record files path')
+    parser.add_argument('--log_dir', help='log dir for tensorboard')
     parser.add_argument('--name', help='job name')
     parser.add_argument('--image', help='container image')
     parser.add_argument('--mnt', help='mnt option')
@@ -39,7 +40,7 @@ def generate_cluster(name, ps_num, worker_num, port):
     return cluster
 
 
-def generate_train_configmap(name, cluster, params):
+def generate_train_configmap(name, cluster, envs):
     ps_hosts_str = ''
     if 'ps' in cluster:
         ps_hosts_str = ','.join(cluster['ps'])
@@ -58,9 +59,8 @@ data:
   WORKER_HOSTS: "{2}"
 """.format(name, ps_hosts_str, worker_hosts_str)
 
-    if params:
-        for k, v in json.loads(params).items():
-            k8s_configmap += """
+    for k, v in envs.items():
+        k8s_configmap += """
   {0}: "{1}"
 """.format(k, v)
 
@@ -216,12 +216,12 @@ spec:
     return k8s_job
 
 
-def generate_train_config(name, ps_num, worker_num, gpu_per_node, image, mnt_option, script, params):
+def generate_train_config(name, ps_num, worker_num, gpu_per_node, image, mnt_option, script, envs):
     port = 2220
     cluster = generate_cluster(name, ps_num, worker_num, port)
 
     k8s_config = ''
-    k8s_config += generate_train_configmap(name, cluster, params)
+    k8s_config += generate_train_configmap(name, cluster, envs)
     for job, hosts in cluster.items():
         for i in range(len(hosts)):
             k8s_config += generate_train_service(job, i, port, name)
@@ -232,9 +232,15 @@ def generate_train_config(name, ps_num, worker_num, gpu_per_node, image, mnt_opt
 
 def main():
     args = parse_args()
-    params = args.params if args.params else None
+    envs = {}
+    if args.params:
+        for k, v in json.loads(args.params).items():
+            envs[k] = v
+    if args.log_dir:
+        envs['LOG_DIR'] = args.log_dir
+
     k8s_config = generate_train_config(args.name, args.ps_num, args.worker_num,
-                                       args.gpu_per_node, args.image, args.mnt, args.script, params)
+                                       args.gpu_per_node, args.image, args.mnt, args.script, envs)
 
     if args.record_dir:
         if not os.path.isdir(args.record_dir):

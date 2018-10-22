@@ -3,7 +3,7 @@
 {% block content %}
 <br/>
 <br/>
-<h1>Template: {{ data[0] }}</h1>
+<h1>Training Name: {{ data[0] }}</h1>
 {% if data[1] == 'COMPLETED' or data[1] == 'KILLED' %}
     <form action="" method="post">
         {{ form.csrf_token }}
@@ -39,6 +39,8 @@
 <h4>{{ data[2] }}</h4>
 <h3>Number of PS:</h3>
 <h4>{{ data[3] }}</h4>
+<h3>Hyper Params:</h3>
+<h4>{{ data[4] }}</h4>
 <h3>Mail To:</h3>
 <h4>{{ data[5] }}</h4>
 {% endif %}
@@ -48,7 +50,7 @@
 <h4>{{ data[6] }}</h4>
 <h3>Image Dir:</h3>
 <h4>{{ data[7] }}</h4>
-<h3>Log Dir:</h3>
+<h3>Log Dir</h3>
 <h4>{{ data[8] }}</h4>
 <h3>Mnt Option:</h3>
 <h4>{{ data[9] }}</h4>
