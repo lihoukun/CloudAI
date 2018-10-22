@@ -52,7 +52,8 @@ def trainings_new():
         cmd += ' --image {}'.format(image)
         cmd += ' --mnt {}'.format(mnt_option)
         cmd += " --script '{}'".format(script)
-        cmd += ' --params {}'.format(params)
+        if params:
+            cmd += ' --params \'{}\''.format(params)
         print(cmd)
         os.system(cmd)
 
@@ -103,7 +104,8 @@ def training_cfg(name=None):
         cmd += ' --image {}'.format(t.image_dir)
         cmd += ' --mnt {}'.format(t.mnt_option)
         cmd += " --script '{}'".format(t.bash_script)
-        cmd += ' --params {}'.format(params)
+        if params:
+            cmd += ' --params \'{}\''.format(params)
         print(cmd)
         os.system(cmd)
 

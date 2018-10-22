@@ -60,9 +60,10 @@ data:
   NUM_EPOCH: "{3}"
 """.format(name, ps_hosts_str, worker_hosts_str, epoch)
 
-    for k, v in json.loads(params):
-        k8s_configmap += """
-  {0}:{1}
+    if params:
+        for k, v in json.loads(params).items():
+            k8s_configmap += """
+  {0}: "{1}"
 """.format(k, v)
 
     return k8s_configmap
@@ -234,8 +235,9 @@ def generate_train_config(name, ps_num, worker_num, epoch, gpu_per_node, image, 
 def main():
     args = parse_args()
     epoch = args.epoch if args.epoch else 1
+    params = args.params if args.params else None
     k8s_config = generate_train_config(args.name, args.ps_num, args.worker_num, epoch,
-                                       args.gpu_per_node, args.image, args.mnt, args.script, args.params)
+                                       args.gpu_per_node, args.image, args.mnt, args.script, params)
 
     if args.record_dir:
         if not os.path.isdir(args.record_dir):

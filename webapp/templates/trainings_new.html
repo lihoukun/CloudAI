@@ -37,7 +37,7 @@
         </p>
         <p>
             {{ form.params.label }}
-            {{ form.params(value=data[10]) }}
+            {{ form.params() }}
             {% for error in form.params.errors %}
             <span style="color: red;">[{{ error }}]</span>
             {% endfor %}

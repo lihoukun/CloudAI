@@ -21,7 +21,7 @@ class TrainingsNewForm(FlaskForm):
     def params_format_check(form, field):
         if field.data:
             try:
-                json.loads(field.data):
+                json.loads(field.data)
             except:
                 raise ValidationError('Not valid json format')
 
@@ -39,7 +39,7 @@ class TrainingResumeForm(FlaskForm):
     def params_format_check(form, field):
         if field.data:
             try:
-                json.loads(field.data):
+                json.loads(field.data)
             except:
                 raise ValidationError('Not valid json format')
 
