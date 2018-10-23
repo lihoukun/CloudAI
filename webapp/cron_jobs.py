@@ -6,6 +6,20 @@ import sys
 import smtplib
 from subprocess import check_output
 
+from celery import Celery
+from celery.schedules import crontab
+celery = Celery('tasks')
+
+CELERYBEAT_SCHEDULE = {
+    'pending-jobs': {
+        'task': 'tasks.pending',
+        'schedule': crontab(minute='*')
+    },
+    'running-jobs': {
+        'task': 'tasks.running',
+        'schedule': crontab(minute='*')
+    },
+}
 
 def send_mail(sub, mail_to, msg):
     if not mail_to: return 0
@@ -25,6 +39,7 @@ Subject: %s
     server.sendmail(FROM, to, message)
     server.quit()
 
+@celery.task(name='tasks.pending')
 def pending():
     t = TrainingModel.query.filter_by(status='PENDING').order_by('submit_at').first()
     if t:
@@ -49,6 +64,7 @@ def pending():
         db_session.commit()
 
 
+@celery.task(name='tasks.running')
 def running():
     for t in TrainingModel.query.filter_by(status='RUNNING').order_by('submit_at'):
         cmd = 'kubectl get pods -l name={}'.format(t.name)
