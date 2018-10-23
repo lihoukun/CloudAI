@@ -1,7 +1,29 @@
-from flask import Flask
-
+from flask import Flask, current_app
 from flask_apscheduler import APScheduler
 from cron_jobs import pending, running
+
+class Config(object):
+    JOBS = [
+        {
+            'id': 'pending',
+			'func': 'main:test',
+            'trigger': 'interval',
+            'seconds': 1
+        }
+    ]
+    SCHEDULER_API_ENABLED = True
+    SECRET_KEY = 'exaairocks'
+
+def test():
+    with open('/home/ai/workspace/CloudAI/webapp/t.txt', 'a+') as f:
+        f.write('test\n')
+
+app = Flask(__name__)
+app.config.from_object(Config())
+cron = APScheduler()
+cron.init_app(app)
+cron.start()
+
 from flask import render_template, flash, redirect, request, url_for
 from wtforms.validators import NumberRange
 
@@ -286,29 +308,5 @@ def kubecmd(command = None, output=[]):
 def notebook():
     return redirect("http://notebook.{}".format(os.environ['NGROK_DOMAIN']))
 
-
-class Config(object):
-    JOBS = [
-        {
-            'id': 'pending',
-            'func': 'pending',
-            'trigger': 'interval',
-            'seconds': 11
-        },
-        {
-            'id': 'running',
-            'func': 'running',
-            'trigger': 'interval',
-            'seconds': 31
-        }
-    ]
-    SCHEDULER_API_ENABLED = True
-    SECRET_KEY = 'exaairocks'
-
 if __name__ == "__main__":
-    app = Flask(__name__)
-    app.config.from_object(Config())
-    cron = APScheduler()
-    cron.init_app(app)
-    cron.start()
     app.run()

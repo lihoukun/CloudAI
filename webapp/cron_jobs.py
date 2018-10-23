@@ -78,6 +78,8 @@ def running():
 
 
 def completed():
+    with open('/home/ai/workspace/CloudAI/webapp/t.txt', 'a+') as f:
+        f.write('world\n')
     for t in TrainingModel.query.filter_by(status='COMPLETED').order_by('stop_at'):
         cmd = 'kubectl get pods -l name={}'.format(t.name)
         output = check_output(cmd.split()).decode('ascii')
