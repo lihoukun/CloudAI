@@ -49,6 +49,8 @@ def pending():
 
 
 def running():
+    with open('/home/ai/workspace/CloudAI/webapp/t.txt', 'a+') as f:
+        f.write('hello\n')
     for t in TrainingModel.query.filter_by(status='RUNNING').order_by('submit_at'):
         cmd = 'kubectl get pods -l name={}'.format(t.name)
         output = check_output(cmd.split()).decode('ascii')

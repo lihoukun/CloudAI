@@ -4,9 +4,10 @@ app.config['SECRET_KEY'] = 'exaairocks'
 
 import atexit
 from apscheduler.schedulers.background import BackgroundScheduler
-from cron_jobs import pending
+from cron_jobs import pending, running
 cron = BackgroundScheduler()
-cron.add_job(func=pending, trigger='interval', seconds=10)
+cron.add_job(func=pending, trigger='interval', seconds=11)
+cron.add_job(func=running, trigger='interval', seconds=31)
 cron.start()
 atexit.register(lambda: cron.shutdown())
 
