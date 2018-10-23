@@ -2,16 +2,16 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Column, Integer, String, DateTime
-from sqlalchemy.pool import SingletonThreadPool
+from sqlalchemy.pool import NullPool
 import os
 import datetime
 
 if os.environ.get('FLASK_DB'):
     engine = create_engine('sqlite:////{}'.format(os.environ.get('FLASK_DB')),
-                           convert_unicode=True, poolclass=SingletonThreadPool)
+			convert_unicode=True, poolclass=NullPool)
 else:
     engine = create_engine('sqlite:////{}/sqlite3.db'.format(os.path.dirname(os.path.abspath(__file__))),
-                           convert_unicode=True, poolclass=SingletonThreadPool)
+                           convert_unicode=True, poolclass=NullPool)
 
 db_session = scoped_session(sessionmaker(autocommit=False,
                                          autoflush=False,

@@ -54,7 +54,7 @@ Subject: %s
 
 
 def pending():
-    t = TrainingModel.query.filter_by(status='PENDING').order_by('submit_at').first()
+    t = db_session.query(TrainingModel).filter_by(status='PENDING').order_by('submit_at').first()
     if t:
         name, num_gpu, mail_to = t.name, t.num_gpu, t.email
         avail_nodes = get_avail_worker()
@@ -78,9 +78,7 @@ def pending():
 
 
 def running():
-    with open('/home/ai/workspace/CloudAI/webapp/t.txt', 'a+') as f:
-        f.write('hello\n')
-    for t in TrainingModel.query.filter_by(status='RUNNING').order_by('submit_at'):
+    for t in db_session.query(TrainingModel).filter_by(status='RUNNING').order_by('submit_at'):
         cmd = 'kubectl get pods -l name={}'.format(t.name)
         output = check_output(cmd.split()).decode('ascii')
         if output:
@@ -126,7 +124,7 @@ def index():
 @app.route('/trainings/new/', methods=['GET', 'POST'])
 def trainings_new():
     form = TrainingsNewForm()
-    form.template_name.choices = [[t.name]*2 for t in TemplateModel.query.all()]
+    form.template_name.choices = [[t.name]*2 for t in db_session.query(TemplateModel).all()]
     form.num_gpu.validators=[NumberRange(min=1, max=get_total_nodes())]
     form.num_cpu.validators=[NumberRange(min=0, max=get_total_nodes())]
     if form.validate_on_submit():
@@ -135,7 +133,7 @@ def trainings_new():
         num_cpu = form.num_cpu.data
         num_gpu = form.num_gpu.data
         params = form.params.data
-        result = TemplateModel.query.filter_by(name=template_name).first()
+        result = db_session.query(TemplateModel).filter_by(name=template_name).first()
         script, image, log_dir, mnt_option = result.bash_script, result.image_dir, result.log_dir, result.mnt_option
         record_dir = '{}/records/{}'.format(os.environ['SHARED_HOST'], train_name)
 
@@ -167,7 +165,7 @@ def trainings_new():
 @app.route('/trainings/<type>', methods=['GET', 'POST'])
 def trainings(type='active'):
     data = []
-    for t in TrainingModel.query.all():
+    for t in db_session.query(TrainingModel).all():
         data.append([t.name, t.status, t.num_gpu])
 
     return render_template('trainings.html', data=data, type=type)
@@ -175,7 +173,7 @@ def trainings(type='active'):
 
 @app.route('/training/config/<name>', methods=['GET', 'POST'])
 def training_cfg(name=None):
-    t = TrainingModel.query.filter_by(name=name).first()
+    t = db_session.query(TrainingModel).filter_by(name=name).first()
     data = [name, t.status, t.num_gpu, t.num_cpu, t.params, t.email,
             t.bash_script, t.image_dir, t.log_dir, t.mnt_option]
 
@@ -230,7 +228,7 @@ def training_info(name=None, desc = [], log = []):
                 data.append(line.split()[:3])
         data.pop(0)
 
-    t = TrainingModel.query.filter_by(name=name).first()
+    t = db_session.query(TrainingModel).filter_by(name=name).first()
     if t.status == 'KILLED':
         forms = DeleteForm(prefix='forms')
         if forms.validate_on_submit():
@@ -294,14 +292,14 @@ def templates_new():
 @app.route('/templates/')
 def templates():
     data = []
-    for t in TemplateModel.query.all():
+    for t in db_session.query(TemplateModel).all():
         data.append((t.name, t.image_dir, t.description))
     return render_template('templates.html', data=data)
 
 
 @app.route('/template/<name>', methods=['GET', 'POST'])
 def template(name=None):
-    t = TemplateModel.query.filter_by(name=name).first()
+    t = db_session.query(TemplateModel).filter_by(name=name).first()
     data = [t.name, t.bash_script, t.image_dir, t.log_dir, t.mnt_option, t.description]
 
     formu = TemplatesEditForm(mnt_option=t.mnt_option, prefix='formu')
@@ -329,7 +327,7 @@ def template(name=None):
 def tensorboard():
     form = EvalForm()
     choices = []
-    for t in TrainingModel.query.filter(TrainingModel.log_dir.isnot(None)).all():
+    for t in db_session.query(TrainingModel).filter(TrainingModel.log_dir.isnot(None)).all():
         if t.log_dir:
             if t.mnt_option == 'hostpath':
                 log_dir = t.log_dir.replace('/mnt/hostpath', os.environ.get('HOSTPATH_HOST'))
