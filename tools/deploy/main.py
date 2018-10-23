@@ -80,5 +80,6 @@ def main():
     else:
         deploy_one(args.action, args.target)
 
+
 if __name__ == "__main__":
     main()

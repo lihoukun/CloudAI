@@ -1,16 +1,7 @@
 from flask import Flask
-app = Flask(__name__)
-app.config['SECRET_KEY'] = 'exaairocks'
 
-import atexit
-from apscheduler.schedulers.background import BackgroundScheduler
+from flask_apscheduler import APScheduler
 from cron_jobs import pending, running
-cron = BackgroundScheduler()
-cron.add_job(func=pending, trigger='interval', seconds=11)
-cron.add_job(func=running, trigger='interval', seconds=31)
-cron.start()
-atexit.register(lambda: cron.shutdown())
-
 from flask import render_template, flash, redirect, request, url_for
 from wtforms.validators import NumberRange
 
@@ -296,5 +287,28 @@ def notebook():
     return redirect("http://notebook.{}".format(os.environ['NGROK_DOMAIN']))
 
 
+class Config(object):
+    JOBS = [
+        {
+            'id': 'pending',
+            'func': 'pending',
+            'trigger': 'interval',
+            'seconds': 11
+        },
+        {
+            'id': 'running',
+            'func': 'running',
+            'trigger': 'interval',
+            'seconds': 31
+        }
+    ]
+    SCHEDULER_API_ENABLED = True
+    SECRET_KEY = 'exaairocks'
+
 if __name__ == "__main__":
+    app = Flask(__name__)
+    app.config.from_object(Config())
+    cron = APScheduler()
+    cron.init_app(app)
+    cron.start()
     app.run()

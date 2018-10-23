@@ -29,6 +29,6 @@ def start_web():
     cwd = os.getcwd()
     flask_dir = os.path.dirname(os.path.realpath(__file__)) + '/../../webapp'
     os.chdir(flask_dir)
-    cmd = 'gunicorn main:app -b 0.0.0.0:{} -w 4 --preload'.format(os.environ.get('FLASK_PORT'))
+    cmd = 'gunicorn main:app -b 0.0.0.0:{} -w 4'.format(os.environ.get('FLASK_PORT'))
     Popen(cmd.split())
     os.chdir(cwd)
