@@ -5,10 +5,16 @@ from cron_jobs import pending, running
 class Config(object):
     JOBS = [
         {
-            'id': 'pending',
+            'id': 'test',
 			'func': 'main:test',
             'trigger': 'interval',
-            'seconds': 1
+            'seconds': 5
+        },
+        {
+            'id': 'pending',
+			'func': 'cron_jobs:pending',
+            'trigger': 'interval',
+            'seconds': 11
         }
     ]
     SCHEDULER_API_ENABLED = True
@@ -309,4 +315,4 @@ def notebook():
     return redirect("http://notebook.{}".format(os.environ['NGROK_DOMAIN']))
 
 if __name__ == "__main__":
-    app.run()
+    app.run(use_reloader=False)
