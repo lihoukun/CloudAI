@@ -1,35 +1,5 @@
-from flask import Flask, current_app
+from flask import Flask
 from flask_apscheduler import APScheduler
-from cron_jobs import pending, running
-
-class Config(object):
-    JOBS = [
-        {
-            'id': 'test',
-			'func': 'main:test',
-            'trigger': 'interval',
-            'seconds': 5
-        },
-        {
-            'id': 'pending',
-			'func': 'cron_jobs:pending',
-            'trigger': 'interval',
-            'seconds': 11
-        }
-    ]
-    SCHEDULER_API_ENABLED = True
-    SECRET_KEY = 'exaairocks'
-
-def test():
-    with open('/home/ai/workspace/CloudAI/webapp/t.txt', 'a+') as f:
-        f.write('test\n')
-
-app = Flask(__name__)
-app.config.from_object(Config())
-cron = APScheduler()
-cron.init_app(app)
-cron.start()
-
 from flask import render_template, flash, redirect, request, url_for
 from wtforms.validators import NumberRange
 
@@ -38,11 +8,109 @@ from forms import KubecmdForm, EvalForm, StopForm, ShowForm, DeleteForm
 from forms import TemplatesNewForm, TemplatesEditForm
 from database import db_session
 from database import TrainingModel, TemplateModel
-from kube_parse import get_total_nodes, get_gpu_per_node
+from kube_parse import get_total_nodes, get_gpu_per_node, get_avail_worker
 from subprocess import check_output
 import os
 import datetime
-import json
+import smtplib
+
+
+class Config(object):
+    JOBS = [
+        {
+            'id': 'pending',
+            'func': 'main:pending',
+            'trigger': 'interval',
+            'seconds': 11
+        },
+        {
+            'id': 'running',
+            'func': 'main:running',
+            'trigger': 'interval',
+            'seconds': 31
+        }
+    ]
+    SCHEDULER_API_ENABLED = True
+    SECRET_KEY = 'exaairocks'
+
+
+def send_mail(sub, mail_to, msg):
+    if not mail_to: return 0
+    to = mail_to.split(',')
+    if not to: return 1
+    FROM = 'DoNotReply@exaai.io'
+
+    message = """\
+From: %s
+To: %s
+Subject: %s
+
+%s
+""" % (FROM, ", ".join(to), sub, msg)
+
+    server = smtplib.SMTP('localhost')
+    server.sendmail(FROM, to, message)
+    server.quit()
+
+
+def pending():
+    t = TrainingModel.query.filter_by(status='PENDING').order_by('submit_at').first()
+    if t:
+        name, num_gpu, mail_to = t.name, t.num_gpu, t.email
+        avail_nodes = get_avail_worker()
+        if num_gpu > avail_nodes:
+            return 0
+
+        cfg_file = '{}/train.yaml'.format(t.record_dir)
+        t.start_at = datetime.datetime.now()
+        if os.path.isfile(cfg_file):
+            cmd = 'kubectl apply -f {}'.format(cfg_file)
+            os.system(cmd)
+            t.status = 'RUNNING'
+        else:
+            os.system('rm -rf {}'.format(t.record_dir))
+            db_session.delete(t)
+            sub = 'cfg file not found'
+            msg = 'No cfg file at {}, deleted'.format(cfg_file)
+            send_mail(sub, mail_to, msg)
+
+        db_session.commit()
+
+
+def running():
+    with open('/home/ai/workspace/CloudAI/webapp/t.txt', 'a+') as f:
+        f.write('hello\n')
+    for t in TrainingModel.query.filter_by(status='RUNNING').order_by('submit_at'):
+        cmd = 'kubectl get pods -l name={}'.format(t.name)
+        output = check_output(cmd.split()).decode('ascii')
+        if output:
+            cmd = 'kubectl get pods -l name={},job=worker'.format(t.name)
+            output = check_output(cmd.split()).decode('ascii')
+            if output:
+                lines = output.split('\n')
+                is_finished = True
+                for line in lines[1:-1]:
+                    items = line.split()
+                    if len(items) != 5 or items[2] != 'Completed':
+                        is_finished = False
+                        break
+                if is_finished: t.status = 'COMPLETED'
+        else:
+            t.status = 'KILLED'
+
+        if t.status  != 'RUNNING':
+            sub = 'Training {} COMPLETED'.format(t.name)
+            msg = 'as title'
+            send_mail(sub, t.email, msg)
+            t.stop_at = datetime.datetime.now()
+            db_session.commit()
+
+
+app = Flask(__name__)
+app.config.from_object(Config())
+cron = APScheduler()
+cron.init_app(app)
+cron.start()
 
 
 @app.teardown_appcontext
