@@ -2,6 +2,14 @@ from flask import Flask
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'exaairocks'
 
+import atexit
+from apscheduler.schedulers.background import BackgroundScheduler
+from cron_jobs import pending
+cron = BackgroundScheduler()
+cron.add_job(func=pending, trigger='interval', seconds=10)
+cron.start()
+atexit.register(lambda: cron.shutdown())
+
 from flask import render_template, flash, redirect, request, url_for
 from wtforms.validators import NumberRange
 
