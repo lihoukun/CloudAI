@@ -4,5 +4,4 @@
 * [K8s Deployment](https://github.com/lihoukun/CloudAI/blob/master/docs/k8s_bj.md)
 * [Webapp deployment](https://github.com/lihoukun/CloudAI/blob/master/docs/webapp.md)
 * [Tutorial](https://github.com/lihoukun/CloudAI/blob/master/docs/user_guide.md)
-* [CloudAI Demo](https://github.com/lihoukun/CloudAI/blob/master/docs/demo.md)
 
